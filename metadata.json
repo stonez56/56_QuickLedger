@@ -1,0 +1,7 @@
+{
+  "requestFramePermissions": [
+    "camera"
+  ],
+  "name": "收支快記雲 v0.2",
+  "description": ""
+}
