@@ -562,7 +562,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ config, onLogout }) =>
                     : 'text-slate-500 hover:text-slate-300'
                 }`}
               >
-                僅內帳 (無憑證/不報稅)
+                僅內帳 <br />(無憑證/不報稅)
               </button>
             </div>
             

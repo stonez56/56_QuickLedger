@@ -54,9 +54,19 @@ export const Input: React.FC<InputProps> = ({ label, icon: Icon, error, rightEle
           </div>
         )}
         <input
-          className={`w-full bg-slate-950 border ${error ? 'border-rose-500' : 'border-slate-700'} rounded-lg py-2.5 ${Icon ? (hideIconOnMobile ? 'pl-3 md:pl-10' : 'pl-10') : 'pl-3'} ${rightElement ? 'pr-10' : 'pr-3'} text-slate-100 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
+          className={`w-full bg-slate-950 border ${error ? 'border-rose-500' : 'border-slate-700'} rounded-lg py-2.5 ${Icon ? (hideIconOnMobile ? 'pl-3 md:pl-10' : 'pl-10') : 'pl-3'} ${rightElement ? 'pr-10' : 'pr-3'} text-slate-100 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all disabled:opacity-50 disabled:cursor-not-allowed ${props.type === 'date' ? '[&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0 [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:cursor-pointer' : ''} ${className}`}
           onInvalid={handleInvalid}
           onInput={handleInput}
+          onClick={(e) => {
+            if (props.type === 'date' && 'showPicker' in e.target) {
+              try {
+                (e.target as HTMLInputElement).showPicker();
+              } catch (err) {
+                // ignore
+              }
+            }
+            if (props.onClick) props.onClick(e);
+          }}
           {...props}
         />
         {rightElement && (
