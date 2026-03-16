@@ -25,6 +25,27 @@
 
 ---
 
+## ⚡ 快速開始 (Quick Start)
+
+如果您只想先在本地端運行專案，請跟著以下步驟：
+
+1. **安裝依賴套件** (若遇到 ERESOLVE 錯誤，請加上 `--legacy-peer-deps`) :
+   ```bash
+   npm install --legacy-peer-deps
+   ```
+2. **設定環境變數**: 在根目錄建立 `.env` 檔案並填入您的 Gemini API Key：
+   ```env
+   VITE_GEMINI_API_KEY=您的_GEMINI_API_KEY
+   ```
+3. **啟動開發伺服器**:
+   ```bash
+   npm run dev
+   ```
+
+*註：完整系統設定（如 Google Sheet 連接、API 設定）請參閱下方的 [安裝與設定教學](#步驟-1準備-google-sheet-後端資料庫)。*
+
+---
+
 ## 🛠️ 系統架構
 
 本專案採用 **Serverless** 架構，前端直接與 Google 服務溝通，無需額外租用後端伺服器：
@@ -33,6 +54,17 @@
 *   **UI 樣式**: Tailwind CSS (透過 Twind 引擎即時編譯) + Lucide Icons
 *   **AI 引擎**: Google Gemini API (`gemini-3-flash-preview`)
 *   **後端/資料庫**: Google Apps Script (GAS) + Google Sheets
+
+---
+
+## How to testing Locally (WSL way)
+* Standard npm run dev (Vite) cannot run Vercel serverless functions locally. To test the API scanner locally before deploying to production, follow these steps:
+
+* Install the Vercel CLI: npm i -g vercel
+* Link your project: vercel link
+* Pull development environment variables: vercel env pull .env.development.local
+* Run the local Vercel server: vercel dev
+* Alternatively, simply deploy to Vercel, and it will work automatically out of the box!
 
 ---
 
@@ -62,7 +94,7 @@
 ### 步驟 3：設定前端專案
 
 1.  複製本專案程式碼至您的本地環境。
-2.  開啟專案中的 `src/constants.ts` (或 `constants.ts`) 檔案。
+2.  開啟專案中的 `constants.ts` 檔案。
 3.  找到 `APPS_SCRIPT_URL` 變數，將其替換為您在步驟 2 複製的 Google Apps Script URL：
 
 ```typescript
@@ -84,9 +116,9 @@ export const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/您的ID/exec
 
 ### 本地開發 (Local Development)
 
-1.  安裝依賴套件：
+1.  安裝依賴套件 (若遇到 ERESOLVE 錯誤，請加上 `--legacy-peer-deps`) :
     ```bash
-    npm install
+    npm install --legacy-peer-deps
     ```
 2.  設定環境變數：在專案根目錄建立 `.env` 檔案，並加入您的 Gemini API Key：
     ```env

@@ -40,12 +40,18 @@ export const SplashScreen: React.FC<{ onFinish: () => void }> = ({ onFinish }) =
           </div>
         </div>
         
-        <h1 className="text-3xl font-bold bg-gradient-to-r from-sky-400 to-emerald-400 bg-clip-text text-transparent mb-2 tracking-tight">
-          收支快記雲
+        <div className="relative z-10 text-center animate-in slide-in-from-bottom-5 duration-700 delay-300">
+        <h1 className="text-4xl md:text-6xl font-bold text-white tracking-tight flex items-center justify-center gap-4">
+            <img src="/light_stonez56_256x265_icon.png" alt="Logo" className="w-12 h-12 md:w-16 md:h-16 object-contain" />
+            收支快記雲
         </h1>
-        <p className="text-slate-400 text-sm font-medium tracking-widest uppercase">
+        <p className="mt-4 text-sky-200 text-lg md:text-xl font-medium tracking-wide">
+          v0.2
+        </p>
+        <p className="mt-1 text-slate-400 text-sm font-medium tracking-widest uppercase">
           56 QuickLedger
         </p>
+      </div>
       </div>
       
       <div className="absolute bottom-12 left-1/2 -translate-x-1/2 flex items-center gap-2">

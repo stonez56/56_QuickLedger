@@ -1,5 +1,4 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { GoogleGenAI, Type } from '@google/genai';
 import { Camera, Loader2, Sparkles, X, ScanLine, Upload } from 'lucide-react';
 import { FLATTENED_CATEGORY_VALUES, AI_SCANNER_PROMPT } from '../constants.ts';
 
@@ -83,53 +82,26 @@ export const Scanner: React.FC<ScannerProps> = ({ onScanResult, onClose }) => {
   const processImage = async (base64Data: string) => {
     setLoading(true);
     try {
-      if (!process.env.API_KEY) {
-        throw new Error("Missing API_KEY in environment variables.");
-      }
-
-      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
       const categoryList = FLATTENED_CATEGORY_VALUES.join('", "');
-      
-      // Inject the category list into the template
       const fullPrompt = AI_SCANNER_PROMPT.replace('{{CATEGORY_LIST}}', `["${categoryList}"]`);
 
-      const response = await ai.models.generateContent({
-        model: 'gemini-3-flash-preview',
-        contents: [
-          {
-            parts: [
-              { inlineData: { mimeType: 'image/jpeg', data: base64Data } },
-              { text: fullPrompt }
-            ]
-          }
-        ],
-        config: {
-          responseMimeType: "application/json",
-          responseSchema: {
-            type: Type.OBJECT,
-            properties: {
-              type: { type: Type.STRING, enum: ["Input", "Output"] },
-              formatCode: { type: Type.STRING },
-              date: { type: Type.STRING, description: "YYYY-MM-DD" },
-              invoiceNo: { type: Type.STRING },
-              taxId: { type: Type.STRING },
-              amount: { type: Type.NUMBER },
-              tax: { type: Type.NUMBER },
-              total: { type: Type.NUMBER },
-              category: { type: Type.STRING },
-              note: { type: Type.STRING, description: "Format: '商家名稱 - 商品'. Language: Traditional Chinese." }
-            },
-            required: ["type", "date", "amount", "total"]
-          }
-        }
+      const response = await fetch('/api/scan', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          imageBase64: base64Data,
+          promptText: fullPrompt
+        }),
       });
 
-      let text = response.text || '{}';
-      if (text.startsWith('```')) {
-        text = text.replace(/^```(json)?\n/, '').replace(/\n```$/, '');
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || `Server responded with ${response.status}`);
       }
 
-      const result = JSON.parse(text);
+      const result = await response.json();
       console.log("AI Scan Result:", result);
       onScanResult(result);
 

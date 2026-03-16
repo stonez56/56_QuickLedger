@@ -444,15 +444,14 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ config, onLogout }) =>
       {showScanner && <Scanner onScanResult={handleScanResult} onClose={() => setShowScanner(false)} />}
       
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-        <div className="flex items-center gap-3">
-            <div>
-              <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                收支快記雲 v0.2
-                <span className="text-xs font-normal px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">2026 帳期</span>
+            <div className="flex items-center space-x-4">
+              <h2 className="text-xl md:text-2xl font-bold text-white flex items-center justify-center">
+                 <img src="/light_stonez56_256x265_icon.png" alt="Logo" className="w-8 h-8 mr-3 object-contain" />
+                 收支快記雲 v0.2
+                <span className="text-xs font-normal px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700 ml-2">2026 帳期</span>
               </h2>
               <p className="text-slate-400 text-sm">{config.userEmail}</p>
             </div>
-        </div>
         <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
           <button
             type="button"
