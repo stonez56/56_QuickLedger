@@ -16,7 +16,8 @@ import {
   ShieldAlert,
   Ban,
   CheckCircle,
-  HelpCircle
+  HelpCircle,
+  Settings
 } from 'lucide-react';
 import { 
   InvoiceType, 
@@ -54,10 +55,11 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ config, onLogout }) =>
   const [hasLastScan, setHasLastScan] = useState(false);
   const [isTaxManuallyEdited, setIsTaxManuallyEdited] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [isNotARAP, setIsNotARAP] = useState(true);
-  const [showInstructions, setShowInstructions] = useState(false);
-  const [showAccountingGuide, setShowAccountingGuide] = useState(false);
-  const [instructionTab, setInstructionTab] = useState<'both' | 'internal'>('both');
+  const [showSettings, setShowSettings] = useState(false);
+  const [settingsTab, setSettingsTab] = useState<'display' | 'both' | 'internal' | 'guide'>('display');
+  const [fontSize, setFontSize] = useState<'sm' | 'base' | 'lg'>('base');
 
   useEffect(() => {
     const saved = localStorage.getItem(LAST_SCAN_KEY);
@@ -439,8 +441,14 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ config, onLogout }) =>
   // Show warning if it's risky AND user currently has it marked as deductible ('1')
   const showWarning = (isRiskyCategory || isRiskyKeyword) && formData.type === InvoiceType.INPUT && formData.deductionCode === '1' && formData.recordType !== RecordType.INTERNAL;
 
+  const fontSizeClass = {
+    sm: 'text-sm',
+    base: 'text-base',
+    lg: 'text-lg'
+  }[fontSize];
+
   return (
-    <div className="max-w-4xl mx-auto pb-24">
+    <div className={`max-w-4xl mx-auto pb-24 ${fontSizeClass}`}>
       {showScanner && <Scanner onScanResult={handleScanResult} onClose={() => setShowScanner(false)} />}
       
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
@@ -457,20 +465,12 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ config, onLogout }) =>
         <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
           <button
             type="button"
-            onClick={() => setShowInstructions(true)}
-            className="w-8 h-8 rounded-full bg-sky-500/10 text-sky-400 flex items-center justify-center hover:bg-sky-500/20 hover:text-sky-300 transition-colors border border-sky-500/20 shrink-0"
-            title="使用說明"
+            onClick={() => { setShowSettings(true); setSettingsTab('display'); }}
+            className="flex-1 md:flex-none inline-flex items-center justify-center px-4 py-1.5 text-sm font-medium text-slate-300 bg-slate-800 rounded-lg hover:bg-slate-700 transition-colors shrink-0"
+            title="設定 / 幫助"
           >
-            <HelpCircle size={18} />
-          </button>
-          <button
-            type="button"
-            onClick={() => setShowAccountingGuide(true)}
-            className="flex-1 md:flex-none inline-flex items-center justify-center px-3 py-1.5 text-sm font-medium text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded-lg hover:bg-emerald-500/20 transition-colors shrink-0"
-            title="記帳需知"
-          >
-            <FileText size={14} className="mr-1.5" />
-            記帳需知
+            <Settings size={14} className="mr-1.5" />
+            設定 / 幫助
           </button>
           {config.sheetUrl && (
             <a 
@@ -484,7 +484,14 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ config, onLogout }) =>
               <ExternalLink size={12} className="ml-1 opacity-50" />
             </a>
           )}
-          <Button variant="ghost" onClick={onLogout} size="sm" className="flex-1 md:flex-none shrink-0">登出</Button>
+          <Button 
+            variant="secondary" 
+            onClick={onLogout} 
+            size="sm" 
+            className="flex-1 md:flex-none shrink-0 bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700 font-medium"
+          >
+            登出
+          </Button>
         </div>
       </div>
 
@@ -797,11 +804,11 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ config, onLogout }) =>
           </Card>
         </div>
 
-        <div className="fixed bottom-0 left-0 right-0 p-4 bg-slate-950/80 backdrop-blur-md border-t border-slate-800 z-40 safe-area-bottom">
-            <div className="max-w-4xl mx-auto grid grid-cols-2 md:flex md:flex-row items-center gap-3 md:gap-4">
+        <div className="fixed md:static bottom-0 left-0 right-0 p-4 md:p-0 bg-slate-950/80 md:bg-transparent backdrop-blur-md md:backdrop-blur-none border-t border-slate-800 md:border-none z-40 md:z-auto safe-area-bottom mt-0 md:mt-8">
+            <div className="max-w-4xl mx-auto grid grid-cols-2 md:flex md:flex-row items-center gap-3 md:gap-4 md:justify-center">
                 <Button 
                     type="submit" 
-                    className="w-full md:w-auto md:flex-1 py-3 text-base md:text-lg font-bold shadow-lg shadow-sky-900/20"
+                    className="w-full md:w-[220px] py-3 md:py-3 md:px-8 text-base font-bold shadow-lg shadow-sky-900/20"
                     isLoading={loading}
                     icon={Save}
                 >
@@ -810,17 +817,17 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ config, onLogout }) =>
                 
                 <Button 
                     type="button" 
-                    variant="ghost" 
-                    onClick={handleReset}
+                    variant="secondary" 
+                    onClick={() => setShowResetConfirm(true)}
                     icon={RotateCcw}
                     disabled={loading}
-                    className="w-full md:w-auto py-3"
+                    className="w-full md:w-[220px] py-3 md:py-3 bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700 font-medium"
                 >
                     重置
                 </Button>
 
                 {message && (
-                    <div className={`col-span-2 w-full md:col-auto md:flex-1 px-4 py-2 rounded-lg text-sm font-medium flex flex-col justify-center animate-in fade-in slide-in-from-bottom-2 ${
+                    <div className={`col-span-2 w-full md:col-auto md:flex-1 px-4 py-2 rounded-lg text-sm font-medium flex flex-col justify-center animate-in fade-in slide-in-from-bottom-2 md:slide-in-from-left-2 ${
                         message.type === 'success' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'
                     }`}>
                         <div className="flex items-center mb-1">
@@ -838,42 +845,84 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ config, onLogout }) =>
         </div>
       </form>
 
-      {/* Instructions Modal */}
-      {showInstructions && (
+      {/* Settings / Help Modal */}
+      {showSettings && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
-          <div className="bg-slate-900 border border-slate-700 rounded-xl shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 flex flex-col max-h-[90vh]">
+          <div className="bg-slate-900 border border-slate-700 rounded-xl shadow-2xl w-full max-w-2xl overflow-hidden animate-in zoom-in-95 flex flex-col max-h-[90vh]">
             <div className="p-5 border-b border-slate-800 flex items-center justify-between shrink-0">
               <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                <HelpCircle className="w-5 h-5 text-sky-400" />
-                記帳使用說明
+                <Settings className="w-5 h-5 text-slate-400" />
+                設定 / 幫助
               </h3>
               <button 
-                onClick={() => setShowInstructions(false)}
+                onClick={() => setShowSettings(false)}
                 className="text-slate-400 hover:text-white"
               >
                 ✕
               </button>
             </div>
             
-            <div className="flex border-b border-slate-800 shrink-0">
+            <div className="flex border-b border-slate-800 shrink-0 overflow-x-auto whitespace-nowrap scrollbar-hide">
               <button
                 type="button"
-                className={`flex-1 py-3 text-sm font-medium transition-colors ${instructionTab === 'both' ? 'text-sky-400 border-b-2 border-sky-400 bg-sky-950/20' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'}`}
-                onClick={() => setInstructionTab('both')}
+                className={`px-4 py-3 text-sm font-medium transition-colors ${settingsTab === 'display' ? 'text-sky-400 border-b-2 border-sky-400 bg-sky-950/20' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'}`}
+                onClick={() => setSettingsTab('display')}
               >
-                內外帳記錄方法
+                ⚙️ 顯示設定
               </button>
               <button
                 type="button"
-                className={`flex-1 py-3 text-sm font-medium transition-colors ${instructionTab === 'internal' ? 'text-sky-400 border-b-2 border-sky-400 bg-sky-950/20' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'}`}
-                onClick={() => setInstructionTab('internal')}
+                className={`px-4 py-3 text-sm font-medium transition-colors ${settingsTab === 'both' ? 'text-sky-400 border-b-2 border-sky-400 bg-sky-950/20' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'}`}
+                onClick={() => setSettingsTab('both')}
               >
-                內帳記錄方法
+                💡 內外帳說明
+              </button>
+              <button
+                type="button"
+                className={`px-4 py-3 text-sm font-medium transition-colors ${settingsTab === 'internal' ? 'text-sky-400 border-b-2 border-sky-400 bg-sky-950/20' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'}`}
+                onClick={() => setSettingsTab('internal')}
+              >
+                📝 僅內帳說明
+              </button>
+              <button
+                type="button"
+                className={`px-4 py-3 text-sm font-medium transition-colors ${settingsTab === 'guide' ? 'text-emerald-400 border-b-2 border-emerald-400 bg-emerald-950/20' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'}`}
+                onClick={() => setSettingsTab('guide')}
+              >
+                📖 記帳需知
               </button>
             </div>
 
             <div className="p-6 space-y-6 text-sm text-slate-300 overflow-y-auto">
-              {instructionTab === 'both' ? (
+              {settingsTab === 'display' && (
+                <div className="space-y-4">
+                  <h4 className="font-bold text-white mb-2">字體大小設定</h4>
+                  <div className="flex gap-4">
+                    <button
+                      type="button"
+                      onClick={() => setFontSize('sm')}
+                      className={`flex-1 py-3 border rounded-lg transition-colors overflow-hidden ${fontSize === 'sm' ? 'bg-sky-500/20 border-sky-500 text-sky-300' : 'bg-slate-800 border-slate-700 text-slate-400 hover:bg-slate-700'}`}
+                    >
+                      <span className="text-sm">小</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setFontSize('base')}
+                      className={`flex-1 py-3 border rounded-lg transition-colors overflow-hidden ${fontSize === 'base' ? 'bg-sky-500/20 border-sky-500 text-sky-300' : 'bg-slate-800 border-slate-700 text-slate-400 hover:bg-slate-700'}`}
+                    >
+                      <span className="text-base">中</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setFontSize('lg')}
+                      className={`flex-1 py-3 border rounded-lg transition-colors overflow-hidden ${fontSize === 'lg' ? 'bg-sky-500/20 border-sky-500 text-sky-300' : 'bg-slate-800 border-slate-700 text-slate-400 hover:bg-slate-700'}`}
+                    >
+                      <span className="text-lg">大</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+              {settingsTab === 'both' && (
                 <>
                   <div className="flex gap-4">
                     <div className="w-8 h-8 rounded-full bg-sky-500/20 text-sky-400 flex items-center justify-center font-bold flex-shrink-0">1</div>
@@ -901,7 +950,8 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ config, onLogout }) =>
                     </div>
                   </div>
                 </>
-              ) : (
+              )}
+              {settingsTab === 'internal' && (
                 <>
                   <div className="flex gap-4">
                     <div className="w-8 h-8 rounded-full bg-sky-500/20 text-sky-400 flex items-center justify-center font-bold flex-shrink-0">1</div>
@@ -928,10 +978,71 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ config, onLogout }) =>
                   </div>
                 </>
               )}
+              {settingsTab === 'guide' && (
+                <>
+                  <div>
+                    <h4 className="font-bold text-emerald-400 text-base mb-3 border-b border-slate-800 pb-2">1. 收入 (Income)</h4>
+                    <div className="space-y-3">
+                      <p><strong className="text-white">通常有發票：</strong> 如果您的公司是「核定使用統一發票」的營業人，只要銷售商品或提供勞務，就必須開立統一發票給客戶。</p>
+                      <p><strong className="text-white">沒有發票的情況：</strong></p>
+                      <ul className="list-disc pl-5 space-y-1 text-slate-400">
+                        <li><strong className="text-slate-300">小規模營業人：</strong> 如果是國稅局核定的免用統一發票商號，則是開立「普通收據」。</li>
+                        <li><strong className="text-slate-300">非營業收入：</strong> 例如銀行存款利息（憑證為銀行存摺紀錄）、政府補助款（核准公文與匯款紀錄）等，這些不會開立發票。</li>
+                      </ul>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h4 className="font-bold text-emerald-400 text-base mb-3 border-b border-slate-800 pb-2">2. 支出 (Expense)</h4>
+                    <div className="space-y-3">
+                      <p>支出的憑證種類非常多，很多項目是沒有統一發票的：</p>
+                      <p><strong className="text-white">有發票的支出：</strong> 向一般公司行號進貨、購買設備、水電費、電信費、交際費等。</p>
+                      <p><strong className="text-white">沒有發票，但有其他合法憑證的支出：</strong></p>
+                      <ul className="list-disc pl-5 space-y-2 text-slate-400">
+                        <li><strong className="text-slate-300">薪資/勞務費：</strong> 員工薪資單、兼職人員的勞務報酬單（勞報單）。</li>
+                        <li><strong className="text-slate-300">小額採購：</strong> 向免用統一發票的店家購買物品，會取得「收據」（需蓋有免用統一發票專用章）。</li>
+                        <li><strong className="text-slate-300">租金支出：</strong> 如果房東是個人，憑證會是「租賃契約」加上「匯款證明」或「簽收單」。</li>
+                        <li><strong className="text-slate-300">差旅交通費：</strong> 高鐵/台鐵車票、機票票根與登機證、計程車收據。</li>
+                        <li><strong className="text-slate-300">郵資/規費/稅金：</strong> 郵局的購票證明、政府機關的規費收據、繳稅的繳款書。</li>
+                        <li><strong className="text-slate-300">銀行手續費：</strong> 銀行存摺的扣款紀錄或銀行開立的手續費收據。</li>
+                        <li><strong className="text-slate-300">國外採購：</strong> 國外廠商開立的 Commercial Invoice（商業發票，這與台灣的統一發票不同）、海關的進口報單。</li>
+                      </ul>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h4 className="font-bold text-emerald-400 text-base mb-3 border-b border-slate-800 pb-2">3. 特殊稅務項目 (Special Tax Items)</h4>
+                    <div className="space-y-3">
+                      <p><strong className="text-white">a. 進項折讓 (Input Return/Discount)：</strong></p>
+                      <ul className="list-disc pl-5 space-y-1 text-slate-400">
+                        <li><strong className="text-slate-300">何時使用：</strong> 當您向供應商進貨或購買費用後，發生「退貨」或「折讓（減價）」時使用。</li>
+                        <li><strong className="text-slate-300">憑證：</strong> 您需要開立或取得「營業人銷貨退回進貨退出或折讓證明單」。</li>
+                        <li><strong className="text-slate-300">系統操作：</strong> 在系統中選擇「23 - 進項折讓」，這會減少您的進項稅額（即減少可扣抵的稅額）。</li>
+                      </ul>
+                      <p><strong className="text-white">b. 海關代徵 (Customs Collection)：</strong></p>
+                      <ul className="list-disc pl-5 space-y-1 text-slate-400">
+                        <li><strong className="text-slate-300">何時使用：</strong> 當您從國外進口貨物時，海關會代為徵收營業稅。</li>
+                        <li><strong className="text-slate-300">憑證：</strong> 您會取得海關核發的「海關進口貨物稅費繳納證兼匯款申請書」（通常稱為海關代徵營業稅繳款書）。</li>
+                        <li><strong className="text-slate-300">系統操作：</strong> 在系統中選擇「28 - 海關代徵」，這筆代徵的營業稅可以作為您的進項稅額來扣抵銷項稅額。</li>
+                      </ul>
+                    </div>
+                  </div>
+
+                  <div className="bg-sky-500/10 border border-sky-500/20 rounded-lg p-4">
+                    <h4 className="font-bold text-sky-400 mb-2 flex items-center gap-2">
+                      <Sparkles className="w-4 h-4" />
+                      在系統中該如何記錄？
+                    </h4>
+                    <p className="text-sky-200/80 leading-relaxed">
+                      在我們開發的這套記帳系統中，當您在記錄時，如果遇到沒有台灣統一發票的支出或收入，您可以在「格式代號」中選擇 <strong className="text-sky-300">「99 - 收據/其他 (無發票)」</strong>，並在備註欄位註明實際的憑證種類（例如：薪資單、高鐵車票），這樣就能確保帳務清晰且符合規範了！
+                    </p>
+                  </div>
+                </>
+              )}
             </div>
             
             <div className="p-4 bg-slate-950/50 border-t border-slate-800 flex justify-end shrink-0">
-              <Button onClick={() => setShowInstructions(false)}>
+              <Button onClick={() => setShowSettings(false)}>
                 我瞭解了
               </Button>
             </div>
@@ -939,86 +1050,39 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ config, onLogout }) =>
         </div>
       )}
 
-      {/* Accounting Guide Modal */}
-      {showAccountingGuide && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
-          <div className="bg-slate-900 border border-slate-700 rounded-xl shadow-2xl w-full max-w-2xl overflow-hidden animate-in zoom-in-95 flex flex-col max-h-[90vh]">
-            <div className="p-5 border-b border-slate-800 flex items-center justify-between shrink-0">
-              <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                <FileText className="w-5 h-5 text-emerald-400" />
-                記帳需知
-              </h3>
-              <button 
-                onClick={() => setShowAccountingGuide(false)}
-                className="text-slate-400 hover:text-white"
+      {/* Reset Confirmation Modal */}
+      {showResetConfirm && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-slate-900 border border-slate-700 rounded-xl shadow-2xl w-full max-w-sm overflow-hidden animate-in zoom-in-95">
+            <div className="p-5 border-b border-slate-800 flex items-center gap-3">
+              <div className="bg-rose-500/20 p-2 rounded-full shrink-0">
+                <AlertTriangle className="w-6 h-6 text-rose-400" />
+              </div>
+              <h3 className="text-xl font-bold text-white">確認重置？</h3>
+            </div>
+            
+            <div className="p-5 text-sm text-slate-300">
+              <p>您確定要清空目前所有已輸入的資料嗎？此動作無法復原。</p>
+            </div>
+
+            <div className="p-4 border-t border-slate-800 bg-slate-900/50 flex gap-2">
+              <Button 
+                type="button" 
+                variant="ghost" 
+                className="flex-1"
+                onClick={() => setShowResetConfirm(false)}
               >
-                ✕
-              </button>
-            </div>
-            
-            <div className="p-6 space-y-6 text-sm text-slate-300 overflow-y-auto">
-              <div>
-                <h4 className="font-bold text-emerald-400 text-base mb-3 border-b border-slate-800 pb-2">1. 收入 (Income)</h4>
-                <div className="space-y-3">
-                  <p><strong className="text-white">通常有發票：</strong> 如果您的公司是「核定使用統一發票」的營業人，只要銷售商品或提供勞務，就必須開立統一發票給客戶。</p>
-                  <p><strong className="text-white">沒有發票的情況：</strong></p>
-                  <ul className="list-disc pl-5 space-y-1 text-slate-400">
-                    <li><strong className="text-slate-300">小規模營業人：</strong> 如果是國稅局核定的免用統一發票商號，則是開立「普通收據」。</li>
-                    <li><strong className="text-slate-300">非營業收入：</strong> 例如銀行存款利息（憑證為銀行存摺紀錄）、政府補助款（核准公文與匯款紀錄）等，這些不會開立發票。</li>
-                  </ul>
-                </div>
-              </div>
-
-              <div>
-                <h4 className="font-bold text-emerald-400 text-base mb-3 border-b border-slate-800 pb-2">2. 支出 (Expense)</h4>
-                <div className="space-y-3">
-                  <p>支出的憑證種類非常多，很多項目是沒有統一發票的：</p>
-                  <p><strong className="text-white">有發票的支出：</strong> 向一般公司行號進貨、購買設備、水電費、電信費、交際費等。</p>
-                  <p><strong className="text-white">沒有發票，但有其他合法憑證的支出：</strong></p>
-                  <ul className="list-disc pl-5 space-y-2 text-slate-400">
-                    <li><strong className="text-slate-300">薪資/勞務費：</strong> 員工薪資單、兼職人員的勞務報酬單（勞報單）。</li>
-                    <li><strong className="text-slate-300">小額採購：</strong> 向免用統一發票的店家購買物品，會取得「收據」（需蓋有免用統一發票專用章）。</li>
-                    <li><strong className="text-slate-300">租金支出：</strong> 如果房東是個人，憑證會是「租賃契約」加上「匯款證明」或「簽收單」。</li>
-                    <li><strong className="text-slate-300">差旅交通費：</strong> 高鐵/台鐵車票、機票票根與登機證、計程車收據。</li>
-                    <li><strong className="text-slate-300">郵資/規費/稅金：</strong> 郵局的購票證明、政府機關的規費收據、繳稅的繳款書。</li>
-                    <li><strong className="text-slate-300">銀行手續費：</strong> 銀行存摺的扣款紀錄或銀行開立的手續費收據。</li>
-                    <li><strong className="text-slate-300">國外採購：</strong> 國外廠商開立的 Commercial Invoice（商業發票，這與台灣的統一發票不同）、海關的進口報單。</li>
-                  </ul>
-                </div>
-              </div>
-
-              <div>
-                <h4 className="font-bold text-emerald-400 text-base mb-3 border-b border-slate-800 pb-2">3. 特殊稅務項目 (Special Tax Items)</h4>
-                <div className="space-y-3">
-                  <p><strong className="text-white">a. 進項折讓 (Input Return/Discount)：</strong></p>
-                  <ul className="list-disc pl-5 space-y-1 text-slate-400">
-                    <li><strong className="text-slate-300">何時使用：</strong> 當您向供應商進貨或購買費用後，發生「退貨」或「折讓（減價）」時使用。</li>
-                    <li><strong className="text-slate-300">憑證：</strong> 您需要開立或取得「營業人銷貨退回進貨退出或折讓證明單」。</li>
-                    <li><strong className="text-slate-300">系統操作：</strong> 在系統中選擇「23 - 進項折讓」，這會減少您的進項稅額（即減少可扣抵的稅額）。</li>
-                  </ul>
-                  <p><strong className="text-white">b. 海關代徵 (Customs Collection)：</strong></p>
-                  <ul className="list-disc pl-5 space-y-1 text-slate-400">
-                    <li><strong className="text-slate-300">何時使用：</strong> 當您從國外進口貨物時，海關會代為徵收營業稅。</li>
-                    <li><strong className="text-slate-300">憑證：</strong> 您會取得海關核發的「海關進口貨物稅費繳納證兼匯款申請書」（通常稱為海關代徵營業稅繳款書）。</li>
-                    <li><strong className="text-slate-300">系統操作：</strong> 在系統中選擇「28 - 海關代徵」，這筆代徵的營業稅可以作為您的進項稅額來扣抵銷項稅額。</li>
-                  </ul>
-                </div>
-              </div>
-
-              <div className="bg-sky-500/10 border border-sky-500/20 rounded-lg p-4">
-                <h4 className="font-bold text-sky-400 mb-2 flex items-center gap-2">
-                  <Sparkles className="w-4 h-4" />
-                  在系統中該如何記錄？
-                </h4>
-                <p className="text-sky-200/80 leading-relaxed">
-                  在我們開發的這套記帳系統中，當您在記錄時，如果遇到沒有台灣統一發票的支出或收入，您可以在「格式代號」中選擇 <strong className="text-sky-300">「99 - 收據/其他 (無發票)」</strong>，並在備註欄位註明實際的憑證種類（例如：薪資單、高鐵車票），這樣就能確保帳務清晰且符合規範了！
-                </p>
-              </div>
-            </div>
-            
-            <div className="p-4 bg-slate-950/50 border-t border-slate-800 flex justify-end shrink-0">
-              <Button onClick={() => setShowAccountingGuide(false)}>
-                我瞭解了
+                取消
+              </Button>
+              <Button 
+                type="button" 
+                className="flex-1 bg-rose-600 hover:bg-rose-700 text-white border-0"
+                onClick={() => {
+                  handleReset();
+                  setShowResetConfirm(false);
+                }}
+              >
+                確定重置
               </Button>
             </div>
           </div>

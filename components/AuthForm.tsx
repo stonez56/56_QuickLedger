@@ -230,11 +230,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onLogin }) => {
                 <div className="mt-2 flex items-start gap-2 text-xs text-slate-500 bg-slate-900/50 p-2 rounded">
                     <HelpCircle className="w-4 h-4 shrink-0 mt-0.5" />
                     <p>
-                        <strong>為什麼要輸入？</strong>
-                        <br/>
-                        應用程式無法直接讀取您的試算表。它會將此密鑰傳送給 Google 伺服器進行比對，確認您是本人後才允許存取。
-                        <br/>
-                        <span className="opacity-70 mt-1 block">請至 Google Sheet <strong>「Config」</strong> 分頁查看 B1 儲存格。</span>
+                        <span className="opacity-70 mt-1 block">Check Google Sheet!</span>
                     </p>
                 </div>
             </div>
