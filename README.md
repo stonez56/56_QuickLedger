@@ -57,14 +57,24 @@
 
 ---
 
-## How to testing Locally (WSL way)
-* Standard npm run dev (Vite) cannot run Vercel serverless functions locally. To test the API scanner locally before deploying to production, follow these steps:
+# 在 WSL 本地測試 Vercel Serverless Functions
 
-* Install the Vercel CLI: npm i -g vercel
-* Link your project: vercel link
-* Pull development environment variables: vercel env pull .env.development.local
-* Run the local Vercel server: vercel dev
-* Alternatively, simply deploy to Vercel, and it will work automatically out of the box!
+標準的 `npm run dev`（Vite）無法在本地執行 Vercel 的 Serverless Functions。  
+若要在部署到正式環境前測試 API Scanner，本地測試方式如下：
+
+```bash
+# 安裝 Vercel CLI
+npm i -g vercel
+
+# 連結專案
+vercel link
+
+# 拉取開發環境變數
+vercel env pull .env.development.local
+
+# 執行本地 Vercel 伺服器
+vercel dev
+
 
 ---
 
