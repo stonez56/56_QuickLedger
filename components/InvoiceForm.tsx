@@ -444,14 +444,16 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ config, onLogout }) =>
       {showScanner && <Scanner onScanResult={handleScanResult} onClose={() => setShowScanner(false)} />}
       
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-            <div className="flex items-center space-x-4">
-              <h2 className="text-xl md:text-2xl font-bold text-white flex items-center justify-center">
-                 <img src="/light_stonez56_256x265_icon.png" alt="Logo" className="w-8 h-8 mr-3 object-contain" />
-                 收支快記雲 v0.2
-                <span className="text-xs font-normal px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700 ml-2">2026 帳期</span>
-              </h2>
-              <p className="text-slate-400 text-sm">{config.userEmail}</p>
-            </div>
+        <div className="flex flex-row justify-between items-center w-full md:w-auto overflow-hidden">
+          <h2 className="text-lg md:text-2xl font-bold text-white flex items-center whitespace-nowrap shrink-0">
+             <img src="/light_stonez56_256x265_icon.png" alt="Logo" className="w-7 h-7 md:w-8 md:h-8 mr-2 md:mr-3 object-contain" />
+             收支快記雲
+          </h2>
+          <div className="flex flex-col md:flex-row items-end md:items-center gap-0.5 md:gap-2 pl-2">
+             <span className="text-[10px] md:text-xs font-normal px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700 whitespace-nowrap">2026 帳期</span>
+             <span className="text-slate-400 text-[11px] md:text-sm truncate max-w-[100px] text-right">{config.userEmail.split('@')[0]}</span>
+          </div>
+        </div>
         <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
           <button
             type="button"
@@ -796,10 +798,10 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ config, onLogout }) =>
         </div>
 
         <div className="fixed bottom-0 left-0 right-0 p-4 bg-slate-950/80 backdrop-blur-md border-t border-slate-800 z-40 safe-area-bottom">
-            <div className="max-w-4xl mx-auto flex flex-col md:flex-row items-center gap-4">
+            <div className="max-w-4xl mx-auto grid grid-cols-2 md:flex md:flex-row items-center gap-3 md:gap-4">
                 <Button 
                     type="submit" 
-                    className="w-full md:w-auto md:flex-1 py-3 text-lg font-bold shadow-lg shadow-sky-900/20"
+                    className="w-full md:w-auto md:flex-1 py-3 text-base md:text-lg font-bold shadow-lg shadow-sky-900/20"
                     isLoading={loading}
                     icon={Save}
                 >
@@ -812,13 +814,13 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ config, onLogout }) =>
                     onClick={handleReset}
                     icon={RotateCcw}
                     disabled={loading}
-                    className="w-full md:w-auto"
+                    className="w-full md:w-auto py-3"
                 >
                     重置
                 </Button>
 
                 {message && (
-                    <div className={`w-full md:w-auto flex-1 px-4 py-2 rounded-lg text-sm font-medium flex flex-col justify-center animate-in fade-in slide-in-from-bottom-2 ${
+                    <div className={`col-span-2 w-full md:col-auto md:flex-1 px-4 py-2 rounded-lg text-sm font-medium flex flex-col justify-center animate-in fade-in slide-in-from-bottom-2 ${
                         message.type === 'success' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'
                     }`}>
                         <div className="flex items-center mb-1">
