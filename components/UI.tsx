@@ -30,9 +30,10 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   icon?: LucideIcon;
   error?: string;
   rightElement?: React.ReactNode;
+  hideIconOnMobile?: boolean;
 }
 
-export const Input: React.FC<InputProps> = ({ label, icon: Icon, error, rightElement, className = '', ...props }) => {
+export const Input: React.FC<InputProps> = ({ label, icon: Icon, error, rightElement, hideIconOnMobile, className = '', ...props }) => {
   const handleInvalid = (e: React.FormEvent<HTMLInputElement>) => {
     (e.target as HTMLInputElement).setCustomValidity('請填寫此欄位');
     if (props.onInvalid) props.onInvalid(e);
@@ -48,12 +49,12 @@ export const Input: React.FC<InputProps> = ({ label, icon: Icon, error, rightEle
       {label && <Label htmlFor={props.id || props.name || ''} required={props.required}>{label}</Label>}
       <div className="relative">
         {Icon && (
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500">
+          <div className={`absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500 ${hideIconOnMobile ? 'hidden md:flex' : ''}`}>
             <Icon size={18} />
           </div>
         )}
         <input
-          className={`w-full bg-slate-950 border ${error ? 'border-rose-500' : 'border-slate-700'} rounded-lg py-2.5 ${Icon ? 'pl-10' : 'pl-3'} ${rightElement ? 'pr-10' : 'pr-3'} text-slate-100 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
+          className={`w-full bg-slate-950 border ${error ? 'border-rose-500' : 'border-slate-700'} rounded-lg py-2.5 ${Icon ? (hideIconOnMobile ? 'pl-3 md:pl-10' : 'pl-10') : 'pl-3'} ${rightElement ? 'pr-10' : 'pr-3'} text-slate-100 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
           onInvalid={handleInvalid}
           onInput={handleInput}
           {...props}

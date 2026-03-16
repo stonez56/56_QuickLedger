@@ -587,6 +587,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ config, onLogout }) =>
                 onChange={handleChange}
                 required
                 icon={Calendar}
+                hideIconOnMobile={true}
               />
             </div>
 
@@ -600,6 +601,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ config, onLogout }) =>
                   value={formData.paymentDate}
                   onChange={handleChange}
                   icon={Calendar}
+                  hideIconOnMobile={true}
                 />
                 <p className="text-[11px] text-slate-500 mt-1.5 leading-tight">若當下未收付(應收/應付)，請留白</p>
               </div>
@@ -611,6 +613,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ config, onLogout }) =>
                 value={formData.expectedDate}
                 onChange={handleChange}
                 icon={Calendar}
+                hideIconOnMobile={true}
               />
             </div>
 
