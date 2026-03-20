@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Receipt, Sparkles } from 'lucide-react';
+import { APP_VERSION } from '../constants.ts';
 
 export const SplashScreen: React.FC<{ onFinish: () => void }> = ({ onFinish }) => {
   const [fadeOut, setFadeOut] = useState(false);
@@ -46,7 +47,7 @@ export const SplashScreen: React.FC<{ onFinish: () => void }> = ({ onFinish }) =
             收支快記雲
         </h1>
         <p className="mt-4 text-sky-200 text-lg md:text-xl font-medium tracking-wide">
-          v0.2
+          {APP_VERSION}
         </p>
         <p className="mt-1 text-slate-400 text-sm font-medium tracking-widest uppercase">
           56 QuickLedger

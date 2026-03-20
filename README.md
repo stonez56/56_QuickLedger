@@ -124,29 +124,28 @@ export const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/您的ID/exec
 
 本專案使用 Vite 進行建置。
 
-### 本地開發 (Local Development)
+### 本地開發與分離測試環境 (Testing Environment)
 
-1.  安裝依賴套件 (若遇到 ERESOLVE 錯誤，請加上 `--legacy-peer-deps`) :
-    ```bash
-    npm install --legacy-peer-deps
-    ```
-2.  設定環境變數：在專案根目錄建立 `.env` 檔案，並加入您的 Gemini API Key：
-    ```env
-    VITE_GEMINI_API_KEY=您的_GEMINI_API_KEY
-    ```
-    *(註：若部署平台支援自動注入 `process.env.API_KEY`，程式碼亦相容此寫法)*
-3.  啟動開發伺服器：
+為保護您的正式財務資料，強烈建議建立**獨立的測試用 Google Sheet**：
+1. **複製 Sheet**: 建立正式 Google Sheet 的副本（例如：`QuickLedger_Test`）。
+2. **部署測試版 API**: 在測試 Sheet 中貼上 `AppsScript.js`，並發布「新的」網頁應用程式部署。複製該測試版 URL。
+3. **設定本地環境變數**: 在本專案根目錄建立 `.env.local` 檔案（此檔案不會上傳至 GitHub）：
+   ```env
+   VITE_APPS_SCRIPT_URL="您的測試版 Web App URL"
+   ```
+4.  啟動開發伺服器：
     ```bash
     npm run dev
     ```
+這樣在本地開發、測試新增/刪除時，都不會影響到正在使用的正式版資料庫。
 
 ### 雲端部署 (以 Vercel 為例)
 
 1.  將程式碼推送到 GitHub。
 2.  在 Vercel 新增專案並匯入您的 Repository。
 3.  **關鍵步驟**：在 Vercel 的專案設定 (Settings) > **Environment Variables** 中新增：
-    *   Key: `API_KEY` (或 `VITE_GEMINI_API_KEY`)
-    *   Value: (您的 Google Gemini API Key)
+    *   Key: `VITE_GEMINI_API_KEY` (您的 Gemini API Key)
+    *   Key: `VITE_APPS_SCRIPT_URL` (您「**正式版**」 Google Sheet 的 Web App URL)
 4.  點擊 Deploy 完成部署。
 
 ---

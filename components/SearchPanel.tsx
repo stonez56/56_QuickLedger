@@ -2,28 +2,37 @@ import React, { useState } from 'react';
 import { Search, Calendar, Edit, Trash2, AlertTriangle, AlertCircle } from 'lucide-react';
 import { AppConfig, LedgerRecord } from '../types.ts';
 import { Card, Input, Button } from './UI.tsx';
+import { getTaiwanDateString } from '../utils/date.ts';
 
 interface SearchPanelProps {
   config: AppConfig;
   onEdit: (record: LedgerRecord) => void;
+  fontSize: 'sm' | 'base' | 'lg';
 }
 
-export const SearchPanel: React.FC<SearchPanelProps> = ({ config, onEdit }) => {
+export const SearchPanel: React.FC<SearchPanelProps> = ({ config, onEdit, fontSize }) => {
   const [activeTab, setActiveTab] = useState<'keyword' | 'date'>('keyword');
   const [query, setQuery] = useState('');
 
-  const formatDate = (d: Date) => {
-    const yyyy = d.getFullYear();
-    const mm = String(d.getMonth() + 1).padStart(2, '0');
-    const dd = String(d.getDate()).padStart(2, '0');
-    return `${yyyy}-${mm}-${dd}`;
-  };
+  const sizeMap = {
+    sm: {
+      id: "text-xs", type: "text-xs", category: "text-lg", meta: "text-xs", amount: "text-xl", tax: "text-xs", note: "text-sm",
+    },
+    base: {
+      id: "text-sm", type: "text-sm", category: "text-xl", meta: "text-sm", amount: "text-2xl", tax: "text-sm", note: "text-base",
+    },
+    lg: {
+      id: "text-base", type: "text-base", category: "text-2xl", meta: "text-base", amount: "text-3xl", tax: "text-base", note: "text-lg",
+    }
+  }[fontSize];
 
-  const today = new Date();
-  const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+  // Use standardized UTC+8 dates
+  const todayStr = getTaiwanDateString();
+  const [yyyy, mm] = todayStr.split('-');
+  const firstDayStr = `${yyyy}-${mm}-01`;
 
-  const [startDate, setStartDate] = useState(formatDate(firstDay));
-  const [endDate, setEndDate] = useState(formatDate(today));
+  const [startDate, setStartDate] = useState(firstDayStr);
+  const [endDate, setEndDate] = useState(todayStr);
   
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<LedgerRecord[]>([]);
@@ -167,30 +176,30 @@ export const SearchPanel: React.FC<SearchPanelProps> = ({ config, onEdit }) => {
             <div className="flex justify-between items-start mb-2">
                <div>
                   <div className="flex flex-wrap items-center gap-2 mb-1">
-                     <span className="text-xs font-mono text-slate-400 bg-slate-900 px-2 py-0.5 rounded border border-slate-700">{record.id}</span>
-                     <span className={`text-xs px-2 py-0.5 rounded ${record.type === '進項 (支出)' ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20' : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'}`}>
+                     <span className={`${sizeMap.id} font-mono text-slate-400 bg-slate-900 px-2 py-0.5 rounded border border-slate-700`}>{record.id}</span>
+                     <span className={`${sizeMap.type} px-2 py-0.5 rounded ${record.type === '進項 (支出)' ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20' : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'}`}>
                        {record.type}
                      </span>
                   </div>
-                  <h4 className="font-bold text-slate-200 text-lg mt-2">{record.category || '未分類'}</h4>
-                  <div className="text-xs text-slate-500 mt-1 flex items-center gap-2">
+                  <h4 className={`font-bold text-slate-200 mt-2 ${sizeMap.category}`}>{record.category || '未分類'}</h4>
+                  <div className={`${sizeMap.meta} text-slate-500 mt-1 flex items-center gap-2`}>
                     <span>發票: {record.date || '--'}</span>
                     {record.paymentDate && <span>• 收付: {record.paymentDate}</span>}
                   </div>
                </div>
                <div className="text-right">
-                  <div className={`text-xl font-bold font-mono tracking-tight ${record.type === '進項 (支出)' ? 'text-rose-400' : 'text-emerald-400'}`}>
+                  <div className={`${sizeMap.amount} font-bold font-mono tracking-tight ${record.type === '進項 (支出)' ? 'text-rose-400' : 'text-emerald-400'}`}>
                      ${Number(record.total).toLocaleString()}
                   </div>
-                  <div className="text-xs text-slate-500">稅額: ${Number(record.tax).toLocaleString()}</div>
+                  <div className={`${sizeMap.tax} text-slate-500`}>稅額: ${Number(record.tax).toLocaleString()}</div>
                </div>
             </div>
             
             {(record.note || record.invoiceNo || record.taxId) && (
-               <div className="bg-slate-900/50 p-3 rounded-lg border border-slate-800/50 mt-3 text-sm flex flex-col gap-1">
-                 {record.note && <p className="text-slate-300">{record.note}</p>}
-                 {record.invoiceNo && <p className="text-slate-500 text-xs">發票號碼: <span className="font-mono text-slate-400">{record.invoiceNo}</span></p>}
-                 {record.taxId && <p className="text-slate-500 text-xs">統編: <span className="font-mono text-slate-400">{record.taxId}</span></p>}
+               <div className="bg-slate-900/50 p-3 rounded-lg border border-slate-800/50 mt-3 flex flex-col gap-1">
+                 {record.note && <p className={`text-slate-300 font-medium ${sizeMap.note}`}>{record.note}</p>}
+                 {record.invoiceNo && <p className={`text-slate-500 ${sizeMap.meta}`}>發票號碼: <span className="font-mono text-slate-400">{record.invoiceNo}</span></p>}
+                 {record.taxId && <p className={`text-slate-500 ${sizeMap.meta}`}>統編: <span className="font-mono text-slate-400">{record.taxId}</span></p>}
                </div>
             )}
 

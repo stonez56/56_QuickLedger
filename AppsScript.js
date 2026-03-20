@@ -82,15 +82,14 @@ function doPost(e) {
         let match = false;
         
         if (payload.type === 'keyword') {
-          // Search in Category (13), Note (14), Vendor(8), InvoiceNo(7)
-          const searchStr = `${row[13]} ${row[14]} ${row[8]} ${row[7]} ${row[11]}`.toLowerCase();
+          // Search in ID (0), Type (5), Date (2), Category (13), Note (14), Vendor(8), InvoiceNo(7), Total(11)
+          const searchStr = `${row[0]} ${row[5]} ${row[2]} ${row[13]} ${row[14]} ${row[8]} ${row[7]} ${row[11]}`.toLowerCase();
           if (searchStr.includes(query) || !query) match = true;
         } else if (payload.type === 'date') {
-           const rowDateMatch = row[2]; // date string or object
-           let rDate = new Date(rowDateMatch);
-           if (!isNaN(rDate.getTime())) {
-               if (startDate && rDate < startDate) continue;
-               if (endDate && rDate > endDate) continue;
+           const rDateStr = safeFormatDate(row[2]); // e.g. "2026-04-20"
+           if (rDateStr) {
+               if (payload.startDate && rDateStr < payload.startDate) continue;
+               if (payload.endDate && rDateStr > payload.endDate) continue;
                match = true;
            }
         }
@@ -118,6 +117,43 @@ function doPost(e) {
         }
         
         if (result.length >= 100) break; // Limit to 100 results for performance
+      }
+      
+      return ContentService.createTextOutput(JSON.stringify({ 
+        status: 'success', 
+        data: result 
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // 處理獲取所有資料請求 (不限制筆數，供儀表板使用)
+    if (payload.action === 'getData') {
+      const sheet = ss.getSheetByName(DATA_SHEET_NAME);
+      const data = sheet.getDataRange().getValues();
+      const result = [];
+      
+      for (let i = data.length - 1; i > 0; i--) {
+        const row = data[i];
+        if (!row[0]) continue;
+        
+        result.push({
+          id: row[0],
+          recordType: row[1],
+          date: safeFormatDate(row[2]),
+          paymentDate: safeFormatDate(row[3]),
+          expectedDate: safeFormatDate(row[4]),
+          type: row[5],
+          formatCode: row[6],
+          invoiceNo: row[7],
+          taxId: row[8],
+          amount: row[9],
+          tax: row[10],
+          total: row[11],
+          taxType: row[12],
+          category: row[13],
+          note: row[14],
+          userEmail: row[15],
+          rowIndex: i + 1
+        });
       }
       
       return ContentService.createTextOutput(JSON.stringify({ 
