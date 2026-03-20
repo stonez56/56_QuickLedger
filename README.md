@@ -1,27 +1,36 @@
-# 🧾 收支快記雲 v0.2 ( 56 QuickLedger)
+# 🧾 收支快記雲 v0.6 ( 56 QuickLedger)
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![React](https://img.shields.io/badge/React-19-blue)
 ![Gemini](https://img.shields.io/badge/AI-Gemini_Flash-orange)
 ![Vite](https://img.shields.io/badge/Build-Vite-purple)
 
-這是一套專為台灣**自由接案者 (Freelancer)** 與 **一人公司 or 小型公司** 量身打造的輕量級智慧記帳系統。
+這是一套專為台灣**自由接案者 (Freelancer)** 與 **一人公司 / 小型公司** 量身打造的輕量級智慧記帳系統。
 
-結合了 **Google Gemini AI** 的強大影像辨識能力與 **Google Sheets** 的高便利性，讓您無需購買昂貴的會計軟體，
-也能透過手機或電腦輕鬆完成符合台灣稅法（5% 營業稅）的帳務處理。
+結合了 **Google Gemini AI** 的強大影像辨識能力與 **Google Sheets** 的高便利性，讓您無需購買昂貴的會計軟體，也能透過手機或電腦輕鬆完成符合台灣稅法（5% 營業稅）的帳務處理。
 
 ---
 
-## ✨ 核心功能
+## ✨ 核心特色與專家級會計防呆
 
-*   **📸 AI 智慧掃描**: 透過 Google Gemini 視覺模型，自動從發票或收據圖片中萃取日期、統編、金額與品項。
-*   **🧠 專業會計邏輯**:
-    *   自動校正台灣 5% 營業稅（排除 AI 偶發的 3%、7% 幻覺）。
-    *   內建「不可扣抵」防呆機制（如：自用小客車洗車、交際費、職工福利），並給予黃色警示。
-    *   自動將商家與品項標準化為繁體中文（例：`Uber - 車資`）。
-*   **☁️ 雲端資料庫**: 記帳資料直接寫入您專屬的 Google Sheet，資料 100% 掌握在自己手中。
-*   **📱 響應式設計 (RWD)**: 完美支援智慧型手機、平板與電腦，並具備保護眼睛的深色模式 (Dark Mode)。
-*   **🔒 安全驗證**: 透過 Email 與自訂 Secret 雙重驗證，防止未經授權的寫入。
+*   **📸 AI 智慧掃描與品項翻譯**: 
+    * 透過 Google Gemini 視覺模型，自動從大張傳統發票、電子收銀機發票中萃取日期、發票號碼、金額與統編。
+    * AI 自動將英數混雜的商店名稱或凌亂的發票明細標準化為繁體中文（如：`7-ELEVEN - 拿鐵`），大幅減輕對帳與審查困擾。
+*   **🧠 嚴格的 5% 稅法邏輯與數學防護**:
+    * 強制校正台灣 5% 營業稅（防禦 AI 若出現 3%、7% 幻覺），每次送出前嚴格執行數學驗證 `銷售未稅額 + 稅額 = 總金額`。
+    * **內外帳防呆**：針對不可扣抵營業稅之進項（如：交際費、職工福利、自用乘人小客車相關花費），即時給予黃色警示，提醒使用者依循稅法將稅金歸零並轉入成本。
+*   **📊 經營者專屬儀表板 (Dashboard)**:
+    * 首頁即時試算本期（雙月）的「預估應繳稅金」，隨時掌握留抵稅額或應納稅費。
+    * 獨立的「呆帳警示」區塊，標示出已開發票但尚未收款的應收應付款項。
+    * **互動式收支與結構分析**：點擊首頁直條圖上特定的月份，系統會立刻過濾並顯示該月份的「TOP 5 支出結構圓餅圖」，一鍵掌握公司營運重點。
+*   **📂 全功能歷史查詢與 C.R.U.D 管理**:
+    * 支援多維度條件（日期區間、格式代號、關鍵字）進行進銷項發票搜尋。
+    * 若發生發票開錯事件，不管是當期發票更正，還是跨期須開立「銷項折讓（代碼 34） / 進項折讓（代碼 23）」，皆能在系統中用直覺編輯表單修正，更動會 100% 即時同步覆蓋至 Google Sheets 中。
+*   **🌐 全球無縫 UTC+8 時區處理**:
+    * 無論記帳負責人在全球任何地方出差，系統強制使用 `Asia/Taipei` 標準時間，解決各種跨時區導致的日期跳動與找帳 Bug，絕不擾亂稅務月份。
+*   **☁️ 零後端雲端資料庫**: 記帳資料直接寫入您專屬的 Google Sheet，資料擁有權 100% 掌握在自己手中，免繳昂貴的會計軟體訂閱費。
+*   **📱 響應式設計 (RWD)**: 完美支援智慧型手機、平板與電腦，圖表介面為觸控手勢最佳化，並具備保護眼睛的深色模式 (Dark Mode)。
+*   **🔒 安全驗證**: 透過 Email 與自訂 Secret 雙重驗證，防護未經授權的連線請求。
 
 ---
 
@@ -51,8 +60,8 @@
 本專案採用 **Serverless** 架構，前端直接與 Google 服務溝通，無需額外租用後端伺服器：
 
 *   **前端框架**: React 19 + Vite
-*   **UI 樣式**: Tailwind CSS (透過 Twind 引擎即時編譯) + Lucide Icons
-*   **AI 引擎**: Google Gemini API (`gemini-3-flash-preview`)
+*   **UI 樣式**: Tailwind CSS (透過 Twind 引擎即時編譯) + Lucide Icons + Recharts
+*   **AI 引擎**: Google Gemini API (`gemini-3-flash-preview` / `gemini-2.5-pro`)
 *   **後端/資料庫**: Google Apps Script (GAS) + Google Sheets
 
 ---
@@ -84,8 +93,8 @@ vercel dev
 
 1.  登入您的 Google 帳號，建立一個新的 Google Sheet。
 2.  在試算表中建立兩個分頁 (Tab)：
-    *   **Sheet1** (或重新命名為 `Records`): 用於儲存記帳資料。
-        *   建議在第一列 (Row 1) 建立標題：`時間戳記`, `日期`, `收付日期`, `預計收付日`, `內外帳`, `進銷`, `格式`, `號碼`, `統編`, `銷售額`, `稅額`, `總額`, `稅別`, `扣抵`, `科目`, `備註`, `使用者`.
+    *   **Data_2026** (或您需要的年份): 用於儲存記帳資料。系統啟動時若偵測無此分頁會自動建立，並自動匯入必要表頭：
+        *   `流水號`, `日期`, `進銷別`, `格式代號`, `發票號碼`, `對方統編`, `銷售額`, `營業稅額`, `總金額`, `課稅別`, `會計科目`, `備註`, `紀錄者`.
     *   **Config**: 用於系統身分驗證。
         *   `A1` 儲存格輸入：`API_SECRET` | `B1` 儲存格輸入：(您自訂的密碼，例如 `mySecret123`)
         *   `A2` 儲存格輸入：`ALLOWED_USERS` | `B2` 儲存格輸入：(您的 Email，例如 `user@gmail.com`)
@@ -93,46 +102,45 @@ vercel dev
 ### 步驟 2：設定 Google Apps Script (API 介面)
 
 1.  在剛剛建立的 Google Sheet 中，點擊上方選單的 `擴充功能` > `Apps Script`。
-2.  將後端處理程式碼（負責接收前端的 `submit` 與 `getConfig` 請求並寫入試算表）貼上至編輯器中。
+2.  將本專案內的 `AppsScript.js` 後端處理程式碼（負責接收前端 C.R.U.D 請求並對接試算表）貼上至編輯器中覆蓋原有的 `Code.gs`。
 3.  **部署為網頁應用程式**:
     *   點擊右上角「部署」>「新增部署作業」。
     *   選取類型：`網頁應用程式`。
     *   執行身分：**我 (Me)**。
-    *   誰可以存取：**任何人 (Anyone)** (前端需要跨網域呼叫，安全性由 Config 分頁的 Secret 把關)。
+    *   誰可以存取：**任何人 (Anyone)** (前端需要跨網域呼叫，安全性由 Config 分頁的 Secret 與 Email 白名單把關)。
 4.  複製部署成功後產生的 **網頁應用程式 URL (Web App URL)**。
 
 ### 步驟 3：設定前端專案
 
 1.  複製本專案程式碼至您的本地環境。
-2.  開啟專案中的 `constants.ts` 檔案。
-3.  找到 `APPS_SCRIPT_URL` 變數，將其替換為您在步驟 2 複製的 Google Apps Script URL：
+2.  開啟專案中的 `constants.ts` 檔案，或者透過本機環境變數建立連線。
+3.  建議建立 `.env.local` 檔案將其替換為您在步驟 2 複製的 Google Apps Script URL：
 
-```typescript
-// constants.ts
-export const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/您的ID/exec';
+```env
+VITE_APPS_SCRIPT_URL="https://script.google.com/macros/s/您的ID/exec"
 ```
 
 ### 步驟 4：獲取 Gemini API Key
 
 1.  前往 [Google AI Studio](https://aistudio.google.com/)。
 2.  點擊 "Get API key" 並建立一個新的 API Key。
-3.  此 Key 將用於前端呼叫 Gemini 模型進行圖片辨識。
+3.  在您的 `.env.local` 檔案中加入：
+```env
+VITE_GEMINI_API_KEY="您的_GEMINI_API_KEY"
+```
 
 ---
 
 ## 📦 部署與執行 (Deployment)
 
-本專案使用 Vite 進行建置。
+本專案使用 Vite 進行打包。
 
 ### 本地開發與分離測試環境 (Testing Environment)
 
 為保護您的正式財務資料，強烈建議建立**獨立的測試用 Google Sheet**：
 1. **複製 Sheet**: 建立正式 Google Sheet 的副本（例如：`QuickLedger_Test`）。
 2. **部署測試版 API**: 在測試 Sheet 中貼上 `AppsScript.js`，並發布「新的」網頁應用程式部署。複製該測試版 URL。
-3. **設定本地環境變數**: 在本專案根目錄建立 `.env.local` 檔案（此檔案不會上傳至 GitHub）：
-   ```env
-   VITE_APPS_SCRIPT_URL="您的測試版 Web App URL"
-   ```
+3. **設定本地環境變數**: 在本專案根目錄建立 `.env.local` 檔案（此檔案預設不會上傳至 GitHub）。
 4.  啟動開發伺服器：
     ```bash
     npm run dev
@@ -153,12 +161,11 @@ export const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/您的ID/exec
 ## 📖 使用說明 (How to Use)
 
 1.  **系統登入**:
-    *   開啟應用程式，輸入您的 Email。
+    *   開啟應用程式，輸入您的 Email（需在 Google Sheet 白名單內）。
     *   輸入您在 Google Sheet `Config` 分頁中設定的 Secret 密碼。
-    *   可勾選「記住帳號」以便下次快速登入。
 2.  **AI 智慧掃描憑證**:
-    *   點擊畫面上的「AI 掃描」按鈕。
-    *   使用手機相機拍攝發票/收據，或從電腦上傳圖片。
+    *   點擊主選單「新增紀錄」裡的「AI 掃描」按鈕。
+    *   使用手機拍攝發票/收據，或從電腦上傳圖片。
     *   系統會自動辨識並填入：日期、發票號碼、金額、稅額、統編。
     *   **自動分類**：AI 會根據消費內容自動建議會計科目（例如：看到 "台灣中油" 會自動選擇 "旅費-交通"）。
 3.  **人工核對與防呆機制**:

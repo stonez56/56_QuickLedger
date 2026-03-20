@@ -7,7 +7,7 @@ interface Props {
 }
 
 export const HelpSettingsModal: React.FC<Props> = ({ onClose }) => {
-  const [settingsTab, setSettingsTab] = useState<'both' | 'internal' | 'guide'>('both');
+  const [settingsTab, setSettingsTab] = useState<'both' | 'internal' | 'guide' | 'error'>('both');
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
@@ -46,6 +46,13 @@ export const HelpSettingsModal: React.FC<Props> = ({ onClose }) => {
             onClick={() => setSettingsTab('guide')}
           >
             📖 記帳需知
+          </button>
+          <button
+            type="button"
+            className={`px-4 py-3 text-sm font-medium transition-colors ${settingsTab === 'error' ? 'text-amber-400 border-b-2 border-amber-400 bg-amber-950/20' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'}`}
+            onClick={() => setSettingsTab('error')}
+          >
+            🔄 憑證開錯處理
           </button>
         </div>
 
@@ -164,6 +171,36 @@ export const HelpSettingsModal: React.FC<Props> = ({ onClose }) => {
                 <p className="text-sky-200/80 leading-relaxed">
                   在我們開發的這套記帳系統中，當您在記錄時，如果遇到沒有台灣統一發票的支出或收入，您可以在「格式代號」中選擇 <strong className="text-sky-300">「99 - 收據/其他 (無發票)」</strong>，並在備註欄位註明實際的憑證種類（例如：薪資單、高鐵車票），這樣就能確保帳務清晰且符合規範了！
                 </p>
+              </div>
+            </>
+          )}
+          {settingsTab === 'error' && (
+            <>
+              <div>
+                <h4 className="font-bold text-amber-400 text-base mb-3 border-b border-slate-800 pb-2">情況一：當期發現錯誤 (尚未申報營業稅，最常發生)</h4>
+                <div className="space-y-3">
+                  <p><strong className="text-white">實務做法：</strong></p>
+                  <ul className="list-disc pl-5 space-y-1 text-slate-400">
+                    <li><strong className="text-slate-300">支出：</strong>把發票退回給廠商，請對方「作廢」並重開一張統編正確的新發票。</li>
+                    <li><strong className="text-slate-300">收入：</strong>請客戶把發票寄回，您將原發票蓋「作廢」章，重開一張新發票給客戶。</li>
+                  </ul>
+                  <p><strong className="text-white">💡 系統操作 (直接修改)：</strong></p>
+                  <p className="text-slate-400">進入「歷史查詢」找出錯誤資料點擊 <strong className="text-amber-300">✏️ 編輯</strong>。直接將「對方統編」與「發票號碼」改為正確的，按下儲存即可覆蓋舊資料。</p>
+                </div>
+              </div>
+
+              <div className="mt-8">
+                <h4 className="font-bold text-amber-400 text-base mb-3 border-b border-slate-800 pb-2">情況二：跨期發現錯誤 (已經繳完營業稅了)</h4>
+                <div className="space-y-3">
+                  <p><strong className="text-white">實務做法：</strong></p>
+                  <p className="text-slate-400">營業稅已經報給國稅局，發票不能作廢了。必須開立「營業人銷貨退回、進貨退出或折讓證明單」，然後再開立一張全新的正確發票。</p>
+                  <p><strong className="text-white">💡 系統操作 (新增沖銷)：</strong></p>
+                  <p className="text-slate-400">這時 <strong className="text-rose-400">不能</strong> 直接編輯舊發票，您需要：</p>
+                  <ol className="list-decimal pl-5 space-y-2 text-slate-400">
+                    <li><strong className="text-slate-300">新增沖銷單：</strong> 進入「新增憑證」，格式代號選擇 <strong className="text-amber-300">34 - 銷項折讓</strong>（收入開錯）或 <strong className="text-amber-300">23 - 進項折讓</strong>（支出拿錯）。在金額輸入<strong className="text-white">「負數金額（如：-12000）」</strong>抵銷前期的帳。</li>
+                    <li><strong className="text-slate-300">新增正確單：</strong> 再次登錄一張統編完全正確的新發票。</li>
+                  </ol>
+                </div>
               </div>
             </>
           )}
