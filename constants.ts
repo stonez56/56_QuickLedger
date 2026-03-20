@@ -1,7 +1,8 @@
+/// <reference types="vite/client" />
 import { InvoiceType, FormatCode, TaxType, RecordType } from './types.ts';
 
-// TODO: Please verify this URL matches your specific Google Apps Script Web App URL
-export const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby38nUvR7FrefEnJL8bGupcAsxtJK-iKAagY6xgKyGMdl9JjsFHrFQYNZdubddUxecW/exec';
+// Read from environment variable first (for Vercel/Local diff), fallback to hardcoded for safety
+export const APPS_SCRIPT_URL = import.meta.env.VITE_APPS_SCRIPT_URL || 'https://script.google.com/macros/s/AKfycby38nUvR7FrefEnJL8bGupcAsxtJK-iKAagY6xgKyGMdl9JjsFHrFQYNZdubddUxecW/exec';
 
 export const INITIAL_FORM_STATE = {
   recordType: RecordType.BOTH,

@@ -25,7 +25,8 @@ import {
   RecordType,
   InvoiceFormState, 
   AppConfig, 
-  ApiResponse 
+  ApiResponse,
+  LedgerRecord
 } from '../types.ts';
 import { 
   INITIAL_FORM_STATE, 
@@ -40,6 +41,8 @@ import { Scanner } from './Scanner.tsx';
 interface InvoiceFormProps {
   config: AppConfig;
   onLogout: () => void;
+  initialData?: LedgerRecord | null;
+  onClearEdit?: () => void;
 }
 
 const LAST_SCAN_KEY = 'last_scanned_invoice';
@@ -47,7 +50,7 @@ const LAST_SCAN_KEY = 'last_scanned_invoice';
 const RISKY_CATEGORIES = ['伙食費', '交際費', '職工福利'];
 const RISKY_KEYWORDS = ['洗車'];
 
-export const InvoiceForm: React.FC<InvoiceFormProps> = ({ config, onLogout }) => {
+export const InvoiceForm: React.FC<InvoiceFormProps> = ({ config, onLogout, initialData, onClearEdit }) => {
   const [formData, setFormData] = useState<InvoiceFormState>(INITIAL_FORM_STATE);
   const [loading, setLoading] = useState(false);
   const [showScanner, setShowScanner] = useState(false);
@@ -67,6 +70,44 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ config, onLogout }) =>
       setHasLastScan(true);
     }
   }, []);
+
+  useEffect(() => {
+    if (initialData) {
+      setFormData({
+        recordType: initialData.recordType || RecordType.BOTH,
+        date: initialData.date || '',
+        paymentDate: initialData.paymentDate || '',
+        expectedDate: initialData.expectedDate || '',
+        type: initialData.type === '銷項 (收入)' ? InvoiceType.OUTPUT : InvoiceType.INPUT,
+        formatCode: initialData.formatCode || '',
+        invoiceNo: initialData.invoiceNo || '',
+        taxId: initialData.taxId || '',
+        amount: initialData.amount || '',
+        tax: initialData.tax || '',
+        total: initialData.total || '',
+        taxType: (TAX_TYPE_OPTIONS.find(t => initialData.taxType?.includes(t.label))?.value as TaxType) || TaxType.TAXABLE,
+        deductionCode: initialData.taxType?.includes('不可扣抵') ? '4' : '1',
+        category: initialData.category || '',
+        note: initialData.note || ''
+      });
+      if (initialData.date && initialData.date === initialData.paymentDate && initialData.date === initialData.expectedDate) {
+         setIsNotARAP(true);
+      } else {
+         setIsNotARAP(false);
+      }
+      setIsTaxManuallyEdited(false);
+    } else {
+      setFormData({
+        ...INITIAL_FORM_STATE,
+        date: new Date().toISOString().split('T')[0],
+        paymentDate: new Date().toISOString().split('T')[0],
+        expectedDate: new Date().toISOString().split('T')[0],
+      });
+      setIsNotARAP(true);
+      setIsTaxManuallyEdited(false);
+      setMessage(null);
+    }
+  }, [initialData]);
 
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
@@ -373,9 +414,10 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ config, onLogout }) =>
 
     // Correct 1-to-1 Mapping to match the Sheet columns
     const payload = {
-      action: 'submit',
+      action: initialData ? 'update' : 'submit',
       secret: config.apiSecret,
       userEmail: config.userEmail,
+      id: initialData ? initialData.id : undefined,
       recordType: formData.recordType,
       date: formData.date,
       paymentDate: formData.paymentDate,
@@ -414,15 +456,19 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ config, onLogout }) =>
       }
 
       if (result.status === 'success') {
-        setMessage({ type: 'success', text: `成功錄入! (Row: ${result.row})` });
-        setFormData(prev => ({
-          ...INITIAL_FORM_STATE,
-          date: prev.date,
-          type: prev.type,
-          formatCode: prev.formatCode,
-          paymentDate: isNotARAP ? prev.date : '',
-          expectedDate: isNotARAP ? prev.date : '',
-        }));
+        setMessage({ type: 'success', text: `成功${initialData ? '更新' : '錄入'}!` });
+        if (initialData && onClearEdit) {
+           setTimeout(() => onClearEdit(), 1500);
+        } else {
+          setFormData(prev => ({
+            ...INITIAL_FORM_STATE,
+            date: prev.date,
+            type: prev.type,
+            formatCode: prev.formatCode,
+            paymentDate: isNotARAP ? prev.date : '',
+            expectedDate: isNotARAP ? prev.date : '',
+          }));
+        }
         setIsTaxManuallyEdited(false);
       } else {
         throw new Error(result.message || 'Unknown error');
@@ -455,7 +501,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ config, onLogout }) =>
         <div className="flex flex-row justify-between items-center w-full md:w-auto overflow-hidden">
           <h2 className="text-lg md:text-2xl font-bold text-white flex items-center whitespace-nowrap shrink-0">
              <img src="/light_stonez56_256x265_icon.png" alt="Logo" className="w-7 h-7 md:w-8 md:h-8 mr-2 md:mr-3 object-contain" />
-             收支快記雲
+             {initialData ? '編輯憑證 (修改)' : '收支快記雲'}
           </h2>
           <div className="flex flex-col md:flex-row items-end md:items-center gap-0.5 md:gap-2 pl-2">
              <span className="text-[10px] md:text-xs font-normal px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700 whitespace-nowrap">2026 帳期</span>

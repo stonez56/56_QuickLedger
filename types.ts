@@ -58,8 +58,31 @@ export interface InvoiceFormState {
   note: string;
 }
 
+export interface LedgerRecord {
+  id: string; // 流水號
+  recordType: RecordType;
+  date: string;
+  paymentDate: string;
+  expectedDate: string;
+  type: string; // "進項 (支出)" | "銷項 (收入)"
+  formatCode: string;
+  invoiceNo: string;
+  taxId: string;
+  amount: number;
+  tax: number;
+  total: number;
+  taxType: string;
+  category: string;
+  note: string;
+  userEmail: string;
+  rowIndex: number;
+}
+
 export interface ApiResponse {
   status: 'success' | 'error';
   message?: string;
   row?: number;
+  id?: string;
+  data?: LedgerRecord[];
+  users?: string[];
 }
