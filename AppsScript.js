@@ -45,9 +45,12 @@ function doPost(e) {
       
       // 尋找當天最大序號
       const data = sheet.getDataRange().getValues();
+      const records = [];
       let maxSeq = 0;
-      for (let i = 1; i < data.length; i++) {
-        const id = data[i][0]; // A欄是流水號
+      for (let i = 0; i < data.length; i++) {
+        const row = data[i];
+        if (!row[0] || row[0] === '流水號') continue; // Skip empty rows and headers
+        const id = row[0]; // A欄是流水號
         if (id && id.toString().startsWith(prefix)) {
           const seq = parseInt(id.toString().split('-')[2], 10);
           if (seq > maxSeq) maxSeq = seq;
@@ -77,8 +80,10 @@ function doPost(e) {
       const endDate = payload.endDate ? new Date(payload.endDate) : null;
       
       // index mapping (0-15 correspond to columns A-P)
-      for (let i = data.length - 1; i > 0; i--) { // Reverse order to show latest first
+      for (let i = data.length - 1; i >= 0; i--) { // Reverse order to show latest first
         const row = data[i];
+        if (!row[0] || row[0] === '流水號') continue; // Skip empty rows and headers
+        
         let match = false;
         
         if (payload.type === 'keyword') {
