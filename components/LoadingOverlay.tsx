@@ -1,0 +1,51 @@
+import React from 'react';
+import { Cloud, Sparkles } from 'lucide-react';
+
+interface LoadingOverlayProps {
+  message?: string;
+}
+
+export const LoadingOverlay: React.FC<LoadingOverlayProps> = ({ message = "同步雲端資料中" }) => {
+  return (
+    <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-500">
+      {/* Background Glow */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-sky-500/20 rounded-full blur-[80px]" />
+      
+      <div className="relative z-10 flex flex-col items-center">
+        <div className="relative mb-8">
+          <div className="w-24 h-24 bg-gradient-to-br from-sky-400 to-emerald-400 rounded-3xl flex items-center justify-center shadow-2xl shadow-sky-500/30 animate-pulse-slow">
+            <Cloud size={48} className="text-slate-950" />
+          </div>
+          <div className="absolute -top-3 -right-3 bg-slate-950 rounded-full p-1.5 border border-slate-800 shadow-xl">
+            <Sparkles size={24} className="text-amber-400 animate-spin-slow" />
+          </div>
+          
+          {/* Circular Progress Ring */}
+          <div className="absolute inset-[-8px] border-4 border-sky-500/10 rounded-[2.5rem]" />
+          <div className="absolute inset-[-8px] border-4 border-sky-500 border-t-transparent rounded-[2.5rem] animate-spin" />
+        </div>
+        
+        <div className="text-center space-y-3">
+          <h2 className="text-2xl font-bold text-white tracking-wide">
+            {message}
+          </h2>
+          <p className="text-slate-400 text-sm font-medium tracking-widest uppercase flex items-center justify-center gap-2">
+            <span className="w-1 h-1 rounded-full bg-sky-500 animate-ping" />
+            Synchronizing
+            <span className="w-1 h-1 rounded-full bg-sky-500 animate-ping" />
+          </p>
+        </div>
+      </div>
+      
+      <div className="absolute bottom-12 flex items-center gap-3">
+        <div className="h-1 w-12 rounded-full bg-slate-800 overflow-hidden">
+          <div className="h-full bg-sky-500 w-full -translate-x-full animate-shimmer" />
+        </div>
+        <span className="text-[10px] text-slate-500 font-mono tracking-tighter uppercase">56 QuickLedger Engine</span>
+        <div className="h-1 w-12 rounded-full bg-slate-800 overflow-hidden">
+          <div className="h-full bg-sky-500 w-full -translate-x-full animate-shimmer" />
+        </div>
+      </div>
+    </div>
+  );
+};

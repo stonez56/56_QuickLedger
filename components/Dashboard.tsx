@@ -3,6 +3,7 @@ import { AppConfig, LedgerRecord, RecordType } from '../types.ts';
 import { Card } from './UI.tsx';
 import { AnalyticsView } from './AnalyticsView.tsx';
 import { TrendingUp, AlertCircle, Clock, CheckCircle2, DollarSign, Activity } from 'lucide-react';
+import { LoadingOverlay } from './LoadingOverlay.tsx';
 
 interface DashboardProps {
   config: AppConfig;
@@ -156,13 +157,8 @@ export const Dashboard: React.FC<DashboardProps> = ({ config, onNavigateToEdit, 
   const estimatedTaxPayable = outputTax - deductibleInputTax;
   const isTaxFavorable = estimatedTaxPayable <= 0; // If negative or zero, we don't owe tax (or get refund/carry forward)
 
-  if (loading) {
-    return (
-      <div className="flex flex-col items-center justify-center py-20 animate-pulse">
-        <Activity className="w-10 h-10 text-sky-500 mb-4 animate-spin-slow" />
-        <p className={`text-slate-400 font-medium ${sizeMap.text}`}>儀表板資料載入中...</p>
-      </div>
-    );
+  if (loading && records.length === 0) {
+    return <LoadingOverlay message="統計分析資料載入中..." />;
   }
 
   if (error) {
