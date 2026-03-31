@@ -152,28 +152,31 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ config, initialData, o
   const handleTaxTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newTaxType = e.target.value as TaxType;
     setFormData(prev => {
-      const amount = Number(prev.amount || 0);
+      const total = Number(prev.total || 0);
       let tax = 0;
-      let total = amount;
-      if (newTaxType === TaxType.TAXABLE && prev.recordType !== RecordType.INTERNAL) {
-         tax = Math.round(amount * 0.05);
-         total = amount + tax;
+      let amount = total;
+      
+      if (newTaxType === TaxType.TAXABLE && prev.recordType !== RecordType.INTERNAL && total > 0) {
+          amount = Math.round(total / 1.05);
+          tax = total - amount;
       }
-      return { ...prev, taxType: newTaxType, tax, total };
+      
+      return { ...prev, taxType: newTaxType, tax, amount, total: total || '' };
     });
     setIsTaxManuallyEdited(false);
   };
 
   const handleRecordTypeChange = (newRecordType: RecordType) => {
     setFormData(prev => {
-      const amount = Number(prev.amount || 0);
+      const total = Number(prev.total || 0);
       let tax = 0;
-      let total = amount;
-      if (prev.taxType === TaxType.TAXABLE && newRecordType !== RecordType.INTERNAL) {
-         tax = Math.round(amount * 0.05);
-         total = amount + tax;
+      let amount = total;
+
+      if (prev.taxType === TaxType.TAXABLE && newRecordType !== RecordType.INTERNAL && total > 0) {
+          amount = Math.round(total / 1.05);
+          tax = total - amount;
       }
-      return { ...prev, recordType: newRecordType, tax, total };
+      return { ...prev, recordType: newRecordType, tax, amount, total: total || '' };
     });
     setIsTaxManuallyEdited(false);
   };
@@ -386,11 +389,14 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ config, initialData, o
       return;
     }
 
-    const isTriplicate = ['21', '31'].includes(formData.formatCode);
-    if (isTriplicate && !formData.taxId) {
-        setMessage({ type: 'error', text: '三聯式發票必須輸入統編 (Tax ID)' });
+    const isRequiredInTW = ['21', '31', '25'].includes(formData.formatCode);
+    const isBothMode = formData.recordType === RecordType.BOTH;
+
+    if (isBothMode && isRequiredInTW && !formData.taxId) {
+        setMessage({ type: 'error', text: '此格式代號必須輸入統編 (Tax ID)' });
         return;
     }
+    
     if (formData.taxId && !isValidTaiwanTaxId(formData.taxId) && formData.formatCode !== '99') {
         setMessage({ type: 'error', text: '統編格式錯誤', detail: '請檢查 8 碼統編是否正確' });
         return;
@@ -507,7 +513,11 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ config, initialData, o
     }
   };
 
-  const isTaxIdValid = formData.taxId === '' || isValidTaiwanTaxId(formData.taxId) || formData.formatCode === '99';
+  const isTaxIdValid = formData.recordType === RecordType.INTERNAL || 
+                       formData.formatCode === '99' || 
+                       formData.taxId === '' || 
+                       isValidTaiwanTaxId(formData.taxId);
+
   const isRiskyCategory = RISKY_CATEGORIES.some(c => formData.category.includes(c));
   const isRiskyKeyword = RISKY_KEYWORDS.some(k => formData.note.includes(k) || formData.category.includes(k));
   // Show warning if it's risky AND user currently has it marked as deductible ('1')
@@ -517,7 +527,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ config, initialData, o
     <div className="max-w-4xl mx-auto pb-24">
       {showScanner && <Scanner onScanResult={handleScanResult} onClose={() => setShowScanner(false)} />}
       
-      <form onSubmit={handlePreSubmit} className="space-y-6">
+      <form onSubmit={handlePreSubmit} noValidate className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <Card className="p-6 space-y-4">
             <div className="flex justify-between items-center mb-2">
@@ -669,7 +679,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ config, initialData, o
                   onChange={handleChange}
                   maxLength={8}
                   error={!isTaxIdValid ? "統編邏輯錯誤" : ""}
-                  required={['21', '31'].includes(formData.formatCode) && formData.formatCode !== '99'}
+                  required={formData.recordType !== RecordType.INTERNAL && ['21', '31', '25'].includes(formData.formatCode)}
                 />
                  {isTaxIdValid && formData.taxId.length === 8 && formData.formatCode !== '99' && (
                    <CheckCircle2 className="absolute top-9 right-3 text-emerald-500 w-4 h-4 animate-in zoom-in" />
@@ -685,40 +695,76 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ config, initialData, o
             </h3>
 
             <div className="space-y-4">
-              <Input
-                id="total"
-                name="total"
-                type="number"
-                label="總金額 (含稅)"
-                placeholder="0"
-                value={formData.total}
-                onChange={handleTotalChange}
-                required
-                icon={DollarSign}
-                className="font-mono text-xl tracking-tight font-bold text-emerald-400"
-              />
-
-              <Input
-                id="amount"
-                name="amount"
-                type="number"
-                label="銷售金額 / 支付金額 (未稅)"
-                placeholder="0"
-                value={formData.amount}
-                onChange={handleAmountChange}
-                required
-                icon={DollarSign}
-                className="font-mono text-lg tracking-tight"
-              />
-
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4">
                  <Select
                   id="taxType"
                   name="taxType"
-                  label="應稅/零稅/免稅"
+                  label="1. 應稅/零稅/免稅"
                   value={formData.taxType}
                   onChange={handleTaxTypeChange}
                   options={TAX_TYPE_OPTIONS}
+                />
+              </div>
+
+              {formData.type === InvoiceType.INPUT && formData.taxType === TaxType.TAXABLE && formData.recordType !== RecordType.INTERNAL && (
+                <div className="animate-in fade-in slide-in-from-top-1">
+                  <Label htmlFor="deductionCode" className="text-xs mb-2">2. 可扣抵 / 不可扣抵</Label>
+                  <div className="bg-slate-950 rounded-lg p-1 flex border border-slate-700">
+                    <button
+                      type="button"
+                      onClick={() => setDeductionCode('1')}
+                      className={`flex-1 py-1.5 text-sm font-medium rounded transition-colors flex items-center justify-center ${
+                        formData.deductionCode === '1' 
+                          ? 'bg-emerald-600/20 text-emerald-400 shadow-sm' 
+                          : 'text-slate-500 hover:text-slate-300'
+                      }`}
+                    >
+                      <CheckCircle size={14} className="mr-1.5" />
+                      可扣抵
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setDeductionCode('4')}
+                      className={`flex-1 py-1.5 text-sm font-medium rounded transition-colors flex items-center justify-center ${
+                        formData.deductionCode === '4' 
+                          ? 'bg-amber-600/20 text-amber-400 shadow-sm' 
+                          : 'text-slate-500 hover:text-slate-300'
+                      }`}
+                    >
+                      <Ban size={14} className="mr-1.5" />
+                      不可扣抵
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              <div className="pt-2 border-t border-slate-800/50">
+                <Input
+                  id="total"
+                  name="total"
+                  type="number"
+                  label="3. 總金額 (含稅總價)"
+                  placeholder="0"
+                  value={formData.total}
+                  onChange={handleTotalChange}
+                  required
+                  icon={DollarSign}
+                  className="font-mono text-xl tracking-tight font-bold text-emerald-400"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <Input
+                  id="amount"
+                  name="amount"
+                  type="number"
+                  label="支付金額 (未稅)"
+                  placeholder="0"
+                  value={formData.amount}
+                  onChange={handleAmountChange}
+                  required
+                  icon={DollarSign}
+                  className="font-mono text-lg tracking-tight"
                 />
                  <Input
                   id="tax"
@@ -731,35 +777,6 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ config, initialData, o
                   className={(formData.taxType === TaxType.TAXABLE && formData.recordType !== RecordType.INTERNAL) ? "" : "bg-slate-900/50 text-slate-400 cursor-not-allowed"}
                 />
               </div>
-
-            {formData.type === InvoiceType.INPUT && formData.taxType === TaxType.TAXABLE && formData.recordType !== RecordType.INTERNAL && (
-              <div className="bg-slate-950 rounded-lg p-1 flex border border-slate-700">
-                <button
-                  type="button"
-                  onClick={() => setDeductionCode('1')}
-                  className={`flex-1 py-1.5 text-sm font-medium rounded transition-colors flex items-center justify-center ${
-                    formData.deductionCode === '1' 
-                      ? 'bg-emerald-600/20 text-emerald-400 shadow-sm' 
-                      : 'text-slate-500 hover:text-slate-300'
-                  }`}
-                >
-                  <CheckCircle size={14} className="mr-1.5" />
-                  可扣抵
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setDeductionCode('4')}
-                  className={`flex-1 py-1.5 text-sm font-medium rounded transition-colors flex items-center justify-center ${
-                    formData.deductionCode === '4' 
-                      ? 'bg-amber-600/20 text-amber-400 shadow-sm' 
-                      : 'text-slate-500 hover:text-slate-300'
-                  }`}
-                >
-                  <Ban size={14} className="mr-1.5" />
-                  不可扣抵
-                </button>
-              </div>
-            )}
               
               {showWarning && formData.taxType === TaxType.TAXABLE && Number(formData.tax) > 0 && (
                  <div className="animate-in fade-in slide-in-from-top-2">
