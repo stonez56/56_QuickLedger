@@ -1,6 +1,16 @@
 // Google 記帳 Sheet: https://docs.google.com/spreadsheets/d/1J0wYR-pnMWFVDOU_cA_GxF2WGn86e-nZQ0RP4HJ8Je4/edit?gid=1903772853#gid=1903772853
 const DATA_SHEET_NAME = "Data_總帳";
 const CONFIG_SHEET_NAME = "Config";
+// 自動環境偵測 (自動判斷這是測試機還是正式機)
+// 只要你的 Google Sheet 檔案名稱包含 "TEST" 或 "測試" 字眼，就會自動判定為 "TEST" 環境。
+// 否則一律判定為 "PRODUCTION" 正式環境。這樣未來的開發者直接複製貼上程式碼，這段判斷都能自動運作！
+function getEnv() {
+  const sheetName = SpreadsheetApp.getActiveSpreadsheet().getName().toUpperCase();
+  if (sheetName.includes("TEST") || sheetName.includes("測試")) {
+    return "TEST";
+  }
+  return "PRODUCTION";
+}
 
 // 1. 處理 CORS 預檢請求
 function doOptions(e) {
@@ -438,7 +448,9 @@ function backupData(isFailSafe = false) {
     parentFolder = parents.next();
   }
   
-  const backupFolderName = "_Backups_QuickLedger";
+  const ENV = getEnv();
+  // 建立備份資料夾：依據環境變數命名
+  const backupFolderName = `QuickLedger_backup_${ENV}`;
   let backupFolder;
   const folders = parentFolder.getFoldersByName(backupFolderName);
   if (folders.hasNext()) {
@@ -450,8 +462,8 @@ function backupData(isFailSafe = false) {
   // 2. 建立新備份
   const dateStr = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "yyyyMMdd_HHmmss");
   const backupName = isFailSafe 
-    ? `most recent backup_${dateStr}` 
-    : `Data_總帳_Backup_${dateStr}`;
+    ? `most_recent_backup_${dateStr}_${ENV}` 
+    : `data_${dateStr}_${ENV}`;
 
   // 我們只備份 Data_總帳 (建立一個新的 SpreadSheet 存放備份)
   const backupSs = SpreadsheetApp.create(backupName);
@@ -491,15 +503,17 @@ function backupData(isFailSafe = false) {
 
 // 7. 列出所有備份檔案
 function listBackups() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const file = DriveApp.getFileById(ss.getId());
+  const spreadsheetId = SpreadsheetApp.getActiveSpreadsheet().getId();
+  const file = DriveApp.getFileById(spreadsheetId);
   const parents = file.getParents();
   let parentFolder = DriveApp.getRootFolder();
   if (parents.hasNext()) {
     parentFolder = parents.next();
   }
+  const ENV = getEnv();
+  const backupFolderName = `QuickLedger_backup_${ENV}`;
+  const folders = parentFolder.getFoldersByName(backupFolderName);
   
-  const folders = parentFolder.getFoldersByName("_Backups_QuickLedger");
   if (!folders.hasNext()) return [];
   
   const backupFolder = folders.next();
