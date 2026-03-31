@@ -9,15 +9,22 @@ interface DashboardProps {
   config: AppConfig;
   onNavigateToEdit: (record: LedgerRecord) => void;
   fontSize: 'sm' | 'base' | 'lg';
+  records: LedgerRecord[];
+  loading: boolean;
+  error: string | null;
+  onRefresh: () => void;
+  filterPeriod: FilterPeriod;
+  setFilterPeriod: (period: FilterPeriod) => void;
+  isDateInPeriod: (dateStr: string, periodType: FilterPeriod) => boolean;
+  getPeriodLabel: (offset: number) => string;
 }
 
 type FilterPeriod = 'current' | 'previous' | 'year';
 
-export const Dashboard: React.FC<DashboardProps> = ({ config, onNavigateToEdit, fontSize }) => {
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [records, setRecords] = useState<LedgerRecord[]>([]);
-  const [filterPeriod, setFilterPeriod] = useState<FilterPeriod>('current');
+export const Dashboard: React.FC<DashboardProps> = ({ 
+  config, onNavigateToEdit, fontSize, records, loading, error, onRefresh,
+  filterPeriod, setFilterPeriod, isDateInPeriod, getPeriodLabel
+}) => {
 
   const sizeMap = {
     sm: { title: "text-lg", stat: "text-2xl", text: "text-sm", small: "text-xs" },
@@ -25,99 +32,8 @@ export const Dashboard: React.FC<DashboardProps> = ({ config, onNavigateToEdit, 
     lg: { title: "text-2xl", stat: "text-4xl", text: "text-lg", small: "text-base" }
   }[fontSize];
 
-  useEffect(() => {
-    fetchDashboardData();
-  }, []);
 
-  const fetchDashboardData = async () => {
-    // Implement SWR (Stale-While-Revalidate) Cache
-    const cached = sessionStorage.getItem('dashboard_records_cache');
-    if (cached) {
-      try {
-        setRecords(JSON.parse(cached));
-        setLoading(false); // Instantly show cached data
-      } catch (e) {
-        // parsing error, ignore
-      }
-    } else {
-      setLoading(true);
-    }
-    
-    setError(null);
-    try {
-      const payload = {
-        action: 'getData',
-        secret: config.apiSecret,
-        userEmail: config.userEmail,
-        // No date limits to get AR/AP across the year and all tax data
-      };
 
-      const response = await fetch(config.scriptUrl, {
-        method: 'POST',
-        mode: 'cors',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-      const result = await response.json();
-      
-      if (result.status === 'success') {
-        const freshRecords = result.data || [];
-        setRecords(freshRecords);
-        sessionStorage.setItem('dashboard_records_cache', JSON.stringify(freshRecords));
-      } else {
-        // Only throw if we don't have cached data, otherwise silently update fails
-        if (!cached) throw new Error(result.message || '載入失敗');
-      }
-    } catch (err: any) {
-      console.error("Dashboard Fetch Error:", err);
-      if (!cached) setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const isDateInPeriod = (dateStr: string, periodType: FilterPeriod) => {
-    if (!dateStr) return false;
-    const d = new Date(dateStr);
-    if (isNaN(d.getTime())) return false;
-
-    const today = new Date();
-    const currentYear = today.getFullYear();
-    const currentBiMonth = Math.floor(today.getMonth() / 2); // 0-5
-
-    if (periodType === 'year') {
-      return d.getFullYear() === currentYear;
-    }
-
-    const recYear = d.getFullYear();
-    const recBiMonth = Math.floor(d.getMonth() / 2);
-
-    if (periodType === 'current') {
-      return recYear === currentYear && recBiMonth === currentBiMonth;
-    }
-
-    if (periodType === 'previous') {
-      if (currentBiMonth === 0) {
-        // Prev period is Nov-Dec of previous year
-        return recYear === currentYear - 1 && recBiMonth === 5;
-      } else {
-        return recYear === currentYear && recBiMonth === currentBiMonth - 1;
-      }
-    }
-    
-    return false;
-  };
-
-  const getPeriodLabel = (offset: number) => {
-    const d = new Date();
-    let biMonth = Math.floor(d.getMonth() / 2) + offset;
-    if (biMonth < 0) biMonth = 5; // wrap around for previous year
-    const startM = String(biMonth * 2 + 1).padStart(2, '0');
-    const endM = String(biMonth * 2 + 2).padStart(2, '0');
-    return `${startM}-${endM}月`;
-  };
 
   // 1. Calculate Estimated Business Tax (本期預估應納營業稅)
   // Tax Payable = Output Tax (銷項) - Deductible Input Tax (可扣抵進項)
@@ -167,7 +83,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ config, onNavigateToEdit, 
         <AlertCircle className="w-10 h-10 text-rose-500 mx-auto mb-3" />
         <h3 className={`font-bold text-rose-400 mb-2 ${sizeMap.title}`}>儀表板載入失敗</h3>
         <p className={`text-rose-300/80 ${sizeMap.text}`}>{error}</p>
-        <button onClick={fetchDashboardData} className={`mt-4 px-4 py-2 bg-rose-500/20 text-rose-300 rounded-lg hover:bg-rose-500/30 transition-colors ${sizeMap.text}`}>
+        <button onClick={onRefresh} className={`mt-4 px-4 py-2 bg-rose-500/20 text-rose-300 rounded-lg hover:bg-rose-500/30 transition-colors ${sizeMap.text}`}>
           重試
         </button>
       </div>

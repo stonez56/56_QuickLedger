@@ -116,8 +116,8 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({ records, fontSize 
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Card className="p-4 lg:col-span-2">
+      <div className="grid grid-cols-1 gap-6">
+        <Card className="p-4">
           <h4 className={`text-slate-400 mb-6 font-medium ${sizeMap.text}`}>收支現金流趨勢 (總額)</h4>
           <div className="h-64 w-full">
             {processedData.barData.length > 0 ? (
@@ -158,7 +158,7 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({ records, fontSize 
           </div>
         </Card>
 
-        <Card className="p-4 relative">
+        <Card className="p-4 relative md:hidden">
           <h4 className={`text-slate-400 font-medium flex items-center gap-2 ${sizeMap.text}`}>
             <PieChartIcon className="w-4 h-4 text-rose-400" />
             TOP 5 支出結構 ({activeFocusKey ? processedData.barData.find(d => d.sortKey === activeFocusKey)?.name : '全期'})
