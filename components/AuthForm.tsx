@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Key, Mail, ShieldCheck, WifiOff, CheckSquare, HelpCircle, Eye, EyeOff, AlertTriangle, CheckCircle2, Terminal } from 'lucide-react';
 import { AppConfig } from '../types.ts';
 import { Card, Input, Button } from './UI.tsx';
-import { APPS_SCRIPT_URL } from '../constants.ts';
+import { APPS_SCRIPT_URL, APP_VERSION } from '../constants.ts';
 
 interface AuthFormProps {
   onLogin: (config: AppConfig) => void;
@@ -190,7 +190,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onLogin }) => {
             <ShieldCheck className="w-8 h-8 text-sky-500" />
           </div>
           <h1 className="text-2xl font-bold text-white tracking-tight">One-Person Accounting</h1>
-          <p className="text-slate-400 mt-2 text-sm">一人公司記帳系統 v2026</p>
+          <p className="text-slate-400 mt-2 text-sm">一人公司記帳系統 {APP_VERSION}</p>
         </div>
 
         <Card className="p-6 md:p-8">

@@ -194,7 +194,7 @@ const MainContent = ({
           </div>
           
           <div className="flex items-center justify-end w-full md:w-auto gap-2">
-            <span className="text-xs font-medium px-2 py-1 rounded bg-slate-800/80 text-slate-300 border border-slate-700">2026 帳期</span>
+            <span className="text-xs font-medium px-2 py-1 rounded bg-slate-800/80 text-slate-300 border border-slate-700">{new Date().getFullYear()} 帳期</span>
             <span className="text-xs font-medium px-2 py-1 rounded bg-slate-800/80 text-slate-300 border border-slate-700">{getFormattedDate()}</span>
             <span className="text-sky-400 text-sm truncate max-w-[200px] font-medium bg-sky-950/30 px-3 py-1 rounded border border-sky-900/30">
               {config.userEmail.split('@')[0]}

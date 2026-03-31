@@ -1,5 +1,5 @@
 // Google 記帳 Sheet: https://docs.google.com/spreadsheets/d/1J0wYR-pnMWFVDOU_cA_GxF2WGn86e-nZQ0RP4HJ8Je4/edit?gid=1903772853#gid=1903772853
-const DATA_SHEET_NAME = "Data_2026總帳";
+const DATA_SHEET_NAME = "Data_總帳";
 const CONFIG_SHEET_NAME = "Config";
 
 // 1. 處理 CORS 預檢請求
@@ -387,18 +387,18 @@ function setup() {
     dataSheet.setFrozenRows(1);
   }
 
-  // 3. 建立內帳 Tab
-  let internalSheet = ss.getSheetByName("Data_2026內帳");
+  // 3. 建立內帳 Tab (Query 從總帳拉)
+  let internalSheet = ss.getSheetByName("Data_內帳");
   if (!internalSheet) {
-    internalSheet = ss.insertSheet("Data_2026內帳");
-    internalSheet.getRange("A1").setFormula(`=QUERY('Data_2026總帳'!A:P, "SELECT * WHERE B = 'Internal' OR B = 'Both'", 1)`);
+    internalSheet = ss.insertSheet("Data_內帳");
+    internalSheet.getRange("A1").setFormula(`=QUERY('Data_總帳'!A:P, "SELECT * WHERE B = 'Internal' OR B = 'Both'", 1)`);
   }
 
   // 4. 建立外帳 Tab 
-  let externalSheet = ss.getSheetByName("Data_2026外帳");
+  let externalSheet = ss.getSheetByName("Data_外帳");
   if (!externalSheet) {
-    externalSheet = ss.insertSheet("Data_2026外帳");
-    externalSheet.getRange("A1").setFormula(`=QUERY('Data_2026總帳'!A:P, "SELECT * WHERE B = 'Both'", 1)`);
+    externalSheet = ss.insertSheet("Data_外帳");
+    externalSheet.getRange("A1").setFormula(`=QUERY('Data_總帳'!A:P, "SELECT * WHERE B = 'Both'", 1)`);
   }
 
   // 5. 確保每日備份觸發器已設置
@@ -451,9 +451,9 @@ function backupData(isFailSafe = false) {
   const dateStr = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "yyyyMMdd_HHmmss");
   const backupName = isFailSafe 
     ? `most recent backup_${dateStr}` 
-    : `Data_2026總帳_Backup_${dateStr}`;
+    : `Data_總帳_Backup_${dateStr}`;
 
-  // 我們只備份 Data_2026總帳 (建立一個新的 SpreadSheet 存放備份)
+  // 我們只備份 Data_總帳 (建立一個新的 SpreadSheet 存放備份)
   const backupSs = SpreadsheetApp.create(backupName);
   const backupFile = DriveApp.getFileById(backupSs.getId());
   backupFile.moveTo(backupFolder);
