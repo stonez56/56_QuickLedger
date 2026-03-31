@@ -3,17 +3,19 @@ import { AuthForm } from './components/AuthForm.tsx';
 import { InvoiceForm } from './components/InvoiceForm.tsx';
 import { SearchPanel } from './components/SearchPanel.tsx';
 import { Dashboard } from './components/Dashboard.tsx';
+import { AdminLayout } from './components/AdminLayout.tsx';
 import { SplashScreen } from './components/SplashScreen.tsx';
 import { HelpSettingsModal } from './components/HelpSettingsModal.tsx';
+import { ConfigProvider } from './contexts/ConfigContext.tsx';
 import { AppConfig, LedgerRecord } from './types.ts';
-import { FilePlus, Search, Settings, Table2, ExternalLink, Type, LogOut } from 'lucide-react';
+import { FilePlus, Search, Settings, Table2, ExternalLink, Type, LogOut, Settings2 } from 'lucide-react';
 import { APPS_SCRIPT_URL, APP_VERSION } from './constants.ts';
 import { getTaiwanDateString } from './utils/date.ts';
 
 export default function App() {
   const [config, setConfig] = useState<AppConfig | null>(null);
   const [showSplash, setShowSplash] = useState(true);
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'create' | 'search'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'admin' | 'create' | 'search'>('create');
   const [editRecord, setEditRecord] = useState<LedgerRecord | null>(null);
   const [fontSize, setFontSize] = useState<'sm' | 'base' | 'lg'>('base');
   const [showSettings, setShowSettings] = useState(false);
@@ -83,8 +85,9 @@ export default function App() {
         {!config ? (
           <AuthForm onLogin={handleLogin} />
         ) : (
-          <div className="max-w-4xl mx-auto space-y-4">
-            {/* 1. Global App Header (Logo & Interactions) */}
+          <ConfigProvider config={config}>
+            <div className="max-w-4xl mx-auto space-y-4">
+              {/* 1. Global App Header (Logo & Interactions) */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-800/60 pb-4 mb-2">
               <h1 className="text-xl md:text-2xl font-bold text-white flex items-center whitespace-nowrap shrink-0">
                  <img src="/light_stonez56_256x265_icon.png" alt="Logo" className="w-8 h-8 md:w-10 md:h-10 mr-3 object-contain" />
@@ -147,10 +150,11 @@ export default function App() {
                         歷史查詢
                     </button>
                     <button
-                        onClick={() => setActiveTab('dashboard')}
-                        className={`px-4 py-2 text-sm font-medium rounded-md transition-all shrink-0 flex items-center justify-center ${activeTab === 'dashboard' ? 'bg-indigo-500/20 text-indigo-400 shadow-sm' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'}`}
+                        onClick={() => setActiveTab('admin')}
+                        className={`px-4 py-2 text-sm font-medium rounded-md transition-all shrink-0 flex items-center justify-center ${activeTab === 'admin' ? 'bg-indigo-500/20 text-indigo-400 shadow-sm' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'}`}
                     >
-                        儀表板
+                        <Settings2 className="w-4 h-4 mr-2" />
+                        管理中心
                     </button>
                 </div>
                 
@@ -165,8 +169,8 @@ export default function App() {
             
             {/* 3. Main Content Area */}
             <div className="pt-2">
-              {activeTab === 'dashboard' ? (
-                 <Dashboard 
+              {activeTab === 'admin' ? (
+                 <AdminLayout 
                     config={config} 
                     onNavigateToEdit={handleEdit} 
                     fontSize={fontSize} 
@@ -186,6 +190,7 @@ export default function App() {
               )}
             </div>
           </div>
+        </ConfigProvider>
         )}
       </div>
 

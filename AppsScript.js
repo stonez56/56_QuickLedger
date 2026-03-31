@@ -167,6 +167,56 @@ function doPost(e) {
       })).setMimeType(ContentService.MimeType.JSON);
     }
 
+    // 處理取得設定資料 (科目與格式代號)
+    if (payload.action === 'getSettings') {
+      let sheet = ss.getSheetByName(CONFIG_SHEET_NAME);
+      const data = sheet.getDataRange().getValues();
+      let categories = [];
+      let formatCodes = [];
+      
+      for (let i = 0; i < data.length; i++) {
+        if (data[i][0] === 'CATEGORIES') {
+          categories = data[i][1] ? JSON.parse(data[i][1]) : [];
+        } else if (data[i][0] === 'FORMAT_CODES') {
+          formatCodes = data[i][1] ? JSON.parse(data[i][1]) : [];
+        }
+      }
+      
+      return ContentService.createTextOutput(JSON.stringify({ 
+        status: 'success', 
+        categories,
+        formatCodes
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // 處理儲存設定資料 (科目與格式代號)
+    if (payload.action === 'saveSettings') {
+      let sheet = ss.getSheetByName(CONFIG_SHEET_NAME);
+      const data = sheet.getDataRange().getValues();
+      let rowIndex = -1;
+      
+      const key = payload.type === 'categories' ? 'CATEGORIES' : 'FORMAT_CODES';
+      const value = JSON.stringify(payload.data || []);
+      
+      for (let i = 0; i < data.length; i++) {
+        if (data[i][0] === key) {
+          rowIndex = i + 1;
+          break;
+        }
+      }
+      
+      if (rowIndex !== -1) {
+        sheet.getRange(rowIndex, 2).setValue(value);
+      } else {
+        sheet.appendRow([key, value]);
+      }
+      
+      return ContentService.createTextOutput(JSON.stringify({ 
+        status: 'success', 
+        message: '設定儲存成功' 
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+
     // 處理更新請求
     if (payload.action === 'update') {
       const sheet = ss.getSheetByName(DATA_SHEET_NAME);
@@ -266,6 +316,10 @@ function getConfig(ss) {
     sheet.getRange("B1").setValue("my-secret-888");
     sheet.getRange("A2").setValue("ALLOWED_USERS");
     sheet.getRange("B2").setValue("stonez56@gmail.com,stonez.chen@gmail.com");
+    sheet.getRange("A3").setValue("CATEGORIES");
+    sheet.getRange("B3").setValue("[]");
+    sheet.getRange("A4").setValue("FORMAT_CODES");
+    sheet.getRange("B4").setValue("[]");
   }
   const secret = sheet.getRange("B1").getValue();
   const usersStr = sheet.getRange("B2").getValue();

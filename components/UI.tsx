@@ -101,7 +101,7 @@ export const Select: React.FC<SelectProps> = ({ label, options, className = '', 
       {label && <Label htmlFor={props.id || props.name || ''} required={props.required}>{label}</Label>}
       <div className="relative">
         <select
-          className={`w-full bg-slate-950 border border-slate-700 rounded-lg py-2.5 pl-3 pr-8 text-slate-100 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent appearance-none transition-all ${className}`}
+          className={`w-full bg-slate-950 border border-slate-700 rounded-lg py-2.5 pl-3 pr-8 text-sm md:text-base text-slate-100 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent appearance-none transition-all ${className}`}
           onInvalid={handleInvalid}
           onInput={handleInput}
           {...props}

@@ -35,13 +35,12 @@ import {
 } from '../types.ts';
 import { 
   INITIAL_FORM_STATE, 
-  FORMAT_CODE_OPTIONS, 
-  CATEGORY_GROUPS, 
-  TAX_TYPE_OPTIONS 
+  TAX_TYPE_OPTIONS
 } from '../constants.ts';
 import { Card, Input, Select, Button, Label } from './UI.tsx';
 import { isValidTaiwanTaxId } from '../utils/validation.ts';
 import { Scanner } from './Scanner.tsx';
+import { useConfig } from '../contexts/ConfigContext.tsx';
 
 interface InvoiceFormProps {
   config: AppConfig;
@@ -55,7 +54,13 @@ const RISKY_CATEGORIES = ['伙食費', '交際費', '職工福利'];
 const RISKY_KEYWORDS = ['洗車'];
 
 export const InvoiceForm: React.FC<InvoiceFormProps> = ({ config, initialData, onClearEdit }) => {
+  const { categories, formatCodes } = useConfig();
   const [formData, setFormData] = useState<InvoiceFormState>(INITIAL_FORM_STATE);
+  
+  // Dynamic Filtering based on current form type
+  const filteredFormatCodes = formatCodes.filter(c => formData.type === InvoiceType.INPUT ? (c.value.startsWith('2') || c.value === '99') : (c.value.startsWith('3') || c.value === '99'));
+  const filteredCategories = categories.filter(g => formData.type === InvoiceType.OUTPUT ? g.name.includes('收入') : !g.name.includes('收入'));
+
   const [loading, setLoading] = useState(false);
   const [showScanner, setShowScanner] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string; detail?: React.ReactNode } | null>(null);
@@ -235,7 +240,8 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ config, initialData, o
 
   const handleTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newType = e.target.value as InvoiceType;
-    const firstFormatCode = FORMAT_CODE_OPTIONS[newType][0].value;
+    const newFilteredCodes = formatCodes.filter(c => newType === InvoiceType.INPUT ? (c.value.startsWith('2') || c.value === '99') : (c.value.startsWith('3') || c.value === '99'));
+    const firstFormatCode = newFilteredCodes.length > 0 ? newFilteredCodes[0].value : (formatCodes.length > 0 ? formatCodes[0].value : '21');
     setFormData(prev => ({ 
       ...prev, 
       type: newType, 
@@ -275,10 +281,12 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ config, initialData, o
 
     // Robust Format Code
     let newFormatCode = data.formatCode;
-    const validCodes = FORMAT_CODE_OPTIONS[newType].map(o => o.value);
+    const newFilteredCodes = formatCodes.filter(c => newType === InvoiceType.INPUT ? (c.value.startsWith('2') || c.value === '99') : (c.value.startsWith('3') || c.value === '99'));
+    const validCodes = newFilteredCodes.map(o => o.value);
+    
     if (!validCodes.includes(newFormatCode)) {
-      newFormatCode = validCodes[0]; 
-      if (newType === InvoiceType.INPUT && data.taxId && FORMAT_CODE_OPTIONS[InvoiceType.INPUT].some(o => o.value === '25')) {
+      newFormatCode = validCodes.length > 0 ? validCodes[0] : '21'; 
+      if (newType === InvoiceType.INPUT && data.taxId && validCodes.includes('25')) {
           newFormatCode = '25';
       }
     }
@@ -637,7 +645,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ config, initialData, o
               label="格式代號"
               value={formData.formatCode}
               onChange={handleChange}
-              options={FORMAT_CODE_OPTIONS[formData.type]}
+              options={filteredFormatCodes.length > 0 ? filteredFormatCodes : [{value: formData.formatCode, label: formData.formatCode}]}
             />
 
             <div className="grid grid-cols-2 gap-4">
@@ -789,11 +797,11 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ config, initialData, o
                         className="w-full bg-slate-950 border border-slate-700 rounded-lg py-2 pl-3 pr-8 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-sky-500 mt-1 appearance-none group"
                     >
                         <option value="" disabled>-- 請選擇類別 --</option>
-                        {CATEGORY_GROUPS.filter(g => formData.type === InvoiceType.OUTPUT ? g.groupLabel.includes('營業收入') : !g.groupLabel.includes('營業收入')).map((group) => (
-                          <optgroup key={group.groupLabel} label={group.groupLabel} className="bg-slate-900">
-                            {group.items.map((item) => (
-                              <option key={item.value} value={item.value}>
-                                {item.label}
+                        {filteredCategories.map((group) => (
+                          <optgroup key={group.id} label={group.name} className="bg-slate-900">
+                            {group.subcategories.map((item) => (
+                              <option key={item} value={item}>
+                                {item}
                               </option>
                             ))}
                           </optgroup>
@@ -930,7 +938,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ config, initialData, o
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-500">會計科目</span>
-                  <span className="text-slate-200 font-medium">{CATEGORY_GROUPS.flatMap(g => g.items).find(i => i.value === formData.category)?.label || formData.category}</span>
+                  <span className="text-slate-200 font-medium">{formData.category}</span>
                 </div>
                 <div className="border-t border-slate-800 my-2 pt-2 flex justify-between">
                   <span className="text-slate-400">總金額</span>

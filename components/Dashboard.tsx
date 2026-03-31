@@ -29,7 +29,19 @@ export const Dashboard: React.FC<DashboardProps> = ({ config, onNavigateToEdit, 
   }, []);
 
   const fetchDashboardData = async () => {
-    setLoading(true);
+    // Implement SWR (Stale-While-Revalidate) Cache
+    const cached = sessionStorage.getItem('dashboard_records_cache');
+    if (cached) {
+      try {
+        setRecords(JSON.parse(cached));
+        setLoading(false); // Instantly show cached data
+      } catch (e) {
+        // parsing error, ignore
+      }
+    } else {
+      setLoading(true);
+    }
+    
     setError(null);
     try {
       const payload = {
@@ -50,13 +62,16 @@ export const Dashboard: React.FC<DashboardProps> = ({ config, onNavigateToEdit, 
       const result = await response.json();
       
       if (result.status === 'success') {
-        setRecords(result.data || []);
+        const freshRecords = result.data || [];
+        setRecords(freshRecords);
+        sessionStorage.setItem('dashboard_records_cache', JSON.stringify(freshRecords));
       } else {
-        throw new Error(result.message || '載入失敗');
+        // Only throw if we don't have cached data, otherwise silently update fails
+        if (!cached) throw new Error(result.message || '載入失敗');
       }
     } catch (err: any) {
       console.error("Dashboard Fetch Error:", err);
-      setError(err.message);
+      if (!cached) setError(err.message);
     } finally {
       setLoading(false);
     }
