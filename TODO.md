@@ -35,3 +35,15 @@ Phase 3: 預覽與送出 (Preview & Batch Submit)
 AppsScript.js
  新增一個 action: 'batchSubmit' 的 API，一口氣將這 10 筆資料寫入 Google Sheet 的最末端，避免分次呼叫 API 造成卡頓或漏單。
 👨‍💻 小結： 透過這個設計，您不需要為了銀行對帳單的格式頭痛，而是直接銜接第三方發票平台的標準資料。這不僅省下了手動輸入 10 筆發票的時間，更保證了「發票平台」與「Google Sheet 帳本」兩邊的數字一毛不差！
+
+---
+
+## v1.0 Architectural Roadmap & Scalability Plans
+
+### 1. The Continuous Ledger (v1.0 Immediate Goal)
+- Stop hardcoding the year (e.g., `Data_2026總帳`) in Google Sheets.
+- Modern General Ledgers (總帳) are continuous. The frontend already handles period filtering (本期/本年度), so a single `Data_GeneralLedger` sheet can hold 10+ years of data without requiring new tabs or deployments.
+
+### 2. Multi-Tenant Scaling (For 100+ Users)
+- **Phase A (Master Sheet)**: Add a `CompanyID` column to a single master Google Sheet to support up to ~50 users. The frontend filters by ID.
+- **Phase B (Supabase Migration)**: Abandon Google Sheets for the backend. Migrate to Postgres via Supabase to handle millions of rows. Utilize Row-Level Security (RLS) to ensure users only see their own company's data.

@@ -3,7 +3,8 @@ import { AppConfig, LedgerRecord } from '../types';
 import { Dashboard } from './Dashboard';
 import { CategorySettings } from './Settings/CategorySettings';
 import { FormatCodeSettings } from './Settings/FormatCodeSettings';
-import { LayoutDashboard, Tags, ListTree, PieChart as PieChartIcon, TrendingDown, AlertCircle } from 'lucide-react';
+import { SystemSettings } from './Settings/SystemSettings';
+import { LayoutDashboard, Tags, ListTree, PieChart as PieChartIcon, TrendingDown, AlertCircle, Settings } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip } from 'recharts';
 
 interface AdminLayoutProps {
@@ -15,7 +16,7 @@ interface AdminLayoutProps {
 type FilterPeriod = 'current' | 'previous' | 'year';
 
 export const AdminLayout: React.FC<AdminLayoutProps> = ({ config, onNavigateToEdit, fontSize }) => {
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'categories' | 'formatCodes'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'categories' | 'formatCodes' | 'systemSettings'>('dashboard');
   const [filterPeriod, setFilterPeriod] = useState<FilterPeriod>('current');
 
   const [loading, setLoading] = useState(true);
@@ -170,6 +171,17 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ config, onNavigateToEd
               <Tags size={18} />
               格式代號設定
             </button>
+            <button
+              onClick={() => setActiveTab('systemSettings')}
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
+                activeTab === 'systemSettings'
+                  ? 'bg-sky-500/20 text-sky-400'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+              }`}
+            >
+              <Settings size={18} />
+              系統與備份
+            </button>
           </div>
         </div>
 
@@ -254,6 +266,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ config, onNavigateToEd
         )}
         {activeTab === 'categories' && <CategorySettings />}
         {activeTab === 'formatCodes' && <FormatCodeSettings />}
+        {activeTab === 'systemSettings' && <SystemSettings config={config} records={records} />}
       </div>
     </div>
   );

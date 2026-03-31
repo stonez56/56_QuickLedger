@@ -5,7 +5,7 @@ import { getTaiwanDateString } from './utils/date.ts';
 // Read from environment variable first (for Vercel/Local diff), fallback to hardcoded for safety
 export const APPS_SCRIPT_URL = import.meta.env.VITE_APPS_SCRIPT_URL || 'https://script.google.com/macros/s/AKfycby38nUvR7FrefEnJL8bGupcAsxtJK-iKAagY6xgKyGMdl9JjsFHrFQYNZdubddUxecW/exec';
 
-export const APP_VERSION = 'v0.6';
+export const APP_VERSION = 'v0.8';
 
 export const INITIAL_FORM_STATE = {
   recordType: RecordType.BOTH,
