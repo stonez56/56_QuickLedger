@@ -56,10 +56,20 @@ const RISKY_KEYWORDS = ['洗車'];
 export const InvoiceForm: React.FC<InvoiceFormProps> = ({ config, initialData, onClearEdit }) => {
   const { categories, formatCodes } = useConfig();
   const [formData, setFormData] = useState<InvoiceFormState>(INITIAL_FORM_STATE);
-  
-  // Dynamic Filtering based on current form type
+  // Dynamic Filtering based on current form type and Soft-Delete Status
   const filteredFormatCodes = formatCodes.filter(c => formData.type === InvoiceType.INPUT ? (c.value.startsWith('2') || c.value === '99') : (c.value.startsWith('3') || c.value === '99'));
-  const filteredCategories = categories.filter(g => formData.type === InvoiceType.OUTPUT ? g.name.includes('收入') : !g.name.includes('收入'));
+  const filteredCategories = categories
+    .filter(g => formData.type === InvoiceType.OUTPUT ? g.name.includes('收入') : !g.name.includes('收入'))
+    .map(g => ({
+      ...g,
+      subcategories: g.subcategories.filter(item => {
+        // Soft Delete Rule: Hide if it starts with "(停用)", EXCEPT if it's currently selected by historical data!
+        if (item === formData.category) return true;
+        if (item.startsWith('(停用)')) return false;
+        return true;
+      })
+    }))
+    .filter(g => g.subcategories.length > 0); // Hide groups that become empty
 
   const [loading, setLoading] = useState(false);
   const [showScanner, setShowScanner] = useState(false);
