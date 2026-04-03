@@ -33,14 +33,11 @@ export default function App() {
   };
 
   useEffect(() => {
-    // Attempt to load from localStorage to persist login
     const savedConfig = localStorage.getItem('app_config');
     if (savedConfig) {
       try {
         const parsed = JSON.parse(savedConfig);
-        // Basic validation to ensure the saved config is useful
         if (parsed.userEmail && parsed.apiSecret) {
-            // Priority: Environment Variable/Constants > Cached URL
             parsed.scriptUrl = APPS_SCRIPT_URL;
             setConfig(parsed);
         }
@@ -58,7 +55,7 @@ export default function App() {
   const handleLogout = () => {
     setConfig(null);
     localStorage.removeItem('app_config');
-    sessionStorage.removeItem('dashboard_records_cache'); // Clear cache on logout
+    sessionStorage.removeItem('dashboard_records_cache');
   };
 
   const handleEdit = (record: LedgerRecord) => {
@@ -74,37 +71,37 @@ export default function App() {
   }[fontSize];
 
   return (
-    <div className={`min-h-screen bg-slate-950 text-slate-100 font-sans selection:bg-sky-500/30 pb-20 ${fontSizeClass}`}>
+    <div className={`min-h-screen bg-background text-on-background font-sans selection:bg-primary-container/30 pb-24 md:pb-8 ${fontSizeClass}`}>
       {showSplash && <SplashScreen onFinish={() => setShowSplash(false)} />}
       
-      {/* Background Gradient Mesh */}
-      <div className="fixed inset-0 z-0 pointer-events-none">
-         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-sky-900/10 blur-[100px]" />
-         <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-emerald-900/10 blur-[100px]" />
+      {/* Background Gradient Mesh for Light aesthetic */}
+      <div className="fixed inset-0 z-0 pointer-events-none opacity-40">
+         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-secondary-fixed/50 blur-[100px]" />
+         <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-tertiary-fixed/50 blur-[100px]" />
       </div>
 
-      <div className="relative z-10 p-4 md:p-6">
-        {!config ? (
+      {!config ? (
+        <div className="relative z-10 p-4 md:p-6 flex items-center justify-center min-h-screen">
           <AuthForm onLogin={handleLogin} />
-        ) : (
-          <ConfigProvider config={config}>
-            <MainContent 
-               config={config}
-               showSplash={showSplash}
-               activeTab={activeTab}
-               setActiveTab={setActiveTab}
-               editRecord={editRecord}
-               setEditRecord={setEditRecord}
-               fontSize={fontSize}
-               setFontSize={setFontSize}
-               setShowSettings={setShowSettings}
-               handleLogout={handleLogout} 
-               handleEdit={handleEdit}
-               getFormattedDate={getFormattedDate}
-            />
-          </ConfigProvider>
-        )}
-      </div>
+        </div>
+      ) : (
+        <ConfigProvider config={config}>
+          <MainContent 
+             config={config}
+             showSplash={showSplash}
+             activeTab={activeTab}
+             setActiveTab={setActiveTab}
+             editRecord={editRecord}
+             setEditRecord={setEditRecord}
+             fontSize={fontSize}
+             setFontSize={setFontSize}
+             setShowSettings={setShowSettings}
+             handleLogout={handleLogout} 
+             handleEdit={handleEdit}
+             getFormattedDate={getFormattedDate}
+          />
+        </ConfigProvider>
+      )}
 
       {showSettings && <HelpSettingsModal onClose={() => setShowSettings(false)} />}
     </div>
@@ -121,89 +118,70 @@ const MainContent = ({
   return (
     <>
       {(isLoading && !showSplash) && <LoadingOverlay />}
-      <div className="max-w-4xl mx-auto space-y-4">
-        {/* 1. Global App Header (Logo & Interactions) */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-800/60 pb-4 mb-2">
-          <h1 className="text-xl md:text-2xl font-bold text-white flex items-center whitespace-nowrap shrink-0">
-            <img src="/light_stonez56_256x265_icon.png" alt="Logo" className="w-8 h-8 md:w-10 md:h-10 mr-3 object-contain" />
-            Stonez56 收支快記雲 <span className="ml-2 text-sm text-sky-400 font-mono">{APP_VERSION}</span>
-          </h1>
-          
-          <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
-            {/* Font Size Toggle */}
-            <div className="flex bg-slate-900 rounded-lg p-1 border border-slate-800 items-center">
-              <Type className="w-4 h-4 text-slate-500 mx-2" />
-              <button onClick={() => setFontSize('sm')} className={`px-2 py-1 rounded text-xs transition-colors ${fontSize === 'sm' ? 'bg-sky-500/20 text-sky-400 font-bold' : 'text-slate-400 hover:bg-slate-800'}`}>小</button>
-              <button onClick={() => setFontSize('base')} className={`px-2 py-1 rounded text-xs transition-colors ${fontSize === 'base' ? 'bg-sky-500/20 text-sky-400 font-bold' : 'text-slate-400 hover:bg-slate-800'}`}>中</button>
-              <button onClick={() => setFontSize('lg')} className={`px-2 py-1 rounded text-xs transition-colors ${fontSize === 'lg' ? 'bg-sky-500/20 text-sky-400 font-bold' : 'text-slate-400 hover:bg-slate-800'}`}>大</button>
-            </div>
 
-            <button
-              onClick={() => setShowSettings(true)}
-              className="inline-flex items-center justify-center px-3 py-1.5 text-sm font-medium text-slate-300 bg-slate-800 rounded-lg hover:bg-slate-700 transition-colors"
-            >
-              <Settings size={14} className="mr-1.5" />
-              說明
-            </button>
-
-            {config.sheetUrl && (
-              <a 
-                href={config.sheetUrl} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center px-3 py-1.5 text-sm font-medium text-sky-400 bg-sky-950/50 border border-sky-900/50 rounded-lg hover:bg-sky-900/50 transition-colors"
-              >
-                <Table2 size={14} className="mr-1.5" />
-                報表
-                <ExternalLink size={12} className="ml-1 opacity-50" />
-              </a>
-            )}
-            <button 
-              onClick={handleLogout} 
-              className="inline-flex items-center justify-center px-3 py-1.5 text-sm font-medium bg-slate-800/80 hover:bg-rose-900/40 text-rose-400 border border-slate-700 hover:border-rose-900/50 rounded-lg transition-colors"
-            >
-              <LogOut size={14} className="mr-1.5" />登出
-            </button>
+      {/* FIXED TOP APP BAR */}
+      <nav className="fixed top-0 left-0 w-full z-40 bg-surface/80 backdrop-blur-xl border-b border-outline-variant/30 shadow-sm px-4 md:px-8 py-3 flex justify-between items-center transition-all">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-primary-container bg-surface-container-highest flex items-center justify-center">
+            <img src="/light_stonez56_256x265_icon.png" alt="Logo" className="w-6 h-6 object-contain" />
           </div>
-        </div>
-
-        {/* 2. Secondary Navigation (Tabs & User Info) */}
-        <div className="flex flex-col md:flex-row gap-4 items-center justify-between z-40 relative">
-          <div className="flex bg-slate-900/80 backdrop-blur-md rounded-lg p-1.5 border border-slate-800 shadow-xl w-full md:w-auto overflow-x-auto whitespace-nowrap hide-scrollbar">
-            <button
-              onClick={() => { setActiveTab('create'); setEditRecord(null); }}
-              className={`px-4 py-2 text-sm font-medium rounded-md transition-all shrink-0 flex items-center justify-center ${activeTab === 'create' && !editRecord ? 'bg-sky-500/20 text-sky-400 shadow-sm' : editRecord && activeTab === 'create' ? 'bg-amber-500/20 text-amber-400 shadow-sm' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'}`}
-            >
-              <FilePlus className="w-4 h-4 mr-2" />
-              {editRecord ? '編輯憑證中' : '新增憑證'}
-            </button>
-            <button
-              onClick={() => setActiveTab('search')}
-              className={`px-4 py-2 text-sm font-medium rounded-md transition-all shrink-0 flex items-center justify-center ${activeTab === 'search' ? 'bg-emerald-500/20 text-emerald-400 shadow-sm' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'}`}
-            >
-              <Search className="w-4 h-4 mr-2" />
-              歷史查詢
-            </button>
-            <button
-              onClick={() => setActiveTab('admin')}
-              className={`px-4 py-2 text-sm font-medium rounded-md transition-all shrink-0 flex items-center justify-center ${activeTab === 'admin' ? 'bg-indigo-500/20 text-indigo-400 shadow-sm' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'}`}
-            >
-              <Settings2 className="w-4 h-4 mr-2" />
-              管理中心
-            </button>
-          </div>
-          
-          <div className="flex items-center justify-end w-full md:w-auto gap-2">
-            <span className="text-xs font-medium px-2 py-1 rounded bg-slate-800/80 text-slate-300 border border-slate-700">{new Date().getFullYear()} 帳期</span>
-            <span className="text-xs font-medium px-2 py-1 rounded bg-slate-800/80 text-slate-300 border border-slate-700">{getFormattedDate()}</span>
-            <span className="text-sky-400 text-sm truncate max-w-[200px] font-medium bg-sky-950/30 px-3 py-1 rounded border border-sky-900/30">
-              {config.userEmail.split('@')[0]}
-            </span>
+          <div className="flex flex-col">
+            <span className="text-xl font-bold tracking-tight text-on-surface">Stonez56</span>
+            <span className="text-[10px] uppercase font-bold text-primary tracking-widest leading-none hidden md:block">{APP_VERSION}</span>
           </div>
         </div>
         
-        {/* 3. Main Content Area */}
-        <div className="pt-2">
+        {/* Desktop Tabs & Tools */}
+        <div className="hidden md:flex items-center gap-6 flex-1 justify-center max-w-2xl mx-auto">
+           <button onClick={() => { setActiveTab('create'); setEditRecord(null); }}
+             className={`px-4 py-2 font-bold rounded-full transition-all ${activeTab === 'create' ? 'bg-primary-container text-on-primary-container' : 'text-on-surface-variant hover:bg-surface-container-high'}`}>
+             <span className="flex items-center gap-2"><FilePlus size={18} /> {editRecord ? '編輯憑證中' : '新增憑證'}</span>
+           </button>
+           <button onClick={() => setActiveTab('search')}
+             className={`px-4 py-2 font-bold rounded-full transition-all ${activeTab === 'search' ? 'bg-secondary-container text-on-secondary-container' : 'text-on-surface-variant hover:bg-surface-container-high'}`}>
+             <span className="flex items-center gap-2"><Search size={18} /> 歷史查詢</span>
+           </button>
+           <button onClick={() => setActiveTab('admin')}
+             className={`px-4 py-2 font-bold rounded-full transition-all ${activeTab === 'admin' ? 'bg-tertiary-container text-on-tertiary-container' : 'text-on-surface-variant hover:bg-surface-container-high'}`}>
+             <span className="flex items-center gap-2"><Settings2 size={18} /> 管理中心</span>
+           </button>
+        </div>
+
+        {/* Right Tools Group */}
+        <div className="flex items-center gap-2 md:gap-3">
+            <div className="hidden md:flex bg-surface-container-high rounded-lg p-1 border border-outline-variant/50 items-center">
+              <Type className="w-4 h-4 text-outline mx-1" />
+              <button onClick={() => setFontSize('sm')} className={`px-2 py-0.5 rounded text-xs transition-colors ${fontSize === 'sm' ? 'bg-primary text-on-primary font-bold' : 'text-on-surface hover:bg-surface-container-highest'}`}>小</button>
+              <button onClick={() => setFontSize('base')} className={`px-2 py-0.5 rounded text-xs transition-colors ${fontSize === 'base' ? 'bg-primary text-on-primary font-bold' : 'text-on-surface hover:bg-surface-container-highest'}`}>中</button>
+              <button onClick={() => setFontSize('lg')} className={`px-2 py-0.5 rounded text-xs transition-colors ${fontSize === 'lg' ? 'bg-primary text-on-primary font-bold' : 'text-on-surface hover:bg-surface-container-highest'}`}>大</button>
+            </div>
+            {config.sheetUrl && (
+              <a href={config.sheetUrl} target="_blank" rel="noopener noreferrer"
+                className="hidden md:flex items-center px-3 py-1.5 text-sm font-bold text-primary bg-primary-container/20 rounded-full hover:bg-primary-container/40 transition-colors">
+                <Table2 size={16} className="mr-1.5" />報表
+              </a>
+            )}
+            <button onClick={() => setShowSettings(true)}
+              className="w-10 h-10 flex items-center justify-center rounded-full text-on-surface-variant hover:bg-surface-container-high transition-colors">
+              <Settings size={20} />
+            </button>
+            <button onClick={handleLogout}
+              className="w-10 h-10 flex items-center justify-center rounded-full text-error hover:bg-error-container/50 transition-colors">
+              <LogOut size={20} />
+            </button>
+        </div>
+      </nav>
+
+      <div className="relative z-10 p-4 md:p-6 max-w-4xl mx-auto pt-20 md:pt-24 min-h-[calc(100vh-6rem)]">
+        {/* Context info for Current Session */}
+        <div className="flex items-center gap-2 mb-6 overscroll-x-auto whitespace-nowrap hide-scrollbar">
+          <span className="text-xs font-bold px-3 py-1 rounded-full bg-surface-container-high text-on-surface-variant border border-outline-variant/50 shadow-sm">{new Date().getFullYear()} 帳期</span>
+          <span className="text-xs font-bold px-3 py-1 rounded-full bg-surface-container-high text-on-surface-variant border border-outline-variant/50 shadow-sm">{getFormattedDate()}</span>
+          <span className="text-xs font-bold px-3 py-1 rounded-full bg-primary-container/30 text-primary border border-primary/20 shadow-sm truncate max-w-[150px] md:max-w-xs">{config.userEmail.split('@')[0]}</span>
+        </div>
+        
+        {/* Main Content Area */}
+        <main className="w-full">
           {activeTab === 'admin' ? (
             <AdminLayout 
               config={config} 
@@ -223,8 +201,27 @@ const MainContent = ({
               fontSize={fontSize}
             />
           )}
-        </div>
+        </main>
       </div>
+
+      {/* MOBILE BOTTOM NAV BAR */}
+      <nav className="md:hidden fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pb-6 pt-3 bg-surface-container-lowest/90 backdrop-blur-xl z-50 rounded-t-[1.5rem] border-t border-outline-variant/30 shadow-[0px_-10px_30px_rgba(82,69,53,0.04)]">
+        <button onClick={() => { setActiveTab('create'); setEditRecord(null); }}
+          className={`flex flex-col items-center justify-center px-4 py-2 transition-all active:scale-90 duration-300 ${activeTab === 'create' ? 'bg-gradient-to-br from-primary to-primary-container text-on-primary rounded-full shadow-lg -translate-y-1' : 'text-on-surface-variant hover:text-primary'}`}>
+          <FilePlus size={activeTab === 'create' ? 24 : 20} className={activeTab === 'create' ? 'mb-0.5' : 'mb-1'} />
+          <span className="text-xs font-bold">{editRecord ? '編輯' : '新增'}</span>
+        </button>
+        <button onClick={() => setActiveTab('search')}
+          className={`flex flex-col items-center justify-center px-4 py-2 transition-all active:scale-90 duration-300 ${activeTab === 'search' ? 'bg-gradient-to-br from-primary to-primary-container text-on-primary rounded-full shadow-lg -translate-y-1' : 'text-on-surface-variant hover:text-primary'}`}>
+          <Search size={activeTab === 'search' ? 24 : 20} className={activeTab === 'search' ? 'mb-0.5' : 'mb-1'} />
+          <span className="text-xs font-bold">歷史</span>
+        </button>
+        <button onClick={() => setActiveTab('admin')}
+          className={`flex flex-col items-center justify-center px-4 py-2 transition-all active:scale-90 duration-300 ${activeTab === 'admin' ? 'bg-gradient-to-br from-primary to-primary-container text-on-primary rounded-full shadow-lg -translate-y-1' : 'text-on-surface-variant hover:text-primary'}`}>
+          <Settings2 size={activeTab === 'admin' ? 24 : 20} className={activeTab === 'admin' ? 'mb-0.5' : 'mb-1'} />
+          <span className="text-xs font-bold">管理</span>
+        </button>
+      </nav>
     </>
   );
 };

@@ -7,7 +7,7 @@ interface BaseProps {
 }
 
 export const Card: React.FC<BaseProps> = ({ children, className = '' }) => (
-  <div className={`bg-slate-900 border border-slate-800 rounded-xl shadow-xl overflow-hidden ${className}`}>
+  <div className={`bg-surface-container-high border border-outline-variant rounded-xl shadow-xl overflow-hidden ${className}`}>
     {children}
   </div>
 );
@@ -19,9 +19,9 @@ interface LabelProps {
 }
 
 export const Label: React.FC<LabelProps> = ({ htmlFor, children, required }) => (
-  <label htmlFor={htmlFor} className="block text-sm font-medium text-slate-400 mb-1.5">
+  <label htmlFor={htmlFor} className="block text-sm font-medium text-on-surface-variant mb-1.5">
     {children}
-    {required && <span className="text-rose-500 ml-1">*</span>}
+    {required && <span className="text-error ml-1">*</span>}
   </label>
 );
 
@@ -49,12 +49,12 @@ export const Input: React.FC<InputProps> = ({ label, icon: Icon, error, rightEle
       {label && <Label htmlFor={props.id || props.name || ''} required={props.required}>{label}</Label>}
       <div className="relative">
         {Icon && (
-          <div className={`absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500 ${hideIconOnMobile ? 'hidden md:flex' : ''}`}>
+          <div className={`absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-on-surface-variant ${hideIconOnMobile ? 'hidden md:flex' : ''}`}>
             <Icon size={18} />
           </div>
         )}
         <input
-          className={`w-full bg-slate-950 border ${error ? 'border-rose-500' : 'border-slate-700'} rounded-lg py-2.5 ${Icon ? (hideIconOnMobile ? 'pl-3 md:pl-10' : 'pl-10') : 'pl-3'} ${rightElement ? 'pr-10' : 'pr-3'} text-slate-100 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all disabled:opacity-50 disabled:cursor-not-allowed ${props.type === 'date' ? '[&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0 [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:cursor-pointer' : ''} ${className}`}
+          className={`w-full bg-background border ${error ? 'border-error' : 'border-outline'} rounded-lg py-2.5 ${Icon ? (hideIconOnMobile ? 'pl-3 md:pl-10' : 'pl-10') : 'pl-3'} ${rightElement ? 'pr-10' : 'pr-3'} text-on-surface placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all disabled:opacity-50 disabled:cursor-not-allowed ${props.type === 'date' ? '[&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0 [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:cursor-pointer' : ''} ${className}`}
           onInvalid={handleInvalid}
           onInput={handleInput}
           onClick={(e) => {
@@ -75,7 +75,7 @@ export const Input: React.FC<InputProps> = ({ label, icon: Icon, error, rightEle
           </div>
         )}
       </div>
-      {error && <p className="mt-1 text-xs text-rose-500">{error}</p>}
+      {error && <p className="mt-1 text-xs text-error">{error}</p>}
     </div>
   );
 };
@@ -101,7 +101,7 @@ export const Select: React.FC<SelectProps> = ({ label, options, className = '', 
       {label && <Label htmlFor={props.id || props.name || ''} required={props.required}>{label}</Label>}
       <div className="relative">
         <select
-          className={`w-full bg-slate-950 border border-slate-700 rounded-lg py-2.5 pl-3 pr-8 text-sm md:text-base text-slate-100 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent appearance-none transition-all ${className}`}
+          className={`w-full bg-background border border-outline rounded-lg py-2.5 pl-3 pr-8 text-sm md:text-base text-on-surface focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent appearance-none transition-all ${className}`}
           onInvalid={handleInvalid}
           onInput={handleInput}
           {...props}
@@ -112,7 +112,7 @@ export const Select: React.FC<SelectProps> = ({ label, options, className = '', 
             </option>
           ))}
         </select>
-        <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none text-slate-500">
+        <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none text-on-surface-variant">
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
           </svg>
@@ -147,10 +147,10 @@ export const Button: React.FC<ButtonProps> = ({
   };
   
   const variants = {
-    primary: "bg-sky-500 hover:bg-sky-400 text-white focus:ring-sky-500",
-    secondary: "bg-slate-700 hover:bg-slate-600 text-slate-200 focus:ring-slate-500",
-    danger: "bg-rose-600 hover:bg-rose-500 text-white focus:ring-rose-500",
-    ghost: "bg-transparent hover:bg-slate-800 text-slate-400 hover:text-slate-200",
+    primary: "bg-primary hover:bg-sky-400 text-on-surface focus:ring-primary",
+    secondary: "bg-outline-variant hover:bg-slate-600 text-on-surface focus:ring-slate-500",
+    danger: "bg-error hover:bg-error text-on-surface focus:ring-rose-500",
+    ghost: "bg-transparent hover:bg-surface-container text-on-surface-variant hover:text-on-surface",
   };
 
   return (

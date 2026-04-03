@@ -133,48 +133,48 @@ export const Scanner: React.FC<ScannerProps> = ({ onScanResult, onClose }) => {
 
   return (
     <>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-md animate-in fade-in duration-200">
-        <div className="w-full max-w-sm bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-2xl relative overflow-hidden">
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/90 backdrop-blur-md animate-in fade-in duration-200">
+        <div className="w-full max-w-sm bg-surface-container-high border border-outline-variant rounded-2xl p-6 shadow-2xl relative overflow-hidden">
           <canvas ref={canvasRef} className="hidden" />
 
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-sky-500 via-purple-500 to-emerald-500" />
           
           <div className="flex justify-between items-center mb-6">
-            <h3 className="text-lg font-bold flex items-center text-white">
-              <ScanLine className="w-5 h-5 mr-2 text-sky-400" />
+            <h3 className="text-lg font-bold flex items-center text-on-surface">
+              <ScanLine className="w-5 h-5 mr-2 text-primary" />
               AI 智慧憑證掃描
             </h3>
-            <button onClick={onClose} className="p-2 rounded-full hover:bg-slate-800 text-slate-400 hover:text-white transition-colors">
+            <button onClick={onClose} className="p-2 rounded-full hover:bg-surface-container text-on-surface-variant hover:text-on-surface transition-colors">
               <X size={20} />
             </button>
           </div>
 
           <div className="space-y-4">
             {loading ? (
-               <div className="w-full h-48 rounded-xl border-2 border-dashed border-sky-500/50 bg-sky-500/5 flex flex-col items-center justify-center space-y-3">
-                  <Loader2 className="w-10 h-10 animate-spin text-sky-400" />
+               <div className="w-full h-48 rounded-xl border-2 border-dashed border-primary/50 bg-primary/5 flex flex-col items-center justify-center space-y-3">
+                  <Loader2 className="w-10 h-10 animate-spin text-primary" />
                   <p className="text-sm text-sky-300 font-medium animate-pulse">正在分析憑證...</p>
                </div>
             ) : (
               <div className="grid grid-cols-2 gap-4">
                   <button
                       onClick={startCamera}
-                      className="flex flex-col items-center justify-center h-32 rounded-xl bg-slate-800 border border-slate-700 hover:bg-slate-700 hover:border-sky-500/50 transition-all group"
+                      className="flex flex-col items-center justify-center h-32 rounded-xl bg-surface-container border border-outline hover:bg-outline-variant hover:border-primary/50 transition-all group"
                   >
-                      <div className="p-3 rounded-full bg-slate-900 group-hover:bg-sky-500 group-hover:text-white text-sky-400 mb-2 transition-colors">
+                      <div className="p-3 rounded-full bg-surface-container-high group-hover:bg-primary group-hover:text-on-surface text-primary mb-2 transition-colors">
                           <Camera className="w-6 h-6" />
                       </div>
-                      <span className="text-sm font-medium text-slate-300">開啟相機</span>
+                      <span className="text-sm font-medium text-on-surface">開啟相機</span>
                   </button>
 
                   <button
                       onClick={() => fileInputRef.current?.click()}
-                      className="flex flex-col items-center justify-center h-32 rounded-xl bg-slate-800 border border-slate-700 hover:bg-slate-700 hover:border-emerald-500/50 transition-all group"
+                      className="flex flex-col items-center justify-center h-32 rounded-xl bg-surface-container border border-outline hover:bg-outline-variant hover:border-secondary/50 transition-all group"
                   >
-                      <div className="p-3 rounded-full bg-slate-900 group-hover:bg-emerald-500 group-hover:text-white text-emerald-400 mb-2 transition-colors">
+                      <div className="p-3 rounded-full bg-surface-container-high group-hover:bg-secondary group-hover:text-on-surface text-secondary mb-2 transition-colors">
                           <Upload className="w-6 h-6" />
                       </div>
-                      <span className="text-sm font-medium text-slate-300">上傳圖片</span>
+                      <span className="text-sm font-medium text-on-surface">上傳圖片</span>
                   </button>
               </div>
             )}
@@ -188,12 +188,12 @@ export const Scanner: React.FC<ScannerProps> = ({ onScanResult, onClose }) => {
             />
 
             {cameraError && (
-                <div className="text-xs text-rose-400 bg-rose-500/10 p-2 rounded text-center">
+                <div className="text-xs text-error bg-error/10 p-2 rounded text-center">
                     {cameraError}
                 </div>
             )}
 
-            <div className="bg-slate-800/50 rounded-lg p-3 text-xs text-slate-400 leading-relaxed border border-slate-700/50">
+            <div className="bg-surface-container/50 rounded-lg p-3 text-xs text-on-surface-variant leading-relaxed border border-outline/50">
               <p className="flex items-start gap-2">
                 <Sparkles className="w-3 h-3 mt-0.5 text-yellow-400 shrink-0" />
                 AI 將自動辨識：進銷別、日期、統編、金額與科目。
@@ -206,12 +206,12 @@ export const Scanner: React.FC<ScannerProps> = ({ onScanResult, onClose }) => {
       {cameraActive && (
         <div className="fixed inset-0 z-[100] bg-black flex flex-col animate-in fade-in duration-300">
           <div className="absolute top-0 left-0 right-0 p-6 z-20 flex justify-between items-start bg-gradient-to-b from-black/80 to-transparent pb-12">
-             <div className="px-4 py-2 bg-black/40 backdrop-blur-md rounded-full text-white text-sm font-medium border border-white/10">
+             <div className="px-4 py-2 bg-black/40 backdrop-blur-md rounded-full text-on-surface text-sm font-medium border border-white/10">
                 拍攝收據 / 發票
              </div>
              <button 
                onClick={stopCamera} 
-               className="p-3 bg-black/40 hover:bg-slate-800 text-white rounded-full backdrop-blur-md transition-all border border-white/10"
+               className="p-3 bg-black/40 hover:bg-surface-container text-on-surface rounded-full backdrop-blur-md transition-all border border-white/10"
              >
                <X size={24} />
              </button>
@@ -226,12 +226,12 @@ export const Scanner: React.FC<ScannerProps> = ({ onScanResult, onClose }) => {
                 className="absolute w-full h-full object-cover"
               />
               <div className="relative w-[85%] aspect-[3/4] max-w-md border-2 border-white/30 rounded-2xl shadow-[0_0_0_9999px_rgba(0,0,0,0.5)] pointer-events-none">
-                  <div className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-sky-500 -mt-0.5 -ml-0.5 rounded-tl-xl" />
-                  <div className="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-sky-500 -mt-0.5 -mr-0.5 rounded-tr-xl" />
-                  <div className="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-sky-500 -mb-0.5 -ml-0.5 rounded-bl-xl" />
-                  <div className="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-sky-500 -mb-0.5 -mr-0.5 rounded-br-xl" />
+                  <div className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-primary -mt-0.5 -ml-0.5 rounded-tl-xl" />
+                  <div className="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-primary -mt-0.5 -mr-0.5 rounded-tr-xl" />
+                  <div className="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-primary -mb-0.5 -ml-0.5 rounded-bl-xl" />
+                  <div className="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-primary -mb-0.5 -mr-0.5 rounded-br-xl" />
                   <div className="absolute inset-0 flex items-center justify-center opacity-30">
-                     <ScanLine className="w-16 h-16 text-white animate-pulse" />
+                     <ScanLine className="w-16 h-16 text-on-surface animate-pulse" />
                   </div>
               </div>
           </div>

@@ -99,21 +99,21 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onLogin }) => {
              text: '腳本未授權 (Permission Missing)',
              isDeployError: true,
              detail: (
-                <div className="space-y-3 mt-2 text-xs text-rose-200 bg-rose-900/40 p-3 rounded border border-rose-500/30">
+                <div className="space-y-3 mt-2 text-xs text-rose-200 bg-error-container/40 p-3 rounded border border-error/30">
                    <div className="flex items-start gap-2">
-                     <Terminal className="w-5 h-5 shrink-0 text-amber-400" />
+                     <Terminal className="w-5 h-5 shrink-0 text-tertiary" />
                      <p className="font-bold text-amber-100">需要手動執行一次授權：</p>
                    </div>
-                   <ol className="list-decimal list-inside space-y-2 ml-1 text-slate-300">
+                   <ol className="list-decimal list-inside space-y-2 ml-1 text-on-surface">
                      <li>回到 <strong>Google Apps Script 編輯器</strong>。</li>
                      <li>
-                        在上方工具列的函式選單中，選擇 <code className="bg-slate-800 px-1 py-0.5 rounded text-sky-300">setup</code> 並點擊 <strong>「執行 (Run)」</strong>。
+                        在上方工具列的函式選單中，選擇 <code className="bg-surface-container px-1 py-0.5 rounded text-sky-300">setup</code> 並點擊 <strong>「執行 (Run)」</strong>。
                      </li>
                      <li>
                         <strong>若無跳出視窗：</strong>請看下方「執行記錄」。若顯示「執行完畢」，代表已經有權限了。
                      </li>
                      <li>
-                        <strong className="text-amber-300">關鍵步驟：</strong>點擊右上角「部署」→「管理部署作業」→ 點擊筆圖示 → <strong className="text-white underline">版本必須選「新版本」</strong> → 部署。
+                        <strong className="text-tertiary">關鍵步驟：</strong>點擊右上角「部署」→「管理部署作業」→ 點擊筆圖示 → <strong className="text-on-surface underline">版本必須選「新版本」</strong> → 部署。
                      </li>
                      <li>
                         完成後，再次點擊下方的「驗證並登入」。
@@ -137,35 +137,35 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onLogin }) => {
         errorMsg = "連線失敗 (Deployment Error)";
         isDeployError = true;
         errorDetail = (
-          <div className="space-y-3 mt-2 text-xs text-rose-200 bg-rose-900/40 p-3 rounded border border-rose-500/30">
+          <div className="space-y-3 mt-2 text-xs text-rose-200 bg-error-container/40 p-3 rounded border border-error/30">
              <div className="flex items-start gap-2">
-               <AlertTriangle className="w-5 h-5 shrink-0 text-amber-400" />
+               <AlertTriangle className="w-5 h-5 shrink-0 text-tertiary" />
                <p className="font-bold text-amber-100">請按照順序檢查 Apps Script 設定：</p>
              </div>
-             <ol className="list-decimal list-inside space-y-2 ml-1 text-slate-300">
+             <ol className="list-decimal list-inside space-y-2 ml-1 text-on-surface">
                <li>
-                 <span className="text-white font-semibold">授權權限：</span>
+                 <span className="text-on-surface font-semibold">授權權限：</span>
                  <br/>
-                 <span className="pl-4 block text-slate-400">執行 <code className="text-sky-300">setup</code> 函式。若無跳窗且顯示執行完畢，即代表成功。</span>
+                 <span className="pl-4 block text-on-surface-variant">執行 <code className="text-sky-300">setup</code> 函式。若無跳窗且顯示執行完畢，即代表成功。</span>
                </li>
                <li>
-                 <span className="text-white font-semibold">部署設定：</span>
+                 <span className="text-on-surface font-semibold">部署設定：</span>
                  <ul className="list-disc list-inside pl-4 mt-1 space-y-1">
                    <li>執行身分 (Execute as): <strong className="text-sky-300">Me (我)</strong></li>
                    <li>存取權限 (Access): <strong className="text-sky-300">Anyone (任何人)</strong></li>
                  </ul>
                </li>
                <li>
-                 <span className="text-white font-semibold">更新版本 (最常見遺漏)：</span>
+                 <span className="text-on-surface font-semibold">更新版本 (最常見遺漏)：</span>
                  <br/>
-                 <span className="pl-4 block text-slate-400">務必建立 <strong>「New version (新版本)」</strong> 並按部署，設定才會生效。</span>
+                 <span className="pl-4 block text-on-surface-variant">務必建立 <strong>「New version (新版本)」</strong> 並按部署，設定才會生效。</span>
                </li>
              </ol>
           </div>
         );
       } else if (errorMsg.includes("Invalid Secret")) {
          errorDetail = (
-           <div className="space-y-1 mt-1 text-xs text-rose-300/90">
+           <div className="space-y-1 mt-1 text-xs text-error/90">
              <p className="font-bold">密鑰錯誤常見原因：</p>
              <ul className="list-disc list-inside">
                <li>確認 Google Sheet「Config」分頁 B1 儲存格內容無誤。</li>
@@ -183,14 +183,14 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onLogin }) => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-slate-950">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-background">
       <div className={`w-full transition-all duration-300 ${error?.isDeployError ? 'max-w-xl' : 'max-w-md'}`}>
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-900 border border-slate-800 mb-4 shadow-lg">
-            <ShieldCheck className="w-8 h-8 text-sky-500" />
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-surface-container-high border border-outline-variant mb-4 shadow-lg">
+            <ShieldCheck className="w-8 h-8 text-primary" />
           </div>
-          <h1 className="text-2xl font-bold text-white tracking-tight">One-Person Accounting</h1>
-          <p className="text-slate-400 mt-2 text-sm">一人公司記帳系統 {APP_VERSION}</p>
+          <h1 className="text-2xl font-bold text-on-surface tracking-tight">One-Person Accounting</h1>
+          <p className="text-on-surface-variant mt-2 text-sm">一人公司記帳系統 {APP_VERSION}</p>
         </div>
 
         <Card className="p-6 md:p-8">
@@ -220,14 +220,14 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onLogin }) => {
                     <button
                       type="button"
                       onClick={() => setShowSecret(!showSecret)}
-                      className="text-slate-500 hover:text-slate-300 focus:outline-none transition-colors"
+                      className="text-on-surface-variant hover:text-on-surface focus:outline-none transition-colors"
                       tabIndex={-1}
                     >
                       {showSecret ? <EyeOff size={18} /> : <Eye size={18} />}
                     </button>
                   }
                 />
-                <div className="mt-2 flex items-start gap-2 text-xs text-slate-500 bg-slate-900/50 p-2 rounded">
+                <div className="mt-2 flex items-start gap-2 text-xs text-on-surface-variant bg-surface-container-high/50 p-2 rounded">
                     <HelpCircle className="w-4 h-4 shrink-0 mt-0.5" />
                     <p>
                         <span className="opacity-70 mt-1 block">Check Google Sheet!</span>
@@ -242,17 +242,17 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onLogin }) => {
                         type="checkbox"
                         checked={rememberMe}
                         onChange={(e) => setRememberMe(e.target.checked)}
-                        className="peer h-4 w-4 cursor-pointer appearance-none rounded border border-slate-600 bg-slate-900 checked:border-sky-500 checked:bg-sky-500 transition-all"
+                        className="peer h-4 w-4 cursor-pointer appearance-none rounded border border-outline bg-surface-container-high checked:border-primary checked:bg-primary transition-all"
                     />
-                    <CheckSquare className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 text-white opacity-0 peer-checked:opacity-100 pointer-events-none" />
+                    <CheckSquare className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 text-on-surface opacity-0 peer-checked:opacity-100 pointer-events-none" />
                 </div>
-                <label htmlFor="remember" className="text-sm text-slate-400 cursor-pointer select-none hover:text-slate-300">
+                <label htmlFor="remember" className="text-sm text-on-surface-variant cursor-pointer select-none hover:text-on-surface">
                     記住帳號與密鑰 (Auto-Fill)
                 </label>
             </div>
 
             {error && (
-               <div className="bg-rose-500/10 border border-rose-500/20 text-rose-400 px-4 py-3 rounded-lg text-sm flex flex-col animate-in slide-in-from-top-2 fade-in">
+               <div className="bg-error/10 border border-error/20 text-error px-4 py-3 rounded-lg text-sm flex flex-col animate-in slide-in-from-top-2 fade-in">
                 <div className="flex items-center font-bold">
                     <WifiOff className="w-4 h-4 mr-2" />
                     {error.text}

@@ -11,76 +11,76 @@ export const HelpSettingsModal: React.FC<Props> = ({ onClose }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
-      <div className="bg-slate-900 border border-slate-700 rounded-xl shadow-2xl w-full max-w-2xl overflow-hidden animate-in zoom-in-95 flex flex-col max-h-[90vh]">
-        <div className="p-5 border-b border-slate-800 flex items-center justify-between shrink-0">
-          <h3 className="text-lg font-bold text-white flex items-center gap-2">
-            <Settings className="w-5 h-5 text-slate-400" />
+      <div className="bg-surface-container-high border border-outline rounded-xl shadow-2xl w-full max-w-2xl overflow-hidden animate-in zoom-in-95 flex flex-col max-h-[90vh]">
+        <div className="p-5 border-b border-outline-variant flex items-center justify-between shrink-0">
+          <h3 className="text-lg font-bold text-on-surface flex items-center gap-2">
+            <Settings className="w-5 h-5 text-on-surface-variant" />
             系統說明與幫助
           </h3>
           <button 
             onClick={onClose}
-            className="text-slate-400 hover:text-white"
+            className="text-on-surface-variant hover:text-on-surface"
           >
             ✕
           </button>
         </div>
         
-        <div className="flex border-b border-slate-800 shrink-0 overflow-x-auto whitespace-nowrap scrollbar-hide">
+        <div className="flex border-b border-outline-variant shrink-0 overflow-x-auto whitespace-nowrap scrollbar-hide">
           <button
             type="button"
-            className={`px-4 py-3 text-sm font-medium transition-colors ${settingsTab === 'both' ? 'text-sky-400 border-b-2 border-sky-400 bg-sky-950/20' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'}`}
+            className={`px-4 py-3 text-sm font-medium transition-colors ${settingsTab === 'both' ? 'text-primary border-b-2 border-sky-400 bg-sky-950/20' : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container/50'}`}
             onClick={() => setSettingsTab('both')}
           >
             💡 內外帳說明
           </button>
           <button
             type="button"
-            className={`px-4 py-3 text-sm font-medium transition-colors ${settingsTab === 'internal' ? 'text-sky-400 border-b-2 border-sky-400 bg-sky-950/20' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'}`}
+            className={`px-4 py-3 text-sm font-medium transition-colors ${settingsTab === 'internal' ? 'text-primary border-b-2 border-sky-400 bg-sky-950/20' : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container/50'}`}
             onClick={() => setSettingsTab('internal')}
           >
             📝 僅內帳說明
           </button>
           <button
             type="button"
-            className={`px-4 py-3 text-sm font-medium transition-colors ${settingsTab === 'guide' ? 'text-emerald-400 border-b-2 border-emerald-400 bg-emerald-950/20' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'}`}
+            className={`px-4 py-3 text-sm font-medium transition-colors ${settingsTab === 'guide' ? 'text-secondary border-b-2 border-emerald-400 bg-emerald-950/20' : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container/50'}`}
             onClick={() => setSettingsTab('guide')}
           >
             📖 記帳需知
           </button>
           <button
             type="button"
-            className={`px-4 py-3 text-sm font-medium transition-colors ${settingsTab === 'error' ? 'text-amber-400 border-b-2 border-amber-400 bg-amber-950/20' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'}`}
+            className={`px-4 py-3 text-sm font-medium transition-colors ${settingsTab === 'error' ? 'text-tertiary border-b-2 border-amber-400 bg-amber-950/20' : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container/50'}`}
             onClick={() => setSettingsTab('error')}
           >
             🔄 憑證開錯處理
           </button>
         </div>
 
-        <div className="p-6 space-y-6 text-sm text-slate-300 overflow-y-auto">
+        <div className="p-6 space-y-6 text-sm text-on-surface overflow-y-auto">
           {settingsTab === 'both' && (
             <>
               <div className="flex gap-4">
-                <div className="w-8 h-8 rounded-full bg-sky-500/20 text-sky-400 flex items-center justify-center font-bold flex-shrink-0">1</div>
+                <div className="w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold flex-shrink-0">1</div>
                 <div>
-                  <h4 className="font-semibold text-white mb-1">選擇憑證分類</h4>
+                  <h4 className="font-semibold text-on-surface mb-1">選擇憑證分類</h4>
                   <p>選擇「內外帳 (含稅憑證)」，代表此筆帳目有合法憑證（如發票），可供報稅使用。若勾選「非應收應付」，系統會自動將發票日期帶入收付款日。</p>
                 </div>
               </div>
               
               <div className="flex gap-4">
-                <div className="w-8 h-8 rounded-full bg-sky-500/20 text-sky-400 flex items-center justify-center font-bold flex-shrink-0">2</div>
+                <div className="w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold flex-shrink-0">2</div>
                 <div>
-                  <h4 className="font-semibold text-white mb-1">判斷可扣抵/不可扣抵</h4>
+                  <h4 className="font-semibold text-on-surface mb-1">判斷可扣抵/不可扣抵</h4>
                   <p>進項發票的營業稅分為「可扣抵」與「不可扣抵」。<br/>
-                  <span className="text-emerald-400">✅ 可扣抵：</span>與公司業務直接相關的支出（如進貨、辦公用品、設備）。<br/>
-                  <span className="text-rose-400">❌ 不可扣抵：</span>交際費、伙食費、職工福利、自用乘人小汽車等。系統會依據您選擇的會計科目給予提示。</p>
+                  <span className="text-secondary">✅ 可扣抵：</span>與公司業務直接相關的支出（如進貨、辦公用品、設備）。<br/>
+                  <span className="text-error">❌ 不可扣抵：</span>交際費、伙食費、職工福利、自用乘人小汽車等。系統會依據您選擇的會計科目給予提示。</p>
                 </div>
               </div>
 
               <div className="flex gap-4">
-                <div className="w-8 h-8 rounded-full bg-sky-500/20 text-sky-400 flex items-center justify-center font-bold flex-shrink-0">3</div>
+                <div className="w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold flex-shrink-0">3</div>
                 <div>
-                  <h4 className="font-semibold text-white mb-1">輸入金額明細</h4>
+                  <h4 className="font-semibold text-on-surface mb-1">輸入金額明細</h4>
                   <p>您可以直接輸入「總金額」，系統會自動反推未稅額與稅金。或是輸入未稅額，系統也會自動計算總金額。</p>
                 </div>
               </div>
@@ -89,25 +89,25 @@ export const HelpSettingsModal: React.FC<Props> = ({ onClose }) => {
           {settingsTab === 'internal' && (
             <>
               <div className="flex gap-4">
-                <div className="w-8 h-8 rounded-full bg-sky-500/20 text-sky-400 flex items-center justify-center font-bold flex-shrink-0">1</div>
+                <div className="w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold flex-shrink-0">1</div>
                 <div>
-                  <h4 className="font-semibold text-white mb-1">選擇憑證分類</h4>
+                  <h4 className="font-semibold text-on-surface mb-1">選擇憑證分類</h4>
                   <p>選擇「僅內帳 (無憑證/不報稅)」，代表此筆帳目僅供內部管理使用，通常是沒有合法發票的支出（如個人收據），或是不打算拿來報稅的項目。</p>
                 </div>
               </div>
               
               <div className="flex gap-4">
-                <div className="w-8 h-8 rounded-full bg-sky-500/20 text-sky-400 flex items-center justify-center font-bold flex-shrink-0">2</div>
+                <div className="w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold flex-shrink-0">2</div>
                 <div>
-                  <h4 className="font-semibold text-white mb-1">格式代號與統編</h4>
+                  <h4 className="font-semibold text-on-surface mb-1">格式代號與統編</h4>
                   <p>內帳通常不需要對方的統編。您可以在格式代號選擇「99 - 收據/其他 (無發票)」，此時「對方統編」欄位將變為非必填。</p>
                 </div>
               </div>
 
               <div className="flex gap-4">
-                <div className="w-8 h-8 rounded-full bg-sky-500/20 text-sky-400 flex items-center justify-center font-bold flex-shrink-0">3</div>
+                <div className="w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold flex-shrink-0">3</div>
                 <div>
-                  <h4 className="font-semibold text-white mb-1">輸入金額明細</h4>
+                  <h4 className="font-semibold text-on-surface mb-1">輸入金額明細</h4>
                   <p>內帳通常不區分稅額，您可以直接輸入總金額即可。確認無誤後點擊「確認送出」即可完成記帳。</p>
                 </div>
               </div>
@@ -116,55 +116,55 @@ export const HelpSettingsModal: React.FC<Props> = ({ onClose }) => {
           {settingsTab === 'guide' && (
             <>
               <div>
-                <h4 className="font-bold text-emerald-400 text-base mb-3 border-b border-slate-800 pb-2">1. 收入 (Income)</h4>
+                <h4 className="font-bold text-secondary text-base mb-3 border-b border-outline-variant pb-2">1. 收入 (Income)</h4>
                 <div className="space-y-3">
-                  <p><strong className="text-white">通常有發票：</strong> 如果您的公司是「核定使用統一發票」的營業人，只要銷售商品或提供勞務，就必須開立統一發票給客戶。</p>
-                  <p><strong className="text-white">沒有發票的情況：</strong></p>
-                  <ul className="list-disc pl-5 space-y-1 text-slate-400">
-                    <li><strong className="text-slate-300">小規模營業人：</strong> 如果是國稅局核定的免用統一發票商號，則是開立「普通收據」。</li>
-                    <li><strong className="text-slate-300">非營業收入：</strong> 例如銀行存款利息（憑證為銀行存摺紀錄）、政府補助款（核准公文與匯款紀錄）等，這些不會開立發票。</li>
+                  <p><strong className="text-on-surface">通常有發票：</strong> 如果您的公司是「核定使用統一發票」的營業人，只要銷售商品或提供勞務，就必須開立統一發票給客戶。</p>
+                  <p><strong className="text-on-surface">沒有發票的情況：</strong></p>
+                  <ul className="list-disc pl-5 space-y-1 text-on-surface-variant">
+                    <li><strong className="text-on-surface">小規模營業人：</strong> 如果是國稅局核定的免用統一發票商號，則是開立「普通收據」。</li>
+                    <li><strong className="text-on-surface">非營業收入：</strong> 例如銀行存款利息（憑證為銀行存摺紀錄）、政府補助款（核准公文與匯款紀錄）等，這些不會開立發票。</li>
                   </ul>
                 </div>
               </div>
 
               <div>
-                <h4 className="font-bold text-emerald-400 text-base mb-3 border-b border-slate-800 pb-2">2. 支出 (Expense)</h4>
+                <h4 className="font-bold text-secondary text-base mb-3 border-b border-outline-variant pb-2">2. 支出 (Expense)</h4>
                 <div className="space-y-3">
                   <p>支出的憑證種類非常多，很多項目是沒有統一發票的：</p>
-                  <p><strong className="text-white">有發票的支出：</strong> 向一般公司行號進貨、購買設備、水電費、電信費、交際費等。</p>
-                  <p><strong className="text-white">沒有發票，但有其他合法憑證的支出：</strong></p>
-                  <ul className="list-disc pl-5 space-y-2 text-slate-400">
-                    <li><strong className="text-slate-300">薪資/勞務費：</strong> 員工薪資單、兼職人員的勞務報酬單（勞報單）。</li>
-                    <li><strong className="text-slate-300">小額採購：</strong> 向免用統一發票的店家購買物品，會取得「收據」（需蓋有免用統一發票專用章）。</li>
-                    <li><strong className="text-slate-300">租金支出：</strong> 如果房東是個人，憑證會是「租賃契約」加上「匯款證明」或「簽收單」。</li>
-                    <li><strong className="text-slate-300">差旅交通費：</strong> 高鐵/台鐵車票、機票票根與登機證、計程車收據。</li>
-                    <li><strong className="text-slate-300">郵資/規費/稅金：</strong> 郵局的購票證明、政府機關的規費收據、繳稅的繳款書。</li>
-                    <li><strong className="text-slate-300">銀行手續費：</strong> 銀行存摺的扣款紀錄或銀行開立的手續費收據。</li>
-                    <li><strong className="text-slate-300">國外採購：</strong> 國外廠商開立的 Commercial Invoice（商業發票，這與台灣的統一發票不同）、海關的進口報單。</li>
+                  <p><strong className="text-on-surface">有發票的支出：</strong> 向一般公司行號進貨、購買設備、水電費、電信費、交際費等。</p>
+                  <p><strong className="text-on-surface">沒有發票，但有其他合法憑證的支出：</strong></p>
+                  <ul className="list-disc pl-5 space-y-2 text-on-surface-variant">
+                    <li><strong className="text-on-surface">薪資/勞務費：</strong> 員工薪資單、兼職人員的勞務報酬單（勞報單）。</li>
+                    <li><strong className="text-on-surface">小額採購：</strong> 向免用統一發票的店家購買物品，會取得「收據」（需蓋有免用統一發票專用章）。</li>
+                    <li><strong className="text-on-surface">租金支出：</strong> 如果房東是個人，憑證會是「租賃契約」加上「匯款證明」或「簽收單」。</li>
+                    <li><strong className="text-on-surface">差旅交通費：</strong> 高鐵/台鐵車票、機票票根與登機證、計程車收據。</li>
+                    <li><strong className="text-on-surface">郵資/規費/稅金：</strong> 郵局的購票證明、政府機關的規費收據、繳稅的繳款書。</li>
+                    <li><strong className="text-on-surface">銀行手續費：</strong> 銀行存摺的扣款紀錄或銀行開立的手續費收據。</li>
+                    <li><strong className="text-on-surface">國外採購：</strong> 國外廠商開立的 Commercial Invoice（商業發票，這與台灣的統一發票不同）、海關的進口報單。</li>
                   </ul>
                 </div>
               </div>
 
               <div>
-                <h4 className="font-bold text-emerald-400 text-base mb-3 border-b border-slate-800 pb-2">3. 特殊稅務項目 (Special Tax Items)</h4>
+                <h4 className="font-bold text-secondary text-base mb-3 border-b border-outline-variant pb-2">3. 特殊稅務項目 (Special Tax Items)</h4>
                 <div className="space-y-3">
-                  <p><strong className="text-white">a. 進項折讓 (Input Return/Discount)：</strong></p>
-                  <ul className="list-disc pl-5 space-y-1 text-slate-400">
-                    <li><strong className="text-slate-300">何時使用：</strong> 當您向供應商進貨或購買費用後，發生「退貨」或「折讓（減價）」時使用。</li>
-                    <li><strong className="text-slate-300">憑證：</strong> 您需要開立或取得「營業人銷貨退回進貨退出或折讓證明單」。</li>
-                    <li><strong className="text-slate-300">系統操作：</strong> 在系統中選擇「23 - 進項折讓」，這會減少您的進項稅額（即減少可扣抵的稅額）。</li>
+                  <p><strong className="text-on-surface">a. 進項折讓 (Input Return/Discount)：</strong></p>
+                  <ul className="list-disc pl-5 space-y-1 text-on-surface-variant">
+                    <li><strong className="text-on-surface">何時使用：</strong> 當您向供應商進貨或購買費用後，發生「退貨」或「折讓（減價）」時使用。</li>
+                    <li><strong className="text-on-surface">憑證：</strong> 您需要開立或取得「營業人銷貨退回進貨退出或折讓證明單」。</li>
+                    <li><strong className="text-on-surface">系統操作：</strong> 在系統中選擇「23 - 進項折讓」，這會減少您的進項稅額（即減少可扣抵的稅額）。</li>
                   </ul>
-                  <p><strong className="text-white">b. 海關代徵 (Customs Collection)：</strong></p>
-                  <ul className="list-disc pl-5 space-y-1 text-slate-400">
-                    <li><strong className="text-slate-300">何時使用：</strong> 當您從國外進口貨物時，海關會代為徵收營業稅。</li>
-                    <li><strong className="text-slate-300">憑證：</strong> 您會取得海關核發的「海關進口貨物稅費繳納證兼匯款申請書」（通常稱為海關代徵營業稅繳款書）。</li>
-                    <li><strong className="text-slate-300">系統操作：</strong> 在系統中選擇「28 - 海關代徵」，這筆代徵的營業稅可以作為您的進項稅額來扣抵銷項稅額。</li>
+                  <p><strong className="text-on-surface">b. 海關代徵 (Customs Collection)：</strong></p>
+                  <ul className="list-disc pl-5 space-y-1 text-on-surface-variant">
+                    <li><strong className="text-on-surface">何時使用：</strong> 當您從國外進口貨物時，海關會代為徵收營業稅。</li>
+                    <li><strong className="text-on-surface">憑證：</strong> 您會取得海關核發的「海關進口貨物稅費繳納證兼匯款申請書」（通常稱為海關代徵營業稅繳款書）。</li>
+                    <li><strong className="text-on-surface">系統操作：</strong> 在系統中選擇「28 - 海關代徵」，這筆代徵的營業稅可以作為您的進項稅額來扣抵銷項稅額。</li>
                   </ul>
                 </div>
               </div>
 
-              <div className="bg-sky-500/10 border border-sky-500/20 rounded-lg p-4">
-                <h4 className="font-bold text-sky-400 mb-2 flex items-center gap-2">
+              <div className="bg-primary/10 border border-primary/20 rounded-lg p-4">
+                <h4 className="font-bold text-primary mb-2 flex items-center gap-2">
                   <Sparkles className="w-4 h-4" />
                   在系統中該如何記錄？
                 </h4>
@@ -177,28 +177,28 @@ export const HelpSettingsModal: React.FC<Props> = ({ onClose }) => {
           {settingsTab === 'error' && (
             <>
               <div>
-                <h4 className="font-bold text-amber-400 text-base mb-3 border-b border-slate-800 pb-2">情況一：當期發現錯誤 (尚未申報營業稅，最常發生)</h4>
+                <h4 className="font-bold text-tertiary text-base mb-3 border-b border-outline-variant pb-2">情況一：當期發現錯誤 (尚未申報營業稅，最常發生)</h4>
                 <div className="space-y-3">
-                  <p><strong className="text-white">實務做法：</strong></p>
-                  <ul className="list-disc pl-5 space-y-1 text-slate-400">
-                    <li><strong className="text-slate-300">支出：</strong>把發票退回給廠商，請對方「作廢」並重開一張統編正確的新發票。</li>
-                    <li><strong className="text-slate-300">收入：</strong>請客戶把發票寄回，您將原發票蓋「作廢」章，重開一張新發票給客戶。</li>
+                  <p><strong className="text-on-surface">實務做法：</strong></p>
+                  <ul className="list-disc pl-5 space-y-1 text-on-surface-variant">
+                    <li><strong className="text-on-surface">支出：</strong>把發票退回給廠商，請對方「作廢」並重開一張統編正確的新發票。</li>
+                    <li><strong className="text-on-surface">收入：</strong>請客戶把發票寄回，您將原發票蓋「作廢」章，重開一張新發票給客戶。</li>
                   </ul>
-                  <p><strong className="text-white">💡 系統操作 (直接修改)：</strong></p>
-                  <p className="text-slate-400">進入「歷史查詢」找出錯誤資料點擊 <strong className="text-amber-300">✏️ 編輯</strong>。直接將「對方統編」與「發票號碼」改為正確的，按下儲存即可覆蓋舊資料。</p>
+                  <p><strong className="text-on-surface">💡 系統操作 (直接修改)：</strong></p>
+                  <p className="text-on-surface-variant">進入「歷史查詢」找出錯誤資料點擊 <strong className="text-tertiary">✏️ 編輯</strong>。直接將「對方統編」與「發票號碼」改為正確的，按下儲存即可覆蓋舊資料。</p>
                 </div>
               </div>
 
               <div className="mt-8">
-                <h4 className="font-bold text-amber-400 text-base mb-3 border-b border-slate-800 pb-2">情況二：跨期發現錯誤 (已經繳完營業稅了)</h4>
+                <h4 className="font-bold text-tertiary text-base mb-3 border-b border-outline-variant pb-2">情況二：跨期發現錯誤 (已經繳完營業稅了)</h4>
                 <div className="space-y-3">
-                  <p><strong className="text-white">實務做法：</strong></p>
-                  <p className="text-slate-400">營業稅已經報給國稅局，發票不能作廢了。必須開立「營業人銷貨退回、進貨退出或折讓證明單」，然後再開立一張全新的正確發票。</p>
-                  <p><strong className="text-white">💡 系統操作 (新增沖銷)：</strong></p>
-                  <p className="text-slate-400">這時 <strong className="text-rose-400">不能</strong> 直接編輯舊發票，您需要：</p>
-                  <ol className="list-decimal pl-5 space-y-2 text-slate-400">
-                    <li><strong className="text-slate-300">新增沖銷單：</strong> 進入「新增憑證」，格式代號選擇 <strong className="text-amber-300">34 - 銷項折讓</strong>（收入開錯）或 <strong className="text-amber-300">23 - 進項折讓</strong>（支出拿錯）。在金額輸入<strong className="text-white">「負數金額（如：-12000）」</strong>抵銷前期的帳。</li>
-                    <li><strong className="text-slate-300">新增正確單：</strong> 再次登錄一張統編完全正確的新發票。</li>
+                  <p><strong className="text-on-surface">實務做法：</strong></p>
+                  <p className="text-on-surface-variant">營業稅已經報給國稅局，發票不能作廢了。必須開立「營業人銷貨退回、進貨退出或折讓證明單」，然後再開立一張全新的正確發票。</p>
+                  <p><strong className="text-on-surface">💡 系統操作 (新增沖銷)：</strong></p>
+                  <p className="text-on-surface-variant">這時 <strong className="text-error">不能</strong> 直接編輯舊發票，您需要：</p>
+                  <ol className="list-decimal pl-5 space-y-2 text-on-surface-variant">
+                    <li><strong className="text-on-surface">新增沖銷單：</strong> 進入「新增憑證」，格式代號選擇 <strong className="text-tertiary">34 - 銷項折讓</strong>（收入開錯）或 <strong className="text-tertiary">23 - 進項折讓</strong>（支出拿錯）。在金額輸入<strong className="text-on-surface">「負數金額（如：-12000）」</strong>抵銷前期的帳。</li>
+                    <li><strong className="text-on-surface">新增正確單：</strong> 再次登錄一張統編完全正確的新發票。</li>
                   </ol>
                 </div>
               </div>
@@ -206,7 +206,7 @@ export const HelpSettingsModal: React.FC<Props> = ({ onClose }) => {
           )}
         </div>
         
-        <div className="p-4 bg-slate-950/50 border-t border-slate-800 flex justify-end shrink-0">
+        <div className="p-4 bg-background/50 border-t border-outline-variant flex justify-end shrink-0">
           <Button onClick={onClose}>
             我瞭解了
           </Button>

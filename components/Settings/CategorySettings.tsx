@@ -100,12 +100,12 @@ export const CategorySettings: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center bg-slate-900 border border-slate-800 p-4 rounded-xl shadow-sm">
+      <div className="flex justify-between items-center bg-surface-container-high border border-outline-variant p-4 rounded-xl shadow-sm">
         <div>
-          <h2 className="text-xl font-bold text-slate-100 flex items-center">
+          <h2 className="text-xl font-bold text-on-surface flex items-center">
              會計科目設定
           </h2>
-          <p className="text-sm text-slate-400 mt-1">
+          <p className="text-sm text-on-surface-variant mt-1">
              管理表單中可選的會計科目大類與子項目
           </p>
         </div>
@@ -116,9 +116,9 @@ export const CategorySettings: React.FC = () => {
 
       <div className="space-y-4">
         {isLoading && categories.length === 0 ? (
-          <div className="p-12 text-center text-slate-500">載入中...</div>
+          <div className="p-12 text-center text-on-surface-variant">載入中...</div>
         ) : categories.map(category => (
-          <Card key={category.id} className="p-4 bg-slate-900">
+          <Card key={category.id} className="p-4 bg-surface-container-high">
             {editingId === category.id ? (
               // Edit Mode
               <div className="space-y-4">
@@ -133,9 +133,9 @@ export const CategorySettings: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="space-y-2 pl-4 border-l-2 border-slate-800">
+                <div className="space-y-2 pl-4 border-l-2 border-outline-variant">
                   <div className="flex justify-between items-center mb-2">
-                    <label className="text-sm font-medium text-slate-400">子科目列表</label>
+                    <label className="text-sm font-medium text-on-surface-variant">子科目列表</label>
                     <Button variant="ghost" size="sm" onClick={addSubcategory} icon={Plus} disabled={isSaving}>新增子科目</Button>
                   </div>
                   
@@ -151,7 +151,7 @@ export const CategorySettings: React.FC = () => {
                       />
                       <button 
                         onClick={() => removeSubcategory(idx)}
-                        className="p-1.5 text-slate-500 hover:text-rose-500 transition-colors"
+                        className="p-1.5 text-on-surface-variant hover:text-error transition-colors"
                         disabled={isSaving}
                       >
                         <Trash2 size={16} />
@@ -159,13 +159,13 @@ export const CategorySettings: React.FC = () => {
                     </div>
                   ))}
                   {editForm?.subcategories.length === 0 && (
-                     <div className="text-sm text-slate-500 italic py-2">目前沒有子科目</div>
+                     <div className="text-sm text-on-surface-variant italic py-2">目前沒有子科目</div>
                   )}
                 </div>
 
-                {error && <p className="text-sm text-rose-500">{error}</p>}
+                {error && <p className="text-sm text-error">{error}</p>}
 
-                <div className="flex justify-end gap-2 pt-2 border-t border-slate-800">
+                <div className="flex justify-end gap-2 pt-2 border-t border-outline-variant">
                   <Button variant="ghost" size="sm" onClick={handleCancel} disabled={isSaving}>取消</Button>
                   <Button variant="primary" size="sm" onClick={handleSave} isLoading={isSaving} icon={Save}>儲存</Button>
                 </div>
@@ -174,18 +174,18 @@ export const CategorySettings: React.FC = () => {
               // View Mode
               <div>
                 <div className="flex justify-between items-start mb-2">
-                  <h3 className="font-medium text-lg text-slate-200">{category.name}</h3>
+                  <h3 className="font-medium text-lg text-on-surface">{category.name}</h3>
                   <div className="flex gap-1">
                     <button 
                        onClick={() => handleEdit(category)}
-                       className="p-1.5 text-slate-400 hover:text-sky-400 hover:bg-slate-800 rounded transition-colors disabled:opacity-50"
+                       className="p-1.5 text-on-surface-variant hover:text-primary hover:bg-surface-container rounded transition-colors disabled:opacity-50"
                        disabled={editingId !== null || isLoading}
                     >
                       <Edit2 size={16} />
                     </button>
                     <button 
                        onClick={() => handleDelete(category.id)}
-                       className="p-1.5 text-slate-400 hover:text-rose-500 hover:bg-slate-800 rounded transition-colors disabled:opacity-50"
+                       className="p-1.5 text-on-surface-variant hover:text-error hover:bg-surface-container rounded transition-colors disabled:opacity-50"
                        disabled={editingId !== null || isLoading}
                     >
                       <Trash2 size={16} />
@@ -194,12 +194,12 @@ export const CategorySettings: React.FC = () => {
                 </div>
                 <div className="flex flex-wrap gap-2 pl-4">
                   {category.subcategories.map((sub, idx) => (
-                    <span key={idx} className="px-2.5 py-1 bg-slate-800/80 border border-slate-700 rounded-md text-sm text-slate-300">
+                    <span key={idx} className="px-2.5 py-1 bg-surface-container/80 border border-outline rounded-md text-sm text-on-surface">
                       {sub}
                     </span>
                   ))}
                   {category.subcategories.length === 0 && (
-                    <span className="text-sm text-slate-500 italic">無子科目</span>
+                    <span className="text-sm text-on-surface-variant italic">無子科目</span>
                   )}
                 </div>
               </div>
@@ -209,7 +209,7 @@ export const CategorySettings: React.FC = () => {
 
         {/* New Category Form (when editingId === 'new') */}
         {editingId === 'new' && (
-          <Card className="p-4 bg-slate-900 border-sky-500/50">
+          <Card className="p-4 bg-surface-container-high border-primary/50">
              <div className="space-y-4">
                 <div className="flex gap-4 items-start">
                   <div className="flex-1">
@@ -222,9 +222,9 @@ export const CategorySettings: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="space-y-2 pl-4 border-l-2 border-slate-800">
+                <div className="space-y-2 pl-4 border-l-2 border-outline-variant">
                   <div className="flex justify-between items-center mb-2">
-                    <label className="text-sm font-medium text-slate-400">子科目列表</label>
+                    <label className="text-sm font-medium text-on-surface-variant">子科目列表</label>
                     <Button variant="ghost" size="sm" onClick={addSubcategory} icon={Plus} disabled={isSaving}>新增子科目</Button>
                   </div>
                   
@@ -240,7 +240,7 @@ export const CategorySettings: React.FC = () => {
                       />
                       <button 
                         onClick={() => removeSubcategory(idx)}
-                        className="p-1.5 text-slate-500 hover:text-rose-500 transition-colors"
+                        className="p-1.5 text-on-surface-variant hover:text-error transition-colors"
                         disabled={isSaving}
                       >
                         <Trash2 size={16} />
@@ -248,13 +248,13 @@ export const CategorySettings: React.FC = () => {
                     </div>
                   ))}
                   {editForm?.subcategories.length === 0 && (
-                     <div className="text-sm text-slate-500 italic py-2">目前沒有子科目</div>
+                     <div className="text-sm text-on-surface-variant italic py-2">目前沒有子科目</div>
                   )}
                 </div>
 
-                {error && <p className="text-sm text-rose-500">{error}</p>}
+                {error && <p className="text-sm text-error">{error}</p>}
 
-                <div className="flex justify-end gap-2 pt-2 border-t border-slate-800">
+                <div className="flex justify-end gap-2 pt-2 border-t border-outline-variant">
                   <Button variant="ghost" size="sm" onClick={handleCancel} disabled={isSaving}>取消</Button>
                   <Button variant="primary" size="sm" onClick={handleSave} isLoading={isSaving} icon={Save}>儲存</Button>
                 </div>

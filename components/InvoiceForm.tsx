@@ -531,7 +531,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ config, initialData, o
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <Card className="p-6 space-y-4">
             <div className="flex justify-between items-center mb-2">
-              <h3 className="text-sky-400 font-semibold text-sm uppercase tracking-wider flex items-center">
+              <h3 className="text-primary font-semibold text-sm uppercase tracking-wider flex items-center">
                 <FileText className="w-4 h-4 mr-2" />
                 憑證分類
               </h3>
@@ -541,7 +541,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ config, initialData, o
                     type="button" 
                     variant="ghost" 
                     size="sm" 
-                    className="h-8 text-xs text-slate-400 hover:text-white"
+                    className="h-8 text-xs text-on-surface-variant hover:text-on-surface"
                     onClick={restoreLastScan}
                     title="載入上一次掃描的資料"
                   >
@@ -553,7 +553,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ config, initialData, o
                   type="button" 
                   variant="secondary" 
                   size="sm" 
-                  className="h-8 text-xs bg-sky-500/10 hover:bg-sky-500/20 text-sky-400 border-sky-500/20"
+                  className="h-8 text-xs bg-primary/10 hover:bg-primary/20 text-primary border-primary/20"
                   onClick={() => setShowScanner(true)}
                 >
                   <Sparkles size={14} className="mr-1.5" />
@@ -562,16 +562,16 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ config, initialData, o
               </div>
             </div>
 
-            <div className="bg-slate-950 rounded-lg p-1 flex border border-slate-700 mb-4 relative">
-              <div className="absolute -top-3 -left-2 bg-slate-900 px-1">
+            <div className="bg-background rounded-lg p-1 flex border border-outline mb-4 relative">
+              <div className="absolute -top-3 -left-2 bg-surface-container-high px-1">
                 <label className="flex items-center gap-1.5 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={isNotARAP}
                     onChange={handleNotARAPChange}
-                    className="w-3.5 h-3.5 rounded border-slate-600 text-sky-500 focus:ring-sky-500/20 bg-slate-800"
+                    className="w-3.5 h-3.5 rounded border-outline text-primary focus:ring-primary/20 bg-surface-container"
                   />
-                  <span className="text-[11px] text-rose-400 font-medium tracking-wide">非應收應付</span>
+                  <span className="text-[11px] text-error font-medium tracking-wide">非應收應付</span>
                 </label>
               </div>
               <button
@@ -579,8 +579,8 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ config, initialData, o
                 onClick={() => setFormData(prev => ({ ...prev, recordType: RecordType.BOTH }))}
                 className={`flex-1 py-1.5 text-sm font-medium rounded transition-colors flex items-center justify-center ${
                   formData.recordType === RecordType.BOTH 
-                    ? 'bg-sky-600/20 text-sky-400 shadow-sm' 
-                    : 'text-slate-500 hover:text-slate-300'
+                    ? 'bg-primary/20 text-primary shadow-sm' 
+                    : 'text-on-surface-variant hover:text-on-surface'
                 }`}
               >
                 內外帳 (含稅憑證)
@@ -590,8 +590,8 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ config, initialData, o
                 onClick={() => setFormData(prev => ({ ...prev, recordType: RecordType.INTERNAL }))}
                 className={`flex-1 py-1.5 text-sm font-medium rounded transition-colors flex items-center justify-center ${
                   formData.recordType === RecordType.INTERNAL 
-                    ? 'bg-amber-600/20 text-amber-400 shadow-sm' 
-                    : 'text-slate-500 hover:text-slate-300'
+                    ? 'bg-tertiary/20 text-tertiary shadow-sm' 
+                    : 'text-on-surface-variant hover:text-on-surface'
                 }`}
               >
                 僅內帳 <br />(無憑證/不報稅)
@@ -635,7 +635,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ config, initialData, o
                   icon={Calendar}
                   hideIconOnMobile={true}
                 />
-                <p className="text-[11px] text-slate-500 mt-1.5 leading-tight">若當下未收付(應收/應付)，請留白</p>
+                <p className="text-[11px] text-on-surface-variant mt-1.5 leading-tight">若當下未收付(應收/應付)，請留白</p>
               </div>
               <Input
                 id="expectedDate"
@@ -682,14 +682,14 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ config, initialData, o
                   required={formData.recordType !== RecordType.INTERNAL && ['21', '31', '25'].includes(formData.formatCode)}
                 />
                  {isTaxIdValid && formData.taxId.length === 8 && formData.formatCode !== '99' && (
-                   <CheckCircle2 className="absolute top-9 right-3 text-emerald-500 w-4 h-4 animate-in zoom-in" />
+                   <CheckCircle2 className="absolute top-9 right-3 text-secondary w-4 h-4 animate-in zoom-in" />
                 )}
               </div>
             </div>
           </Card>
 
           <Card className="p-6 space-y-4">
-            <h3 className="text-emerald-400 font-semibold text-sm uppercase tracking-wider mb-2 flex items-center">
+            <h3 className="text-secondary font-semibold text-sm uppercase tracking-wider mb-2 flex items-center">
               <DollarSign className="w-4 h-4 mr-2" />
               金額明細
             </h3>
@@ -709,14 +709,14 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ config, initialData, o
               {formData.type === InvoiceType.INPUT && formData.taxType === TaxType.TAXABLE && formData.recordType !== RecordType.INTERNAL && (
                 <div className="animate-in fade-in slide-in-from-top-1">
                   <Label htmlFor="deductionCode" className="text-xs mb-2">2. 可扣抵 / 不可扣抵</Label>
-                  <div className="bg-slate-950 rounded-lg p-1 flex border border-slate-700">
+                  <div className="bg-background rounded-lg p-1 flex border border-outline">
                     <button
                       type="button"
                       onClick={() => setDeductionCode('1')}
                       className={`flex-1 py-1.5 text-sm font-medium rounded transition-colors flex items-center justify-center ${
                         formData.deductionCode === '1' 
-                          ? 'bg-emerald-600/20 text-emerald-400 shadow-sm' 
-                          : 'text-slate-500 hover:text-slate-300'
+                          ? 'bg-secondary/20 text-secondary shadow-sm' 
+                          : 'text-on-surface-variant hover:text-on-surface'
                       }`}
                     >
                       <CheckCircle size={14} className="mr-1.5" />
@@ -727,8 +727,8 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ config, initialData, o
                       onClick={() => setDeductionCode('4')}
                       className={`flex-1 py-1.5 text-sm font-medium rounded transition-colors flex items-center justify-center ${
                         formData.deductionCode === '4' 
-                          ? 'bg-amber-600/20 text-amber-400 shadow-sm' 
-                          : 'text-slate-500 hover:text-slate-300'
+                          ? 'bg-tertiary/20 text-tertiary shadow-sm' 
+                          : 'text-on-surface-variant hover:text-on-surface'
                       }`}
                     >
                       <Ban size={14} className="mr-1.5" />
@@ -738,7 +738,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ config, initialData, o
                 </div>
               )}
 
-              <div className="pt-2 border-t border-slate-800/50">
+              <div className="pt-2 border-t border-outline-variant/50">
                 <Input
                   id="total"
                   name="total"
@@ -749,7 +749,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ config, initialData, o
                   onChange={handleTotalChange}
                   required
                   icon={DollarSign}
-                  className="font-mono text-xl tracking-tight font-bold text-emerald-400"
+                  className="font-mono text-xl tracking-tight font-bold text-secondary"
                 />
               </div>
 
@@ -774,13 +774,13 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ config, initialData, o
                   value={formData.tax}
                   onChange={handleTaxChange}
                   readOnly={formData.taxType !== TaxType.TAXABLE || formData.recordType === RecordType.INTERNAL}
-                  className={(formData.taxType === TaxType.TAXABLE && formData.recordType !== RecordType.INTERNAL) ? "" : "bg-slate-900/50 text-slate-400 cursor-not-allowed"}
+                  className={(formData.taxType === TaxType.TAXABLE && formData.recordType !== RecordType.INTERNAL) ? "" : "bg-surface-container-high/50 text-on-surface-variant cursor-not-allowed"}
                 />
               </div>
               
               {showWarning && formData.taxType === TaxType.TAXABLE && Number(formData.tax) > 0 && (
                  <div className="animate-in fade-in slide-in-from-top-2">
-                   <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-3 text-amber-300 text-sm flex gap-3 items-start">
+                   <div className="bg-tertiary/10 border border-tertiary/20 rounded-lg p-3 text-tertiary text-sm flex gap-3 items-start">
                      <ShieldAlert className="w-5 h-5 shrink-0 mt-0.5" />
                      <div className="space-y-2 flex-1">
                        <p className="font-bold">會計師提醒：此類別稅額通常「不可扣抵」</p>
@@ -789,7 +789,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ config, initialData, o
                          type="button" 
                          variant="secondary" 
                          size="sm" 
-                         className="w-full text-xs bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 border-amber-500/20"
+                         className="w-full text-xs bg-tertiary/20 hover:bg-tertiary/30 text-tertiary border-tertiary/20"
                          onClick={markAsNonDeductibleAndFixTax}
                        >
                          一鍵修正：標記為「不可扣抵」 (稅額保留)
@@ -811,11 +811,11 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ config, initialData, o
                         value={formData.category}
                         onChange={handleChange}
                         required
-                        className="w-full bg-slate-950 border border-slate-700 rounded-lg py-2 pl-3 pr-8 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-sky-500 mt-1 appearance-none group"
+                        className="w-full bg-background border border-outline rounded-lg py-2 pl-3 pr-8 text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary mt-1 appearance-none group"
                     >
                         <option value="" disabled>-- 請選擇類別 --</option>
                         {filteredCategories.map((group) => (
-                          <optgroup key={group.id} label={group.name} className="bg-slate-900">
+                          <optgroup key={group.id} label={group.name} className="bg-surface-container-high">
                             {group.subcategories.map((item) => (
                               <option key={item} value={item}>
                                 {item}
@@ -824,7 +824,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ config, initialData, o
                           </optgroup>
                         ))}
                     </select>
-                    <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none text-slate-500 mt-6">
+                    <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none text-on-surface-variant mt-6">
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
                       </svg>
@@ -839,14 +839,14 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ config, initialData, o
                         value={formData.note}
                         onChange={handleChange}
                         placeholder="如：購買電腦、固定資產..."
-                        className="w-full bg-slate-950 border border-slate-700 rounded-lg py-2 px-3 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-sky-500 mt-1"
+                        className="w-full bg-background border border-outline rounded-lg py-2 px-3 text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary mt-1"
                     />
                 </div>
             </div>
           </Card>
         </div>
 
-        <div className="fixed md:static bottom-0 left-0 right-0 p-4 md:p-0 bg-slate-950/80 md:bg-transparent backdrop-blur-md md:backdrop-blur-none border-t border-slate-800 md:border-none z-40 md:z-auto safe-area-bottom mt-0 md:mt-8">
+        <div className="fixed md:static bottom-0 left-0 right-0 p-4 md:p-0 bg-background/80 md:bg-transparent backdrop-blur-md md:backdrop-blur-none border-t border-outline-variant md:border-none z-40 md:z-auto safe-area-bottom mt-0 md:mt-8">
             <div className="max-w-4xl mx-auto grid grid-cols-2 md:flex md:flex-row items-center gap-3 md:gap-4 md:justify-center">
                 <Button 
                     type="submit" 
@@ -863,21 +863,21 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ config, initialData, o
                     onClick={() => setShowResetConfirm(true)}
                     icon={RotateCcw}
                     disabled={loading}
-                    className="w-full md:w-[220px] py-3 md:py-3 bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700 font-medium"
+                    className="w-full md:w-[220px] py-3 md:py-3 bg-surface-container/80 hover:bg-outline-variant text-on-surface border border-outline font-medium"
                 >
                     重置
                 </Button>
 
                 {message && (
                     <div className={`col-span-2 w-full md:col-auto md:flex-1 px-4 py-2 rounded-lg text-sm font-medium flex flex-col justify-center animate-in fade-in slide-in-from-bottom-2 md:slide-in-from-left-2 ${
-                        message.type === 'success' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'
+                        message.type === 'success' ? 'bg-secondary/10 text-secondary border border-secondary/20' : 'bg-error/10 text-error border border-error/20'
                     }`}>
                         <div className="flex items-center mb-1">
                             {message.type === 'error' && <WifiOff className="w-4 h-4 mr-2" />}
                             <span className="font-bold">{message.text}</span>
                         </div>
                         {message.detail && (
-                            <div className="text-xs mt-1 text-rose-300/90 pl-6 leading-relaxed">
+                            <div className="text-xs mt-1 text-error/90 pl-6 leading-relaxed">
                                 {message.detail}
                             </div>
                         )}
@@ -890,19 +890,19 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ config, initialData, o
       {/* Reset Confirmation Modal */}
       {showResetConfirm && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
-          <div className="bg-slate-900 border border-slate-700 rounded-xl shadow-2xl w-full max-w-sm overflow-hidden animate-in zoom-in-95">
-            <div className="p-5 border-b border-slate-800 flex items-center gap-3">
-              <div className="bg-rose-500/20 p-2 rounded-full shrink-0">
-                <AlertTriangle className="w-6 h-6 text-rose-400" />
+          <div className="bg-surface-container-high border border-outline rounded-xl shadow-2xl w-full max-w-sm overflow-hidden animate-in zoom-in-95">
+            <div className="p-5 border-b border-outline-variant flex items-center gap-3">
+              <div className="bg-error/20 p-2 rounded-full shrink-0">
+                <AlertTriangle className="w-6 h-6 text-error" />
               </div>
-              <h3 className="text-xl font-bold text-white">確認重置？</h3>
+              <h3 className="text-xl font-bold text-on-surface">確認重置？</h3>
             </div>
             
-            <div className="p-5 text-sm text-slate-300">
+            <div className="p-5 text-sm text-on-surface">
               <p>您確定要清空目前所有已輸入的資料嗎？此動作無法復原。</p>
             </div>
 
-            <div className="p-4 border-t border-slate-800 bg-slate-900/50 flex gap-2">
+            <div className="p-4 border-t border-outline-variant bg-surface-container-high/50 flex gap-2">
               <Button 
                 type="button" 
                 variant="ghost" 
@@ -913,7 +913,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ config, initialData, o
               </Button>
               <Button 
                 type="button" 
-                className="flex-1 bg-rose-600 hover:bg-rose-700 text-white border-0"
+                className="flex-1 bg-error hover:bg-rose-700 text-on-surface border-0"
                 onClick={() => {
                   handleReset();
                   setShowResetConfirm(false);
@@ -929,42 +929,42 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ config, initialData, o
       {/* Confirmation Modal */}
       {showConfirmModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
-          <div className="bg-slate-900 border border-slate-700 rounded-xl shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95">
-            <div className="p-5 border-b border-slate-800 flex items-center gap-3">
-              <div className="bg-sky-500/20 p-2 rounded-full">
-                <CheckCircle2 className="w-6 h-6 text-sky-400" />
+          <div className="bg-surface-container-high border border-outline rounded-xl shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95">
+            <div className="p-5 border-b border-outline-variant flex items-center gap-3">
+              <div className="bg-primary/20 p-2 rounded-full">
+                <CheckCircle2 className="w-6 h-6 text-primary" />
               </div>
-              <h3 className="text-xl font-bold text-white">資料輸入完成</h3>
+              <h3 className="text-xl font-bold text-on-surface">資料輸入完成</h3>
             </div>
             
             <div className="p-5 space-y-3 text-sm">
-              <p className="text-slate-400 mb-4">請確認以下資料是否正確：</p>
+              <p className="text-on-surface-variant mb-4">請確認以下資料是否正確：</p>
               
-              <div className="bg-slate-950 rounded-lg p-4 border border-slate-800 space-y-2">
+              <div className="bg-background rounded-lg p-4 border border-outline-variant space-y-2">
                 <div className="flex justify-between">
-                  <span className="text-slate-500">入帳類型</span>
-                  <span className="text-slate-200 font-medium">{formData.recordType === RecordType.BOTH ? '內外帳 (含稅)' : '僅內帳'}</span>
+                  <span className="text-on-surface-variant">入帳類型</span>
+                  <span className="text-on-surface font-medium">{formData.recordType === RecordType.BOTH ? '內外帳 (含稅)' : '僅內帳'}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-500">憑證種類</span>
-                  <span className="text-slate-200 font-medium">{formData.type === InvoiceType.INPUT ? '進項 (支出)' : '銷項 (收入)'}</span>
+                  <span className="text-on-surface-variant">憑證種類</span>
+                  <span className="text-on-surface font-medium">{formData.type === InvoiceType.INPUT ? '進項 (支出)' : '銷項 (收入)'}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-500">發票日期</span>
-                  <span className="text-slate-200 font-medium">{formData.date}</span>
+                  <span className="text-on-surface-variant">發票日期</span>
+                  <span className="text-on-surface font-medium">{formData.date}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-500">會計科目</span>
-                  <span className="text-slate-200 font-medium">{formData.category}</span>
+                  <span className="text-on-surface-variant">會計科目</span>
+                  <span className="text-on-surface font-medium">{formData.category}</span>
                 </div>
-                <div className="border-t border-slate-800 my-2 pt-2 flex justify-between">
-                  <span className="text-slate-400">總金額</span>
-                  <span className="text-emerald-400 font-bold text-lg">${Number(formData.total).toLocaleString()}</span>
+                <div className="border-t border-outline-variant my-2 pt-2 flex justify-between">
+                  <span className="text-on-surface-variant">總金額</span>
+                  <span className="text-secondary font-bold text-lg">${Number(formData.total).toLocaleString()}</span>
                 </div>
               </div>
             </div>
 
-            <div className="p-4 border-t border-slate-800 bg-slate-900/50 flex flex-col gap-2">
+            <div className="p-4 border-t border-outline-variant bg-surface-container-high/50 flex flex-col gap-2">
               <Button 
                 type="button" 
                 className="w-full py-2.5 font-bold"
@@ -985,7 +985,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ config, initialData, o
                 <Button 
                   type="button" 
                   variant="ghost" 
-                  className="flex-1 py-2 text-rose-400 hover:text-rose-300 hover:bg-rose-500/10"
+                  className="flex-1 py-2 text-error hover:text-error hover:bg-error/10"
                   onClick={() => {
                     handleReset();
                     setShowConfirmModal(false);

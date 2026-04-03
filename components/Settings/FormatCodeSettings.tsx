@@ -78,12 +78,12 @@ export const FormatCodeSettings: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center bg-slate-900 border border-slate-800 p-4 rounded-xl shadow-sm">
+      <div className="flex justify-between items-center bg-surface-container-high border border-outline-variant p-4 rounded-xl shadow-sm">
         <div>
-          <h2 className="text-xl font-bold text-slate-100 flex items-center">
+          <h2 className="text-xl font-bold text-on-surface flex items-center">
              格式代號設定
           </h2>
-          <p className="text-sm text-slate-400 mt-1">
+          <p className="text-sm text-on-surface-variant mt-1">
              管理表單中可選的發票/收據格式代號
           </p>
         </div>
@@ -92,13 +92,13 @@ export const FormatCodeSettings: React.FC = () => {
         </Button>
       </div>
 
-      <Card className="bg-slate-900 overflow-hidden">
+      <Card className="bg-surface-container-high overflow-hidden">
         {isLoading && formatCodes.length === 0 ? (
-          <div className="p-12 text-center text-slate-500">載入中...</div>
+          <div className="p-12 text-center text-on-surface-variant">載入中...</div>
         ) : (
           <div className="divide-y divide-slate-800">
             {formatCodes.map((code, idx) => (
-              <div key={idx} className="p-4 hover:bg-slate-800/30 transition-colors">
+              <div key={idx} className="p-4 hover:bg-surface-container/30 transition-colors">
                 {editingIndex === idx ? (
                   // Edit Mode
                   <div className="flex flex-col md:flex-row gap-3 items-start md:items-center">
@@ -125,24 +125,24 @@ export const FormatCodeSettings: React.FC = () => {
                   // View Mode
                   <div className="flex justify-between items-center">
                     <div className="flex gap-4 items-center">
-                        <span className="font-mono bg-slate-800 text-sky-400 px-2 py-1 rounded text-sm w-12 text-center">
+                        <span className="font-mono bg-surface-container text-primary px-2 py-1 rounded text-sm w-12 text-center">
                             {code.value}
                         </span>
-                        <span className="text-slate-300">
+                        <span className="text-on-surface">
                             {code.label}
                         </span>
                     </div>
                     <div className="flex gap-1">
                         <button 
                         onClick={() => handleEdit(idx, code)}
-                        className="p-1.5 text-slate-400 hover:text-sky-400 hover:bg-slate-800 rounded transition-colors disabled:opacity-50"
+                        className="p-1.5 text-on-surface-variant hover:text-primary hover:bg-surface-container rounded transition-colors disabled:opacity-50"
                         disabled={editingIndex !== null || isLoading}
                         >
                         <Edit2 size={16} />
                         </button>
                         <button 
                         onClick={() => handleDelete(idx)}
-                        className="p-1.5 text-slate-400 hover:text-rose-500 hover:bg-slate-800 rounded transition-colors disabled:opacity-50"
+                        className="p-1.5 text-on-surface-variant hover:text-error hover:bg-surface-container rounded transition-colors disabled:opacity-50"
                         disabled={editingIndex !== null || isLoading}
                         >
                         <Trash2 size={16} />
@@ -155,7 +155,7 @@ export const FormatCodeSettings: React.FC = () => {
 
             {/* New Form */}
             {editingIndex === 'new' && (
-              <div className="p-4 bg-sky-950/20 border-l-2 border-sky-500">
+              <div className="p-4 bg-sky-950/20 border-l-2 border-primary">
                 <div className="flex flex-col md:flex-row gap-3 items-start md:items-center">
                     <Input 
                         placeholder="代號 (如: 21)" 
@@ -176,12 +176,12 @@ export const FormatCodeSettings: React.FC = () => {
                       <Button variant="primary" size="sm" onClick={handleSave} isLoading={isSaving}>儲存</Button>
                     </div>
                 </div>
-                {error && <p className="text-sm text-rose-500 mt-2">{error}</p>}
+                {error && <p className="text-sm text-error mt-2">{error}</p>}
               </div>
             )}
             
             {formatCodes.length === 0 && editingIndex !== 'new' && !isLoading && (
-                 <div className="p-8 text-center text-slate-500 italic">目前沒有任何格式代號</div>
+                 <div className="p-8 text-center text-on-surface-variant italic">目前沒有任何格式代號</div>
             )}
           </div>
         )}

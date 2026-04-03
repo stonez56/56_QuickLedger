@@ -131,9 +131,9 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ config, onNavigateToEd
     <div className="flex flex-col md:flex-row gap-4 h-full">
       {/* Admin Sidebar / Top Nav on Mobile */}
       <div className="md:w-64 shrink-0">
-        <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-xl sticky top-4">
-          <div className="p-4 border-b border-slate-800 bg-slate-800/50">
-            <h2 className="font-semibold text-slate-100 flex items-center">
+        <div className="bg-surface-container-high border border-outline-variant rounded-xl overflow-hidden shadow-xl sticky top-4">
+          <div className="p-4 border-b border-outline-variant bg-surface-container/50">
+            <h2 className="font-semibold text-on-surface flex items-center">
               管理中心
             </h2>
           </div>
@@ -142,8 +142,8 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ config, onNavigateToEd
               onClick={() => setActiveTab('dashboard')}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
                 activeTab === 'dashboard'
-                  ? 'bg-sky-500/20 text-sky-400'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+                  ? 'bg-primary/20 text-primary'
+                  : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container/50'
               }`}
             >
               <LayoutDashboard size={18} />
@@ -153,8 +153,8 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ config, onNavigateToEd
               onClick={() => setActiveTab('categories')}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
                 activeTab === 'categories'
-                  ? 'bg-sky-500/20 text-sky-400'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+                  ? 'bg-primary/20 text-primary'
+                  : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container/50'
               }`}
             >
               <ListTree size={18} />
@@ -164,8 +164,8 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ config, onNavigateToEd
               onClick={() => setActiveTab('formatCodes')}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
                 activeTab === 'formatCodes'
-                  ? 'bg-sky-500/20 text-sky-400'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+                  ? 'bg-primary/20 text-primary'
+                  : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container/50'
               }`}
             >
               <Tags size={18} />
@@ -175,8 +175,8 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ config, onNavigateToEd
               onClick={() => setActiveTab('systemSettings')}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
                 activeTab === 'systemSettings'
-                  ? 'bg-sky-500/20 text-sky-400'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+                  ? 'bg-primary/20 text-primary'
+                  : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container/50'
               }`}
             >
               <Settings size={18} />
@@ -187,9 +187,9 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ config, onNavigateToEd
 
         {/* Sidebar Pie Chart Snapshot - ONLY ON DESKTOP */}
         <div className="hidden md:block mt-4 flex-1">
-          <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-xl p-4 min-h-[300px] flex flex-col">
-            <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2 mb-4">
-              <PieChartIcon size={14} className="text-rose-400" />
+          <div className="bg-surface-container-high border border-outline-variant rounded-xl overflow-hidden shadow-xl p-4 min-h-[300px] flex flex-col">
+            <h4 className="text-xs font-bold text-on-surface-variant uppercase tracking-widest flex items-center gap-2 mb-4">
+              <PieChartIcon size={14} className="text-error" />
               TOP 5 支出結構 ({currentPeriodLabel})
             </h4>
             
@@ -219,7 +219,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ config, onNavigateToEd
                   </PieChart>
                 </ResponsiveContainer>
               ) : (
-                <div className="h-full flex flex-col items-center justify-center text-slate-500 text-xs italic gap-2 text-center py-8">
+                <div className="h-full flex flex-col items-center justify-center text-on-surface-variant text-xs italic gap-2 text-center py-8">
                   <TrendingDown size={32} className="opacity-20" />
                   <p>尚無支出資料</p>
                 </div>
@@ -232,11 +232,11 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ config, onNavigateToEd
                   <div key={item.name} className="flex items-center justify-between group/item">
                     <div className="flex items-center gap-2 truncate mr-2">
                       <div className="w-2.5 h-2.5 rounded-full shrink-0 shadow-sm shadow-black/40" style={{ backgroundColor: COLORS[idx] }} />
-                      <span className="text-slate-400 truncate text-[11px] group-hover/item:text-slate-200 transition-colors">
+                      <span className="text-on-surface-variant truncate text-[11px] group-hover/item:text-on-surface transition-colors">
                         {item.name.replace(' (⚠️ 稅額不可扣抵)', '').replace('：', ' ')}
                       </span>
                     </div>
-                    <span className="font-mono text-slate-100 font-bold shrink-0 text-sm tracking-tight">
+                    <span className="font-mono text-on-surface font-bold shrink-0 text-sm tracking-tight">
                       ${item.value.toLocaleString()}
                     </span>
                   </div>

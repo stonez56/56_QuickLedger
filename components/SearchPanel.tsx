@@ -106,18 +106,18 @@ export const SearchPanel: React.FC<SearchPanelProps> = ({ config, onEdit, fontSi
   return (
     <div className="space-y-6 animate-in slide-in-from-bottom-4">
       <Card className="p-6">
-        <div className="flex bg-slate-900 rounded-lg p-1 border border-slate-800 mb-6 w-full max-w-sm mx-auto">
+        <div className="flex bg-surface-container-high rounded-lg p-1 border border-outline-variant mb-6 w-full max-w-sm mx-auto">
             <button
                 type="button"
                 onClick={() => setActiveTab('keyword')}
-                className={`flex-1 py-1.5 text-sm font-medium rounded transition-colors ${activeTab === 'keyword' ? 'bg-sky-500/20 text-sky-400' : 'text-slate-500'}`}
+                className={`flex-1 py-1.5 text-sm font-medium rounded transition-colors ${activeTab === 'keyword' ? 'bg-primary/20 text-primary' : 'text-on-surface-variant'}`}
             >
                 關鍵字查詢
             </button>
             <button
                 type="button"
                 onClick={() => setActiveTab('date')}
-                className={`flex-1 py-1.5 text-sm font-medium rounded transition-colors ${activeTab === 'date' ? 'bg-emerald-500/20 text-emerald-400' : 'text-slate-500'}`}
+                className={`flex-1 py-1.5 text-sm font-medium rounded transition-colors ${activeTab === 'date' ? 'bg-secondary/20 text-secondary' : 'text-on-surface-variant'}`}
             >
                 日期區間
             </button>
@@ -162,7 +162,7 @@ export const SearchPanel: React.FC<SearchPanelProps> = ({ config, onEdit, fontSi
           </Button>
 
           {message && (
-             <div className={`p-3 rounded-lg flex items-center text-sm mt-4 ${message.type === 'error' ? 'bg-rose-500/10 text-rose-400' : 'bg-emerald-500/10 text-emerald-400'}`}>
+             <div className={`p-3 rounded-lg flex items-center text-sm mt-4 ${message.type === 'error' ? 'bg-error/10 text-error' : 'bg-secondary/10 text-secondary'}`}>
                 {message.type === 'error' ? <AlertTriangle className="w-4 h-4 mr-2" /> : <AlertCircle className="w-4 h-4 mr-2" />}
                 {message.text}
              </div>
@@ -172,43 +172,43 @@ export const SearchPanel: React.FC<SearchPanelProps> = ({ config, onEdit, fontSi
 
       <div className="space-y-4">
         {results.map((record) => (
-          <Card key={record.id} className="p-4 hover:border-sky-500/30 transition-colors">
+          <Card key={record.id} className="p-4 hover:border-primary/30 transition-colors">
             <div className="flex justify-between items-start mb-2">
                <div>
                   <div className="flex flex-wrap items-center gap-2 mb-1">
-                     <span className={`${sizeMap.id} font-mono text-slate-400 bg-slate-900 px-2 py-0.5 rounded border border-slate-700`}>{record.id}</span>
-                     <span className={`${sizeMap.type} px-2 py-0.5 rounded ${record.type === '進項 (支出)' ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20' : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'}`}>
+                     <span className={`${sizeMap.id} font-mono text-on-surface-variant bg-surface-container-high px-2 py-0.5 rounded border border-outline`}>{record.id}</span>
+                     <span className={`${sizeMap.type} px-2 py-0.5 rounded ${record.type === '進項 (支出)' ? 'bg-error/10 text-error border border-error/20' : 'bg-secondary/10 text-secondary border border-secondary/20'}`}>
                        {record.type}
                      </span>
                   </div>
-                  <h4 className={`font-bold text-slate-200 mt-2 ${sizeMap.category}`}>{record.category || '未分類'}</h4>
-                  <div className={`${sizeMap.meta} text-slate-500 mt-1 flex items-center gap-2`}>
+                  <h4 className={`font-bold text-on-surface mt-2 ${sizeMap.category}`}>{record.category || '未分類'}</h4>
+                  <div className={`${sizeMap.meta} text-on-surface-variant mt-1 flex items-center gap-2`}>
                     <span>發票: {record.date || '--'}</span>
                     {record.paymentDate && <span>• 收付: {record.paymentDate}</span>}
                   </div>
                </div>
                <div className="text-right">
-                  <div className={`${sizeMap.amount} font-bold font-mono tracking-tight ${record.type === '進項 (支出)' ? 'text-rose-400' : 'text-emerald-400'}`}>
+                  <div className={`${sizeMap.amount} font-bold font-mono tracking-tight ${record.type === '進項 (支出)' ? 'text-error' : 'text-secondary'}`}>
                      ${Number(record.total).toLocaleString()}
                   </div>
-                  <div className={`${sizeMap.tax} text-slate-500`}>稅額: ${Number(record.tax).toLocaleString()}</div>
+                  <div className={`${sizeMap.tax} text-on-surface-variant`}>稅額: ${Number(record.tax).toLocaleString()}</div>
                </div>
             </div>
             
             {(record.note || record.invoiceNo || record.taxId) && (
-               <div className="bg-slate-900/50 p-3 rounded-lg border border-slate-800/50 mt-3 flex flex-col gap-1">
-                 {record.note && <p className={`text-slate-300 font-medium ${sizeMap.note}`}>{record.note}</p>}
-                 {record.invoiceNo && <p className={`text-slate-500 ${sizeMap.meta}`}>發票號碼: <span className="font-mono text-slate-400">{record.invoiceNo}</span></p>}
-                 {record.taxId && <p className={`text-slate-500 ${sizeMap.meta}`}>統編: <span className="font-mono text-slate-400">{record.taxId}</span></p>}
+               <div className="bg-surface-container-high/50 p-3 rounded-lg border border-outline-variant/50 mt-3 flex flex-col gap-1">
+                 {record.note && <p className={`text-on-surface font-medium ${sizeMap.note}`}>{record.note}</p>}
+                 {record.invoiceNo && <p className={`text-on-surface-variant ${sizeMap.meta}`}>發票號碼: <span className="font-mono text-on-surface-variant">{record.invoiceNo}</span></p>}
+                 {record.taxId && <p className={`text-on-surface-variant ${sizeMap.meta}`}>統編: <span className="font-mono text-on-surface-variant">{record.taxId}</span></p>}
                </div>
             )}
 
-            <div className="flex justify-end gap-3 pt-4 mt-2 border-t border-slate-800/50">
-               <Button variant="ghost" size="sm" className="h-8 px-4 text-sky-400 bg-sky-500/10 hover:bg-sky-500/20" onClick={() => onEdit(record)}>
+            <div className="flex justify-end gap-3 pt-4 mt-2 border-t border-outline-variant/50">
+               <Button variant="ghost" size="sm" className="h-8 px-4 text-primary bg-primary/10 hover:bg-primary/20" onClick={() => onEdit(record)}>
                   <Edit className="w-4 h-4 mr-1.5" />
                   編輯修改
                </Button>
-               <Button variant="ghost" size="sm" className="h-8 px-4 text-rose-400 bg-rose-500/10 hover:bg-rose-500/20" onClick={() => handleDelete(record)}>
+               <Button variant="ghost" size="sm" className="h-8 px-4 text-error bg-error/10 hover:bg-error/20" onClick={() => handleDelete(record)}>
                   <Trash2 className="w-4 h-4 mr-1.5" />
                   刪除
                </Button>

@@ -89,36 +89,36 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({ records, fontSize 
   const COLORS = ['#fb7185', '#f43f5e', '#e11d48', '#be123c', '#9f1239'];
 
   return (
-    <div className="space-y-4 mt-8 pt-6 border-t border-slate-800">
+    <div className="space-y-4 mt-8 pt-6 border-t border-outline-variant">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
-        <h3 className={`font-bold text-slate-200 flex items-center gap-2 ${sizeMap.title}`}>
-          <BarChart3 className="w-6 h-6 text-indigo-400" />
+        <h3 className={`font-bold text-on-surface flex items-center gap-2 ${sizeMap.title}`}>
+          <BarChart3 className="w-6 h-6 text-on-primary-container" />
           經營損益分析
         </h3>
         
-        <div className="flex bg-slate-900/80 rounded-lg p-1 border border-slate-800 w-full md:w-auto overflow-x-auto hide-scrollbar">
+        <div className="flex bg-surface-container-high/80 rounded-lg p-1 border border-outline-variant w-full md:w-auto overflow-x-auto hide-scrollbar">
           <button
             onClick={() => { setPeriod('monthly'); setActiveFocusKey(null); }}
-            className={`px-3 py-1.5 text-sm rounded transition-colors shrink-0 ${period === 'monthly' ? 'bg-indigo-500/20 text-indigo-400' : 'text-slate-400 hover:text-slate-200'}`}
+            className={`px-3 py-1.5 text-sm rounded transition-colors shrink-0 ${period === 'monthly' ? 'bg-primary-container/20 text-on-primary-container' : 'text-on-surface-variant hover:text-on-surface'}`}
           >月度</button>
           <button
             onClick={() => { setPeriod('bimonthly'); setActiveFocusKey(null); }}
-            className={`px-3 py-1.5 text-sm rounded transition-colors shrink-0 ${period === 'bimonthly' ? 'bg-indigo-500/20 text-indigo-400' : 'text-slate-400 hover:text-slate-200'}`}
+            className={`px-3 py-1.5 text-sm rounded transition-colors shrink-0 ${period === 'bimonthly' ? 'bg-primary-container/20 text-on-primary-container' : 'text-on-surface-variant hover:text-on-surface'}`}
           >雙月 (營業稅)</button>
           <button
             onClick={() => { setPeriod('quarterly'); setActiveFocusKey(null); }}
-            className={`px-3 py-1.5 text-sm rounded transition-colors shrink-0 ${period === 'quarterly' ? 'bg-indigo-500/20 text-indigo-400' : 'text-slate-400 hover:text-slate-200'}`}
+            className={`px-3 py-1.5 text-sm rounded transition-colors shrink-0 ${period === 'quarterly' ? 'bg-primary-container/20 text-on-primary-container' : 'text-on-surface-variant hover:text-on-surface'}`}
           >季度</button>
           <button
             onClick={() => { setPeriod('annually'); setActiveFocusKey(null); }}
-            className={`px-3 py-1.5 text-sm rounded transition-colors shrink-0 ${period === 'annually' ? 'bg-indigo-500/20 text-indigo-400' : 'text-slate-400 hover:text-slate-200'}`}
+            className={`px-3 py-1.5 text-sm rounded transition-colors shrink-0 ${period === 'annually' ? 'bg-primary-container/20 text-on-primary-container' : 'text-on-surface-variant hover:text-on-surface'}`}
           >年度</button>
         </div>
       </div>
 
       <div className="grid grid-cols-1 gap-6">
         <Card className="p-4">
-          <h4 className={`text-slate-400 mb-6 font-medium ${sizeMap.text}`}>收支現金流趨勢 (總額)</h4>
+          <h4 className={`text-on-surface-variant mb-6 font-medium ${sizeMap.text}`}>收支現金流趨勢 (總額)</h4>
           <div className="h-64 w-full">
             {processedData.barData.length > 0 ? (
                 <ResponsiveContainer width="100%" height="100%">
@@ -153,17 +153,17 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({ records, fontSize 
                   </BarChart>
                 </ResponsiveContainer>
             ) : (
-                <div className="w-full h-full flex items-center justify-center text-slate-500 text-sm">此期間無收支紀錄</div>
+                <div className="w-full h-full flex items-center justify-center text-on-surface-variant text-sm">此期間無收支紀錄</div>
             )}
           </div>
         </Card>
 
         <Card className="p-4 relative md:hidden">
-          <h4 className={`text-slate-400 font-medium flex items-center gap-2 ${sizeMap.text}`}>
-            <PieChartIcon className="w-4 h-4 text-rose-400" />
+          <h4 className={`text-on-surface-variant font-medium flex items-center gap-2 ${sizeMap.text}`}>
+            <PieChartIcon className="w-4 h-4 text-error" />
             TOP 5 支出結構 ({activeFocusKey ? processedData.barData.find(d => d.sortKey === activeFocusKey)?.name : '全期'})
           </h4>
-          <p className="text-xs text-sky-400 mt-1 mb-2">💡 點擊左側長條圖，可分析特定期間</p>
+          <p className="text-xs text-primary mt-1 mb-2">💡 點擊左側長條圖，可分析特定期間</p>
           <div className="h-64 w-full">
             {processedData.pieData.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
@@ -190,7 +190,7 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({ records, fontSize 
                 </PieChart>
               </ResponsiveContainer>
             ) : (
-               <div className="w-full h-full flex items-center justify-center text-slate-500 text-sm">無支出資料</div>
+               <div className="w-full h-full flex items-center justify-center text-on-surface-variant text-sm">無支出資料</div>
             )}
           </div>
         </Card>
