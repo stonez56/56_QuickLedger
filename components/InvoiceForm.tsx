@@ -45,7 +45,7 @@ import { useConfig } from '../contexts/ConfigContext.tsx';
 interface InvoiceFormProps {
   config: AppConfig;
   initialData?: LedgerRecord | null;
-  onClearEdit?: () => void;
+  onClearEdit?: (wasSaved?: boolean) => void;
 }
 
 const LAST_SCAN_KEY = 'last_scanned_invoice';
@@ -204,6 +204,34 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ config, initialData, o
         newData.expectedDate = value;
       }
       
+      // Auto-Apply rules if category or note changes
+      if ((name === 'category' || name === 'note') && newData.type === InvoiceType.INPUT) {
+          const combinedText = (newData.category + ' ' + newData.note).toLowerCase();
+          const isGasOrWash = combinedText.includes('旅費-交通') || combinedText.includes('油資') || combinedText.includes('加油') || combinedText.includes('洗車') || combinedText.includes('停車');
+          const isEntertainment = combinedText.includes('交際費') || combinedText.includes('餐飲');
+          const isWelfare = combinedText.includes('職工福利') || combinedText.includes('員工福利');
+          const isTelecom = combinedText.includes('郵電費') || combinedText.includes('電話') || combinedText.includes('手機');
+          const isMisc = combinedText.includes('雜項購置');
+          const isInsurance = combinedText.includes('保險費');
+
+          let newNote = newData.note;
+          if (isGasOrWash && !newNote.includes('車號')) newNote = `[車號 ABC-1234] ${newNote}`.trim();
+          if (isEntertainment && !newNote.includes('事由')) newNote = `[交際對象/事由: ] ${newNote}`.trim();
+          if (isWelfare && !newNote.includes('事由')) newNote = `[活動事由: ] ${newNote}`.trim();
+          if (isTelecom && !newNote.includes('業務聯繫')) newNote = `[負責人業務聯繫使用] ${newNote}`.trim();
+          if (isMisc && !newNote.includes('工作室')) newNote = `[工作室耗材] ${newNote}`.trim();
+          if (isInsurance && !newNote.includes('合約')) newNote = `[附租賃/借用合約] ${newNote}`.trim();
+          newData.note = newNote;
+
+          if (isGasOrWash || isEntertainment || isWelfare || isInsurance) {
+             newData.taxType = TaxType.NON_DEDUCTIBLE;
+             newData.deductionCode = '4';
+             newData.recordType = RecordType.BOTH;
+             newData.tax = 0;
+             newData.amount = Number(newData.total || 0);
+          }
+      }
+
       return newData;
     });
   };
@@ -256,22 +284,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ config, initialData, o
     setFormData(prev => ({ ...prev, deductionCode: code }));
   };
 
-  // Professional Fix: Instead of zeroing tax, we strictly enforce correct calculation + mark as non-deductible.
-  // Wait, the manual says for non-deductible: "將含稅價填入未稅金額，稅額填 0"
-  const markAsNonDeductibleAndFixTax = () => {
-    const currentTotal = Number(formData.total || 0);
-
-    setFormData(prev => ({
-        ...prev,
-        amount: currentTotal,
-        tax: 0,
-        total: currentTotal,
-        taxType: TaxType.TAXABLE,
-        deductionCode: '4', // Mark as Non-deductible
-        recordType: RecordType.INTERNAL // Force to internal logic to keep tax 0
-    }));
-    setIsTaxManuallyEdited(false);
-  };
+  // Removed markAsNonDeductibleAndFixTax as logic is now fully automated.
 
   const populateFormData = (data: any) => {
     console.log("Populating Form Data:", data);
@@ -312,7 +325,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ config, initialData, o
 
     setFormData(prev => {
       const finalDate = newDate || prev.date;
-      return {
+      const state = {
         ...prev,
         recordType: RecordType.BOTH,
         type: newType,
@@ -329,6 +342,34 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ config, initialData, o
         note: data.note || prev.note || '',
         deductionCode: '1' // Reset to deductible on new scan
       };
+
+      if (state.type === InvoiceType.INPUT) {
+          const combinedText = (state.category + ' ' + state.note).toLowerCase();
+          const isGasOrWash = combinedText.includes('旅費-交通') || combinedText.includes('油資') || combinedText.includes('加油') || combinedText.includes('洗車') || combinedText.includes('停車');
+          const isEntertainment = combinedText.includes('交際費') || combinedText.includes('餐飲');
+          const isWelfare = combinedText.includes('職工福利') || combinedText.includes('員工福利');
+          const isTelecom = combinedText.includes('郵電費') || combinedText.includes('電話') || combinedText.includes('手機');
+          const isMisc = combinedText.includes('雜項購置');
+          const isInsurance = combinedText.includes('保險費');
+
+          let newNote = state.note;
+          if (isGasOrWash && !newNote.includes('車號')) newNote = `[車號 ABC-1234] ${newNote}`;
+          if (isEntertainment && !newNote.includes('事由')) newNote = `[交際對象/事由: ] ${newNote}`;
+          if (isWelfare && !newNote.includes('事由')) newNote = `[活動事由: ] ${newNote}`;
+          if (isTelecom && !newNote.includes('業務聯繫')) newNote = `[負責人業務聯繫使用] ${newNote}`;
+          if (isMisc && !newNote.includes('工作室')) newNote = `[工作室耗材] ${newNote}`;
+          if (isInsurance && !newNote.includes('合約')) newNote = `[附租賃/借用合約] ${newNote}`;
+          state.note = newNote.trim();
+
+          if (isGasOrWash || isEntertainment || isWelfare || isInsurance) {
+             state.taxType = TaxType.NON_DEDUCTIBLE;
+             state.deductionCode = '4';
+             state.recordType = RecordType.BOTH;
+             state.tax = 0;
+             state.amount = Number(state.total || 0);
+          }
+      }
+      return state as InvoiceFormState;
     });
 
     // Critical Fix: If the Scanner's Tax doesn't match the 5% Calculation (due to rounding differences),
@@ -490,7 +531,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ config, initialData, o
       if (result.status === 'success') {
         setMessage({ type: 'success', text: `成功${initialData ? '更新' : '錄入'}!` });
         if (initialData && onClearEdit) {
-           setTimeout(() => onClearEdit(), 1500);
+           setTimeout(() => onClearEdit(true), 1500);
         } else {
           setFormData(prev => ({
             ...INITIAL_FORM_STATE,
@@ -518,10 +559,8 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ config, initialData, o
                        formData.taxId === '' || 
                        isValidTaiwanTaxId(formData.taxId);
 
-  const isRiskyCategory = RISKY_CATEGORIES.some(c => formData.category.includes(c));
-  const isRiskyKeyword = RISKY_KEYWORDS.some(k => formData.note.includes(k) || formData.category.includes(k));
-  // Show warning if it's risky AND user currently has it marked as deductible ('1')
-  const showWarning = (isRiskyCategory || isRiskyKeyword) && formData.type === InvoiceType.INPUT && formData.deductionCode === '1' && formData.recordType !== RecordType.INTERNAL;
+  // Show descriptive tip if it was automatically set to non-deductible
+  const showNonDeductibleTip = formData.type === InvoiceType.INPUT && formData.taxType === TaxType.NON_DEDUCTIBLE;
 
   return (
     <div className="max-w-4xl mx-auto pb-24">
@@ -708,7 +747,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ config, initialData, o
 
               {formData.type === InvoiceType.INPUT && formData.taxType === TaxType.TAXABLE && formData.recordType !== RecordType.INTERNAL && (
                 <div className="animate-in fade-in slide-in-from-top-1">
-                  <Label htmlFor="deductionCode" className="text-xs mb-2">2. 可扣抵 / 不可扣抵</Label>
+                  <div className="block font-medium text-slate-400 text-xs mb-2">2. 可扣抵 / 不可扣抵</div>
                   <div className="bg-slate-950 rounded-lg p-1 flex border border-slate-700">
                     <button
                       type="button"
@@ -778,22 +817,13 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ config, initialData, o
                 />
               </div>
               
-              {showWarning && formData.taxType === TaxType.TAXABLE && Number(formData.tax) > 0 && (
+              {showNonDeductibleTip && (
                  <div className="animate-in fade-in slide-in-from-top-2">
-                   <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-3 text-amber-300 text-sm flex gap-3 items-start">
-                     <ShieldAlert className="w-5 h-5 shrink-0 mt-0.5" />
-                     <div className="space-y-2 flex-1">
-                       <p className="font-bold">會計師提醒：此類別稅額通常「不可扣抵」</p>
-                       <p className="opacity-80 text-xs">營業稅法規定，交際費、職工福利及自用乘人小汽車(洗車)之進項稅額不得扣抵。建議將稅額設為 0 (併入成本)。</p>
-                       <Button 
-                         type="button" 
-                         variant="secondary" 
-                         size="sm" 
-                         className="w-full text-xs bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 border-amber-500/20"
-                         onClick={markAsNonDeductibleAndFixTax}
-                       >
-                         一鍵修正：標記為「不可扣抵」 (稅額保留)
-                       </Button>
+                   <div className="bg-sky-500/10 border border-sky-500/20 rounded-lg p-3 text-sky-300 text-sm flex gap-3 items-start">
+                     <HelpCircle className="w-5 h-5 shrink-0 mt-0.5" />
+                     <div className="space-y-1 flex-1">
+                       <p className="font-bold">AI 稅務顧問提醒 💡</p>
+                       <p className="opacity-90 text-xs text-sky-200/80">依據稅法規定，此類別（如交際、福利、小汽車相關等）進項憑證不可扣抵營業稅。系統已自動將憑證註記為「不計稅 / 不可扣抵」，並會將稅額併入成本供後續依規定入列公司開支。</p>
                      </div>
                    </div>
                  </div>
@@ -857,16 +887,29 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ config, initialData, o
                     確認送出
                 </Button>
                 
-                <Button 
-                    type="button" 
-                    variant="secondary" 
-                    onClick={() => setShowResetConfirm(true)}
-                    icon={RotateCcw}
-                    disabled={loading}
-                    className="w-full md:w-[220px] py-3 md:py-3 bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700 font-medium"
-                >
-                    重置
-                </Button>
+                {initialData ? (
+                  <Button 
+                      type="button" 
+                      variant="secondary" 
+                      onClick={() => onClearEdit && onClearEdit(false)}
+                      icon={RotateCcw}
+                      disabled={loading}
+                      className="w-full md:w-[220px] py-3 md:py-3 bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700 font-medium"
+                  >
+                      取消編輯返回
+                  </Button>
+                ) : (
+                  <Button 
+                      type="button" 
+                      variant="secondary" 
+                      onClick={() => setShowResetConfirm(true)}
+                      icon={RotateCcw}
+                      disabled={loading}
+                      className="w-full md:w-[220px] py-3 md:py-3 bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700 font-medium"
+                  >
+                      重置空表單
+                  </Button>
+                )}
 
                 {message && (
                     <div className={`col-span-2 w-full md:col-auto md:flex-1 px-4 py-2 rounded-lg text-sm font-medium flex flex-col justify-center animate-in fade-in slide-in-from-bottom-2 md:slide-in-from-left-2 ${

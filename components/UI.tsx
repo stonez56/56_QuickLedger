@@ -13,13 +13,14 @@ export const Card: React.FC<BaseProps> = ({ children, className = '' }) => (
 );
 
 interface LabelProps {
-  htmlFor: string;
+  htmlFor?: string;
   children: React.ReactNode;
   required?: boolean;
+  className?: string;
 }
 
-export const Label: React.FC<LabelProps> = ({ htmlFor, children, required }) => (
-  <label htmlFor={htmlFor} className="block text-sm font-medium text-slate-400 mb-1.5">
+export const Label: React.FC<LabelProps> = ({ htmlFor, children, required, className = '' }) => (
+  <label htmlFor={htmlFor || undefined} className={`block text-sm font-medium text-slate-400 mb-1.5 ${className}`}>
     {children}
     {required && <span className="text-rose-500 ml-1">*</span>}
   </label>

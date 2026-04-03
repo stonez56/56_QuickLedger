@@ -8,9 +8,12 @@ interface SearchPanelProps {
   config: AppConfig;
   onEdit: (record: LedgerRecord) => void;
   fontSize: 'sm' | 'base' | 'lg';
+  lastEditedId?: string | null;
+  scrollTargetId?: string | null;
+  refreshTrigger?: number;
 }
 
-export const SearchPanel: React.FC<SearchPanelProps> = ({ config, onEdit, fontSize }) => {
+export const SearchPanel: React.FC<SearchPanelProps> = ({ config, onEdit, fontSize, lastEditedId, scrollTargetId, refreshTrigger }) => {
   const [activeTab, setActiveTab] = useState<'keyword' | 'date'>('keyword');
   const [query, setQuery] = useState('');
 
@@ -38,8 +41,7 @@ export const SearchPanel: React.FC<SearchPanelProps> = ({ config, onEdit, fontSi
   const [results, setResults] = useState<LedgerRecord[]>([]);
   const [message, setMessage] = useState<{type: 'error'|'success', text: string} | null>(null);
 
-  const handleSearch = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const performSearch = async () => {
     setLoading(true);
     setMessage(null);
 
@@ -74,6 +76,29 @@ export const SearchPanel: React.FC<SearchPanelProps> = ({ config, onEdit, fontSi
       setLoading(false);
     }
   };
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    performSearch();
+  };
+
+  React.useEffect(() => {
+    if (refreshTrigger && refreshTrigger > 0) {
+      performSearch();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [refreshTrigger]);
+
+  React.useEffect(() => {
+    if (scrollTargetId && results.some(r => r.id === scrollTargetId)) {
+      const el = document.getElementById(`record-${scrollTargetId}`);
+      if (el) {
+        setTimeout(() => {
+           el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 100); // reduced delay since no network fetch happens
+      }
+    }
+  }, [scrollTargetId, results]);
 
   const handleDelete = async (record: LedgerRecord) => {
     if (!window.confirm(`確定要刪除流水號 ${record.id} 嗎？此動作無法復原。`)) return;
@@ -172,7 +197,20 @@ export const SearchPanel: React.FC<SearchPanelProps> = ({ config, onEdit, fontSi
 
       <div className="space-y-4">
         {results.map((record) => (
-          <Card key={record.id} className="p-4 hover:border-sky-500/30 transition-colors">
+          <div 
+            id={`record-${record.id}`}
+            key={record.id} 
+            className={`p-4 rounded-xl shadow-xl transition-all duration-700 relative overflow-hidden ${
+              lastEditedId === record.id 
+                ? 'border-[2px] border-sky-400 shadow-[0_0px_20px_rgba(14,165,233,0.4)] bg-sky-900/40' 
+                : 'border border-slate-800 bg-slate-900 hover:border-sky-500/30'
+            }`}
+          >
+            {lastEditedId === record.id && (
+              <div className="absolute bottom-4 left-4 bg-sky-500 text-white text-[10px] font-bold px-2.5 py-1 rounded-md shadow-sm flex items-center">
+                已更新
+              </div>
+            )}
             <div className="flex justify-between items-start mb-2">
                <div>
                   <div className="flex flex-wrap items-center gap-2 mb-1">
@@ -213,7 +251,7 @@ export const SearchPanel: React.FC<SearchPanelProps> = ({ config, onEdit, fontSi
                   刪除
                </Button>
             </div>
-          </Card>
+          </div>
         ))}
       </div>
     </div>

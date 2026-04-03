@@ -48,6 +48,7 @@ export const TAX_TYPE_OPTIONS = [
   { value: TaxType.TAXABLE, label: '1 - 應稅 (5%)' },
   { value: TaxType.ZERO_RATE, label: '2 - 零稅率' },
   { value: TaxType.TAX_FREE, label: '3 - 免稅' },
+  { value: TaxType.NON_DEDUCTIBLE, label: '4 - 不計稅/不可扣抵' },
 ];
 
 /**

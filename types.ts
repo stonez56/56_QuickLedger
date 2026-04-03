@@ -13,6 +13,7 @@ export enum TaxType {
   TAXABLE = '1',     // 應稅
   ZERO_RATE = '2',   // 零稅率
   TAX_FREE = '3',    // 免稅
+  NON_DEDUCTIBLE = '4', // 不計稅 / 不可扣抵
 }
 
 // Based on standard TW invoice format codes

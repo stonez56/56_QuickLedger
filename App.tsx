@@ -17,6 +17,10 @@ export default function App() {
   const [config, setConfig] = useState<AppConfig | null>(null);
   const [showSplash, setShowSplash] = useState(true);
   const [activeTab, setActiveTab] = useState<'admin' | 'create' | 'search'>('create');
+  const [previousTab, setPreviousTab] = useState<'admin' | 'search' | null>(null);
+  const [lastEditedId, setLastEditedId] = useState<string | null>(null);
+  const [scrollTargetId, setScrollTargetId] = useState<string | null>(null);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [editRecord, setEditRecord] = useState<LedgerRecord | null>(null);
   const [fontSize, setFontSize] = useState<'sm' | 'base' | 'lg'>('base');
   const [showSettings, setShowSettings] = useState(false);
@@ -62,6 +66,7 @@ export default function App() {
   };
 
   const handleEdit = (record: LedgerRecord) => {
+    setPreviousTab(activeTab === 'admin' ? 'admin' : 'search');
     setEditRecord(record);
     setActiveTab('create');
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -93,6 +98,13 @@ export default function App() {
                showSplash={showSplash}
                activeTab={activeTab}
                setActiveTab={setActiveTab}
+               previousTab={previousTab}
+               lastEditedId={lastEditedId}
+               setLastEditedId={setLastEditedId}
+               scrollTargetId={scrollTargetId}
+               setScrollTargetId={setScrollTargetId}
+               refreshTrigger={refreshTrigger}
+               setRefreshTrigger={setRefreshTrigger}
                editRecord={editRecord}
                setEditRecord={setEditRecord}
                fontSize={fontSize}
@@ -112,9 +124,11 @@ export default function App() {
 }
 
 const MainContent = ({ 
-  config, showSplash, activeTab, setActiveTab, editRecord, setEditRecord, 
-  fontSize, setFontSize, setShowSettings, handleLogout, handleEdit, 
-  getFormattedDate 
+  config, showSplash, activeTab, setActiveTab, previousTab, 
+  lastEditedId, setLastEditedId, scrollTargetId, setScrollTargetId, 
+  refreshTrigger, setRefreshTrigger,
+  editRecord, setEditRecord, fontSize, setFontSize, setShowSettings, 
+  handleLogout, handleEdit, getFormattedDate 
 }: any) => {
   const { isLoading } = useConfig();
   
@@ -204,25 +218,42 @@ const MainContent = ({
         
         {/* 3. Main Content Area */}
         <div className="pt-2">
-          {activeTab === 'admin' ? (
+          <div className={activeTab === 'admin' ? 'block' : 'hidden'}>
             <AdminLayout 
               config={config} 
               onNavigateToEdit={handleEdit} 
               fontSize={fontSize} 
             />
-          ) : activeTab === 'create' ? (
+          </div>
+          <div className={activeTab === 'create' ? 'block' : 'hidden'}>
             <InvoiceForm 
               config={config} 
               initialData={editRecord}
-              onClearEdit={() => setEditRecord(null)}
+              onClearEdit={(wasSaved?: boolean) => {
+                const editedId = editRecord?.id;
+                setEditRecord(null);
+                if (previousTab) setActiveTab(previousTab);
+                if (wasSaved && editedId) {
+                  setLastEditedId(editedId);
+                  setScrollTargetId(editedId);
+                  setRefreshTrigger((prev: number) => prev + 1);
+                } else {
+                  setLastEditedId(null);
+                  if (editedId) setScrollTargetId(editedId);
+                }
+              }}
             />
-          ) : (
+          </div>
+          <div className={activeTab === 'search' ? 'block' : 'hidden'}>
             <SearchPanel 
               config={config} 
               onEdit={handleEdit}
               fontSize={fontSize}
+              lastEditedId={lastEditedId}
+              scrollTargetId={scrollTargetId}
+              refreshTrigger={refreshTrigger}
             />
-          )}
+          </div>
         </div>
       </div>
     </>
