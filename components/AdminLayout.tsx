@@ -11,11 +11,12 @@ interface AdminLayoutProps {
   config: AppConfig;
   onNavigateToEdit?: (record: LedgerRecord) => void;
   fontSize: 'sm' | 'base' | 'lg';
+  isActive: boolean;
 }
 
 type FilterPeriod = 'current' | 'previous' | 'year';
 
-export const AdminLayout: React.FC<AdminLayoutProps> = ({ config, onNavigateToEdit, fontSize }) => {
+export const AdminLayout: React.FC<AdminLayoutProps> = ({ config, onNavigateToEdit, fontSize, isActive }) => {
   const [activeTab, setActiveTab] = useState<'dashboard' | 'categories' | 'formatCodes' | 'systemSettings'>('dashboard');
   const [filterPeriod, setFilterPeriod] = useState<FilterPeriod>('current');
 
@@ -24,8 +25,10 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ config, onNavigateToEd
   const [records, setRecords] = useState<LedgerRecord[]>([]);
 
   React.useEffect(() => {
-    fetchDashboardData();
-  }, []);
+    if (isActive) {
+      fetchDashboardData();
+    }
+  }, [isActive]);
 
   const fetchDashboardData = async () => {
     const cached = sessionStorage.getItem('dashboard_records_cache');

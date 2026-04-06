@@ -47,6 +47,7 @@ export const FormatCodeSettings: React.FC = () => {
       }
       
       await saveFormatCodes(newCodes);
+      sessionStorage.removeItem('dashboard_records_cache'); // Invalidate stats cache
       setEditingIndex(null);
       setEditForm(null);
     } catch (e: any) {
@@ -63,6 +64,7 @@ export const FormatCodeSettings: React.FC = () => {
     try {
       const newCodes = formatCodes.filter((_, i) => i !== index);
       await saveFormatCodes(newCodes);
+      sessionStorage.removeItem('dashboard_records_cache'); // Invalidate stats cache
     } catch (e: any) {
       alert(e.message || '刪除失敗');
     } finally {

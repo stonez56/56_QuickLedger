@@ -44,6 +44,7 @@ export const CategorySettings: React.FC = () => {
       }
       
       await saveCategories(newCategories);
+      sessionStorage.removeItem('dashboard_records_cache'); // Invalidate stats cache
       setEditingId(null);
       setEditForm(null);
     } catch (e: any) {
@@ -60,6 +61,7 @@ export const CategorySettings: React.FC = () => {
     try {
       const newCategories = categories.filter(c => c.id !== id);
       await saveCategories(newCategories);
+      sessionStorage.removeItem('dashboard_records_cache'); // Invalidate stats cache
     } catch (e: any) {
       alert(e.message || '刪除失敗');
     } finally {

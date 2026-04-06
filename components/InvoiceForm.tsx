@@ -557,6 +557,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ config, initialData, o
       }
 
       if (result.status === 'success') {
+        sessionStorage.removeItem('dashboard_records_cache'); // Invalidate stats cache on any mutation
         setMessage({ type: 'success', text: `成功${initialData ? '更新' : '錄入'}!` });
         if (initialData && onClearEdit) {
            setTimeout(() => onClearEdit(true), 1500);

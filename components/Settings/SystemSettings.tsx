@@ -164,6 +164,7 @@ export const SystemSettings: React.FC<SystemSettingsProps> = ({ config, records 
       });
       const result = await response.json();
       if (result.status === 'success') {
+        sessionStorage.removeItem('dashboard_records_cache'); // Invalidate stats cache on restore
         setMessage({ type: 'success', text: '資料已成功還原！請重新整理網頁以載入最新資料。' });
       } else {
         setMessage({ type: 'error', text: result.message || '還原失敗' });

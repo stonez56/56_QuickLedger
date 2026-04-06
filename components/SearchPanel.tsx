@@ -116,6 +116,7 @@ export const SearchPanel: React.FC<SearchPanelProps> = ({ config, onEdit, fontSi
       });
       const res = await response.json();
       if (res.status === 'success') {
+         sessionStorage.removeItem('dashboard_records_cache'); // Invalidate stats cache on delete
          setResults(prev => prev.filter(r => r.id !== record.id));
          setMessage({ type: 'success', text: '刪除成功' });
       } else {

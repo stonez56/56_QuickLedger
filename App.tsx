@@ -223,6 +223,7 @@ const MainContent = ({
               config={config} 
               onNavigateToEdit={handleEdit} 
               fontSize={fontSize} 
+              isActive={activeTab === 'admin'}
             />
           </div>
           <div className={activeTab === 'create' ? 'block' : 'hidden'}>
