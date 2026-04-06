@@ -213,6 +213,9 @@ VITE_GEMINI_API_KEY="您的_GEMINI_API_KEY"
    - 首頁的「營運儀表板」與「歷史清單」完全隔離了重複請求。在不同的 Tab 之間切換時，所有圖表皆受惠於前端 Cache 瞬間渲染，強烈保護了 Apps Script API 的每日呼叫配額 (Quotas)。
 6. **無伺服器自動備份 (Serverless Cron Backup)**：
    - 每日凌晨 2 點的自動備份機制**並非**由網站前端觸發，而是綁定於 Google Apps Script 的 Time-driven Triggers。這代表就算您一個月沒開網站，雲端試算表也會自己醒來進行 30 天滾動式備份。
+7. 加上 帳務歸屬-備註說明 - 下拉選單選項：無墊付、業主墊付、員工墊付 
+   - 當有業主/員工務付金額時,快速記錄
+   - 預設值：無墊付
 
 ---
 

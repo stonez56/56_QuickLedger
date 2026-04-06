@@ -22,6 +22,7 @@ export const INITIAL_FORM_STATE = {
   taxType: TaxType.TAXABLE,
   deductionCode: '1' as const, // Default to Deductible
   category: '',
+  advancePaymentType: '無墊付' as const, // Default: no advance payment
   note: '',
 };
 

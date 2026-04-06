@@ -125,8 +125,9 @@ function doPost(e) {
             total: row[11],
             taxType: row[12],
             category: row[13],
-            note: row[14],
-            userEmail: row[15],
+            advancePaymentType: row[14] || '無墊付', // O: 墊付類型
+            note: row[15],                          // P: 備註
+            userEmail: row[16],                     // Q: 紀錄者
             rowIndex: i + 1
           });
         }
@@ -165,8 +166,9 @@ function doPost(e) {
           total: row[11],
           taxType: row[12],
           category: row[13],
-          note: row[14],
-          userEmail: row[15],
+          advancePaymentType: row[14] || '無', // O: 墊付類型
+          note: row[15],                          // P: 備註
+          userEmail: row[16],                     // Q: 紀錄者
           rowIndex: i + 1
         });
       }
@@ -245,7 +247,7 @@ function doPost(e) {
       }
       
       const rowData = buildRowData(payload.id, payload);
-      sheet.getRange(rowIndex, 1, 1, 16).setValues([rowData]);
+      sheet.getRange(rowIndex, 1, 1, 17).setValues([rowData]);
       
       return ContentService.createTextOutput(JSON.stringify({ 
         status: 'success', 
@@ -351,8 +353,9 @@ function buildRowData(id, payload) {
     payload.total || 0,              // L: 總金額
     payload.taxType || '',           // M: 課稅別
     payload.category || '',          // N: 會計科目
-    payload.note || '',              // O: 備註
-    payload.userEmail || ''          // P: 紀錄者
+    payload.advancePaymentType || 'none', // O: 墊付類型 (新增)
+    payload.note || '',              // P: 備註
+    payload.userEmail || ''          // Q: 紀錄者
   ];
 }
 
@@ -390,7 +393,7 @@ function setup() {
     const headers = [
       "流水號", "入帳類型", "發票日期", "收/付款日期", "預計收/付款日", 
       "憑證種類", "格式代號", "發票號碼", "對方統編", "銷售額", 
-      "營業稅額", "總金額", "課稅別", "會計科目", "備註", "紀錄者"
+      "營業稅額", "總金額", "課稅別", "會計科目", "墊付類型", "備註", "紀錄者"
     ];
     dataSheet.getRange(1, 1, 1, headers.length).setValues([headers]);
     dataSheet.getRange(1, 1, 1, headers.length).setFontWeight("bold").setBackground("#f3f4f6");
@@ -401,14 +404,14 @@ function setup() {
   let internalSheet = ss.getSheetByName("Data_內帳");
   if (!internalSheet) {
     internalSheet = ss.insertSheet("Data_內帳");
-    internalSheet.getRange("A1").setFormula(`=QUERY('Data_總帳'!A:P, "SELECT * WHERE B = 'Internal' OR B = 'Both'", 1)`);
+    internalSheet.getRange("A1").setFormula(`=QUERY('Data_總帳'!A:Q, "SELECT * WHERE B = 'Internal' OR B = 'Both'", 1)`);
   }
 
   // 4. 建立外帳 Tab 
   let externalSheet = ss.getSheetByName("Data_外帳");
   if (!externalSheet) {
     externalSheet = ss.insertSheet("Data_外帳");
-    externalSheet.getRange("A1").setFormula(`=QUERY('Data_總帳'!A:P, "SELECT * WHERE B = 'Both'", 1)`);
+    externalSheet.getRange("A1").setFormula(`=QUERY('Data_總帳'!A:Q, "SELECT * WHERE B = 'Both'", 1)`);
   }
 
   // 5. 確保每日備份觸發器已設置

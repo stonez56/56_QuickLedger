@@ -28,6 +28,7 @@ import {
   InvoiceType, 
   TaxType, 
   RecordType,
+  AdvancePaymentType,
   InvoiceFormState, 
   AppConfig, 
   ApiResponse,
@@ -104,6 +105,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ config, initialData, o
         taxType: (TAX_TYPE_OPTIONS.find(t => initialData.taxType?.includes(t.label))?.value as TaxType) || TaxType.TAXABLE,
         deductionCode: initialData.taxType?.includes('不可扣抵') ? '4' : '1',
         category: initialData.category || '',
+        advancePaymentType: (initialData.advancePaymentType as AdvancePaymentType) || '無墊付',
         note: initialData.note || ''
       });
       if (initialData.date && initialData.date === initialData.paymentDate && initialData.date === initialData.expectedDate) {
@@ -243,6 +245,21 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ config, initialData, o
       }
 
       return newData;
+    });
+  };
+
+  // Helper: strips any advance payment suffix from the note string
+  const stripAdvanceSuffix = (note: string) =>
+    note.replace(/\s*\(業主墊付\)\s*$/, '').replace(/\s*\(員工墊付\)\s*$/, '').trim();
+
+  const handleAdvancePaymentChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const val = e.target.value as AdvancePaymentType;
+    setFormData(prev => {
+      const cleanNote = stripAdvanceSuffix(prev.note);
+      let newNote = cleanNote;
+      if (val === '業主墊付') newNote = cleanNote ? `${cleanNote} (業主墊付)` : '(業主墊付)';
+      if (val === '員工墊付') newNote = cleanNote ? `${cleanNote} (員工墊付)` : '(員工墊付)';
+      return { ...prev, advancePaymentType: val, note: newNote };
     });
   };
 
@@ -514,6 +531,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ config, initialData, o
       total: Number(formData.total),
       taxType: taxTypeLabel,
       category: formData.category,
+      advancePaymentType: formData.advancePaymentType,
       note: formData.note,
     };
 
@@ -872,6 +890,25 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ config, initialData, o
                 </div>
                 
                 <div className="relative">
+                    <Label htmlFor="advancePaymentType" className="text-xs">墊付類型</Label>
+                    <select
+                        id="advancePaymentType"
+                        name="advancePaymentType"
+                        value={formData.advancePaymentType}
+                        onChange={handleAdvancePaymentChange}
+                        className="w-full bg-slate-950 border border-slate-700 rounded-lg py-2 pl-3 pr-8 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-sky-500 mt-1 appearance-none"
+                    >
+                        <option value="無墊付">無墊付</option>
+                        <option value="業主墊付">業主墊付</option>
+                        <option value="員工墊付">員工墊付</option>
+                    </select>
+                    <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none text-slate-500 mt-6">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </div>
+                </div>
+                <div className="col-span-2">
                     <Label htmlFor="note" className="text-xs">帳務歸屬-備註說明</Label>
                     <input
                         id="note"

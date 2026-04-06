@@ -4,6 +4,9 @@ export enum InvoiceType {
   INPUT = 'Input',   // 進項 (Purchase)
 }
 
+// 墊付類型: none = 無墊付, owner = 業主墊付, employee = 員工墊付
+export type AdvancePaymentType = '無墊付' | '業主墊付' | '員工墊付';
+
 export enum RecordType {
   BOTH = 'Both',         // 內外帳 (有合法憑證，可供報稅)
   INTERNAL = 'Internal', // 僅內帳 (無合法憑證，或不打算報稅)
@@ -56,6 +59,7 @@ export interface InvoiceFormState {
   taxType: TaxType;
   deductionCode: '1' | '4'; // '1': 可扣抵, '4': 不可扣抵 (Standard TW e-Invoice Codes)
   category: string;
+  advancePaymentType: AdvancePaymentType; // 墊付類型
   note: string;
 }
 
@@ -74,6 +78,7 @@ export interface LedgerRecord {
   total: number;
   taxType: string;
   category: string;
+  advancePaymentType?: string; // 墊付類型 (optional for legacy records)
   note: string;
   userEmail: string;
   rowIndex: number;
