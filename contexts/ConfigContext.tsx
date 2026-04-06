@@ -71,6 +71,7 @@ export const ConfigProvider: React.FC<{
       id: "office",
       name: "📄 辦公與行政 (日常營運)",
       subcategories: [
+        "薪資支出： 薪資",
         "文具用品： 辦公耗材、文具", 
         "雜項購置 (日常用品)： 衛生紙、水、清潔用品等", 
         "書報雜誌 / 進修課程： 專業書籍、員工培訓費用", 

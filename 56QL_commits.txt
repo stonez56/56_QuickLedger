@@ -1,0 +1,20 @@
+c017bee New Entries: When you click "新增憑證" (Add New), the React frontend will actively scan the list and hide any category starting with (停用) from the dropdown. It vanishes from sight.
+b5a77c6 feat: implement AI tax automation for non-deductible expenses, preserve search history state across navigation, and enhance edit-return UX with smart scrolling and highlighting
+f79dfd2 Revised Folders and files name for backups
+68b50c1 Remove year from Google Sheet tabs to ensure there is one leadger per company. Tested backup/download leadger function worked!
+caa2bf1 Added daily auto backup for up to 30 days and download current Sheet to local computer
+54de675 Revise statistic view for Pie chart
+42a46fd Fix & enhance features: 🚀 Premium Cloud Loading Overlay. ⚡ Fast Dashboard Caching. ✅ No more Tax ID block on 99 (No Invoice). 🍱 Updated Category list (including 勞健保費).
+cbbd9f4 Add Insurance category into 會計科目, Revise data loading with a Syncing...screen
+a449f50 Added an Admin panel to add CRUD feature for 會計科目&代號 online & Enable catch for Statistic tab
+46f77ea Enhanced README.md & Help for 折讓發票 & drafed a TODO for batch upload
+942231c Update Google Sheet AppScripts to filter out empty Google sheet rows
+5c7e378 Implemented statistic features for month, quarter, bi-annual, and annual report
+081f828 Implemented search function
+b04836e Fix calendar won't pop-up issue
+fbf0f4c Remove calendar icon from mobile view
+f0adc27 Group help notes and able to change font size
+7a97f4e Fixed warpped App title
+1cfe4f5 push .npmrc into Vercel Server to fix compiler error
+b0de8ca Added icons/logo & move secrets to save places
+098fa86 first commit
