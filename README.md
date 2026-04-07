@@ -235,6 +235,17 @@ VITE_GEMINI_API_KEY="您的_GEMINI_API_KEY"
        - If the merchant is "Costco", suggest category "伙食費".
     ```
 
+## 🔒 ISO 27001 & ISO 27701 合規聲明 (Compliance)
+
+為了符合現代資訊安全與全球隱私保護標準，QuickLedger 已於核心架構中導入 ISO 系列政策：
+
+*   **ISO 27001 (資訊安全管理系統 - ISMS)**
+    *   **環境安全**: 移除前端靜態金鑰注入邏輯，強制透過安全的伺服器端變數 (Vercel Node `process.env`) 傳遞 Gemini API Key，並防護 API Token。
+    *   **架構隱匿**: 強化伺服器例外防護機制，所有對外的錯誤回應皆經過混淆 (Obfuscations)，阻斷對核心資料表 (Google Sheets 網要) 內部命名的探索。
+*   **ISO 27701 (隱私資訊管理系統 - PIMS)**
+    *   **紀錄者脫敏設計 (Data Masking)**: API 在回傳操作紀錄者 (Email 資訊) 時，於資料傳遞過渡層直接實施自動脫敏 (如：`sto***@gmail.com`)，符合資料最小化與內建隱私設計 (Privacy by Design)。
+    *   **定期資料清理 (Data Retention Policy)**: 伺服器核心內建了定時任務器 (Cron Trigger)，自動檢查並清除超過 5 年保存期限的歷史交易足跡，積極限制個資無限期保存。
+
 ---
 
 ## 📝 授權 (License)

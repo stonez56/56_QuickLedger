@@ -16,12 +16,12 @@ export default async function handler(req: any, res: any) {
             return res.status(400).json({ error: 'Missing imageBase64 or promptText in request body' });
         }
 
-        if (!process.env.VITE_GEMINI_API_KEY && !process.env.API_KEY) {
+        if (!process.env.GEMINI_API_KEY) {
             console.error("Missing Gemini API Key in environment variables");
             return res.status(500).json({ error: 'Server configuration error: Missing API Key' });
         }
 
-        const apiKey = process.env.VITE_GEMINI_API_KEY || process.env.API_KEY;
+        const apiKey = process.env.GEMINI_API_KEY;
         const ai = new GoogleGenAI({ apiKey });
 
         const response = await ai.models.generateContent({

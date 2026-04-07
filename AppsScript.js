@@ -45,7 +45,7 @@ function doPost(e) {
     if (payload.action === 'submit') {
       const sheet = ss.getSheetByName(DATA_SHEET_NAME);
       if (!sheet) {
-        throw new Error(`找不到工作表：${DATA_SHEET_NAME}，請先執行 setup()`);
+        throw new Error(`內部資料處理錯誤：無法存取指定的資料源，請聯繫管理員。`);
       }
 
       // 產生流水號 (VCH-YYYYMMDD-000X)
@@ -127,7 +127,7 @@ function doPost(e) {
             category: row[13],
             advancePaymentType: row[14] || '無墊付', // O: 墊付類型
             note: row[15],                          // P: 備註
-            userEmail: row[16],                     // Q: 紀錄者
+            userEmail: row[16] ? row[16].toString().replace(/(^[^@]{1,3})[^@]*(@.*$)/, "$1***$2") : '', // Q: 紀錄者 (ISO 27701 脫敏)
             rowIndex: i + 1
           });
         }
@@ -168,7 +168,7 @@ function doPost(e) {
           category: row[13],
           advancePaymentType: row[14] || '無', // O: 墊付類型
           note: row[15],                          // P: 備註
-          userEmail: row[16],                     // Q: 紀錄者
+          userEmail: row[16] ? row[16].toString().replace(/(^[^@]{1,3})[^@]*(@.*$)/, "$1***$2") : '', // Q: 紀錄者 (ISO 27701 脫敏)
           rowIndex: i + 1
         });
       }
@@ -416,6 +416,9 @@ function setup() {
 
   // 5. 確保每日備份觸發器已設置
   setupDailyBackupTrigger();
+
+  // 6. 確保 ISO 27701 每月資料清理觸發器已設置
+  setupMonthlyCleanupTrigger();
 }
 
 // 5. 確保每日自動化備份觸發器 (Server-Side Cron)
@@ -441,7 +444,7 @@ function setupDailyBackupTrigger() {
 function backupData(isFailSafe = false) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sourceSheet = ss.getSheetByName(DATA_SHEET_NAME);
-  if (!sourceSheet) throw new Error(`${DATA_SHEET_NAME} 不存在`);
+  if (!sourceSheet) throw new Error(`內部資料處理錯誤：無法存取指定的資料源，請聯繫管理員。`);
 
   // 1. 取得或建立備份資料夾 (與原試算表同層級)
   const file = DriveApp.getFileById(ss.getId());
@@ -541,7 +544,7 @@ function listBackups() {
 function restoreData(backupFileId) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const targetSheet = ss.getSheetByName(DATA_SHEET_NAME);
-  if (!targetSheet) throw new Error(`${DATA_SHEET_NAME} 不存在`);
+  if (!targetSheet) throw new Error(`內部資料處理錯誤：無法存取指定的資料源，請聯繫管理員。`);
 
   // 1. Fail-Safe: 先執行一次現有資料的備份
   backupData(true);
@@ -554,10 +557,44 @@ function restoreData(backupFileId) {
   const data = backupSheet.getDataRange().getValues();
   if (data.length === 0) throw new Error("備份檔案內沒有資料");
 
-  // 3. 覆寫當前總帳
   targetSheet.clear(); // 清空舊資料
   targetSheet.getRange(1, 1, data.length, data[0].length).setValues(data);
   targetSheet.getRange(1, 1, 1, data[0].length).setFontWeight("bold").setBackground("#f3f4f6");
   targetSheet.setFrozenRows(1);
 }
 
+// 9. ISO 27701 確保定時資料清理 (Retention Policy) 觸發器
+function setupMonthlyCleanupTrigger() {
+  const functionName = "cleanupOldData";
+  const triggers = ScriptApp.getProjectTriggers();
+  for (let i = 0; i < triggers.length; i++) {
+    if (triggers[i].getHandlerFunction() === functionName) {
+      return; 
+    }
+  }
+  ScriptApp.newTrigger(functionName)
+    .timeBased()
+    .everyDays(30)
+    .atHour(3)
+    .create();
+}
+
+// 10. ISO 27701 實際資料清理邏輯 (移除超過 5 年的總帳紀錄)
+function cleanupOldData() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = ss.getSheetByName(DATA_SHEET_NAME);
+  if (!sheet) return;
+  const data = sheet.getDataRange().getValues();
+  const now = new Date();
+  const fiveYearsAgo = new Date(now.getFullYear() - 5, now.getMonth(), now.getDate());
+  
+  // 由下往上刪除避免 Index 計算移位錯亂
+  for (let i = data.length - 1; i > 0; i--) {
+    const row = data[i];
+    if (!row[0] || row[0] === '流水號') continue;
+    const dateObj = new Date(row[2]); // C: 發票日期
+    if (!isNaN(dateObj.getTime()) && dateObj < fiveYearsAgo) {
+      sheet.deleteRow(i + 1);
+    }
+  }
+}
