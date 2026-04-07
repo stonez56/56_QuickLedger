@@ -62,6 +62,7 @@ export const CATEGORY_GROUPS = [
     items: [
       { value: "銷貨收入", label: "銷貨收入 (販售商品)" },
       { value: "勞務收入", label: "勞務收入 (提供專業服務)" },
+      { value: "其他收入", label: "暫收款 (預收款)" },
       { value: "其他收入", label: "其他收入 (利息/補助金)" },
     ]
   },

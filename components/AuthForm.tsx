@@ -89,6 +89,9 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onLogin }) => {
             userEmail: email.trim(),
             apiSecret: secret.trim(),
             scriptUrl: APPS_SCRIPT_URL,
+            maxDateRange: result.sysConfig?.maxDateRange ?? 60,
+            maxRecords: result.sysConfig?.maxRecords ?? 500,
+            recordsPerPage: result.sysConfig?.recordsPerPage ?? 20,
           });
         }
       } else {

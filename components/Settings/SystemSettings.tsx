@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card } from '../UI.tsx';
 import { AppConfig, LedgerRecord } from '../../types.ts';
-import { Save, Download, CloudOff, Cloud, RefreshCcw, AlertTriangle, Shield, HardDrive, List, FileClock, X } from 'lucide-react';
+import { Save, Download, CloudOff, Cloud, RefreshCcw, AlertTriangle, Shield, HardDrive, List, FileClock, X, Database } from 'lucide-react';
 
 interface SystemSettingsProps {
   config: AppConfig;
@@ -21,6 +21,11 @@ export const SystemSettings: React.FC<SystemSettingsProps> = ({ config, records 
   // Security Settings
   const [secret, setSecret] = useState(config.apiSecret); 
   const [usersStr, setUsersStr] = useState('');
+  
+  // Search Limits Settings
+  const [maxDateRange, setMaxDateRange] = useState(config.maxDateRange || 60);
+  const [maxRecords, setMaxRecords] = useState(config.maxRecords || 500);
+  const [recordsPerPage, setRecordsPerPage] = useState(config.recordsPerPage || 20);
   
   // Backup Management
   const [backups, setBackups] = useState<BackupFile[]>([]);
@@ -65,7 +70,10 @@ export const SystemSettings: React.FC<SystemSettingsProps> = ({ config, records 
           secret: config.apiSecret,
           data: {
              secret: secret.trim(),
-             users: usersStr.trim()
+             users: usersStr.trim(),
+             maxDateRange,
+             maxRecords,
+             recordsPerPage
           }
         }),
       });
@@ -243,7 +251,39 @@ export const SystemSettings: React.FC<SystemSettingsProps> = ({ config, records 
           </div>
         </Card>
 
-        {/* Local Backup Section */}
+        <div className="space-y-6">
+            {/* Database Limits Section */}
+            <Card className="p-6">
+              <div className="flex items-center gap-3 mb-6">
+                <Database className="w-6 h-6 text-purple-400" />
+                <h2 className="text-xl font-bold text-slate-100">查詢效能與預設顯示</h2>
+              </div>
+              
+              <div className="space-y-4">
+                 <div>
+                    <label className="block text-sm font-medium text-slate-400 mb-1">最大查詢區間 (天)</label>
+                    <input type="number" value={maxDateRange} onChange={e => setMaxDateRange(Number(e.target.value))} className="w-full bg-slate-900 border border-slate-700 text-slate-100 rounded-lg py-2 px-3 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all" />
+                 </div>
+                 <div>
+                    <label className="block text-sm font-medium text-slate-400 mb-1">單次抓取上限 (筆)</label>
+                    <input type="number" value={maxRecords} onChange={e => setMaxRecords(Number(e.target.value))} className="w-full bg-slate-900 border border-slate-700 text-slate-100 rounded-lg py-2 px-3 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all" />
+                 </div>
+                 <div>
+                    <label className="block text-sm font-medium text-slate-400 mb-1">預設分頁筆數 (筆/頁)</label>
+                    <input type="number" value={recordsPerPage} onChange={e => setRecordsPerPage(Number(e.target.value))} className="w-full bg-slate-900 border border-slate-700 text-slate-100 rounded-lg py-2 px-3 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all" />
+                 </div>
+                 <button
+                   onClick={handleSaveSecurity}
+                   disabled={loading}
+                   className="w-full flex items-center justify-center py-2.5 px-4 bg-purple-500/20 hover:bg-purple-500/30 text-purple-400 border border-purple-500/50 rounded-lg font-medium transition-colors disabled:opacity-50 mt-4"
+                 >
+                   {loading ? <RefreshCcw className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5 mr-2" />}
+                   儲存效能設定
+                 </button>
+              </div>
+            </Card>
+
+
         <Card className="p-6 h-fit">
           <div className="flex items-center gap-3 mb-6">
             <HardDrive className="w-6 h-6 text-sky-400" />
@@ -260,6 +300,7 @@ export const SystemSettings: React.FC<SystemSettingsProps> = ({ config, records 
             下載 CSV 備份
           </button>
         </Card>
+        </div>
       </div>
 
       {/* Cloud Backup & Restore Section */}

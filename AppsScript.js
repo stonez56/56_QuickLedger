@@ -37,7 +37,12 @@ function doPost(e) {
     if (payload.action === 'getConfig') {
       return ContentService.createTextOutput(JSON.stringify({ 
         status: 'success', 
-        users: config.users 
+        users: config.users,
+        sysConfig: {
+          maxDateRange: config.maxDateRange,
+          maxRecords: config.maxRecords,
+          recordsPerPage: config.recordsPerPage
+        }
       })).setMimeType(ContentService.MimeType.JSON);
     }
 
@@ -131,8 +136,7 @@ function doPost(e) {
             rowIndex: i + 1
           });
         }
-        
-        if (result.length >= 100) break; // Limit to 100 results for performance
+        if (result.length >= config.maxRecords) break; // Apply configurable performance limit
       }
       
       return ContentService.createTextOutput(JSON.stringify({ 
@@ -280,11 +284,15 @@ function doPost(e) {
       })).setMimeType(ContentService.MimeType.JSON);
     }
 
-    // 處理系統設定儲存 (ID/Password/Allowed Users)
+    // 處理系統設定儲存 (ID/Password/Allowed Users/Limits)
     if (payload.action === 'saveSystemSettings') {
       let sheet = ss.getSheetByName(CONFIG_SHEET_NAME);
       sheet.getRange("B1").setValue(payload.data.secret);
       sheet.getRange("B2").setValue(payload.data.users);
+      if (payload.data.maxDateRange !== undefined) sheet.getRange("B5").setValue(payload.data.maxDateRange);
+      if (payload.data.maxRecords !== undefined) sheet.getRange("B6").setValue(payload.data.maxRecords);
+      if (payload.data.recordsPerPage !== undefined) sheet.getRange("B7").setValue(payload.data.recordsPerPage);
+
       return ContentService.createTextOutput(JSON.stringify({ 
         status: 'success', 
         message: '系統設定儲存成功' 
@@ -373,10 +381,25 @@ function getConfig(ss) {
     sheet.getRange("A4").setValue("FORMAT_CODES");
     sheet.getRange("B4").setValue("[]");
   }
+  
+  if (!sheet.getRange("A5").getValue()) {
+    sheet.getRange("A5").setValue("MAX_DATE_RANGE");
+    sheet.getRange("B5").setValue(60);
+    sheet.getRange("A6").setValue("MAX_RECORDS");
+    sheet.getRange("B6").setValue(500);
+    sheet.getRange("A7").setValue("RECORDS_PER_PAGE");
+    sheet.getRange("B7").setValue(20);
+  }
+
   const secret = sheet.getRange("B1").getValue();
   const usersStr = sheet.getRange("B2").getValue();
   const users = (usersStr || "").toString().split(',').map(u => u.trim().toLowerCase()).filter(u => u);
-  return { secret, users };
+
+  const maxDateRange = parseInt(sheet.getRange("B5").getValue()) || 60;
+  const maxRecords = parseInt(sheet.getRange("B6").getValue()) || 500;
+  const recordsPerPage = parseInt(sheet.getRange("B7").getValue()) || 20;
+
+  return { secret, users, maxDateRange, maxRecords, recordsPerPage };
 }
 
 // 4. 初始化設定 (請在 GAS 編輯器中手動執行此函式一次)

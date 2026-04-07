@@ -38,19 +38,70 @@ export const SearchPanel: React.FC<SearchPanelProps> = ({ config, onEdit, fontSi
   const [endDate, setEndDate] = useState(todayStr);
   
   const [loading, setLoading] = useState(false);
-  const [results, setResults] = useState<LedgerRecord[]>([]);
+  const [rawResults, setRawResults] = useState<LedgerRecord[]>([]);
+  const [visibleCount, setVisibleCount] = useState(config.recordsPerPage || 20);
+  const [sortConfig, setSortConfig] = useState<{key: 'date'|'total', direction?: 'asc'|'desc'}>({key: 'date', direction: 'desc'});
   const [message, setMessage] = useState<{type: 'error'|'success', text: string} | null>(null);
+
+  const sortedResults = React.useMemo(() => {
+     let sortableItems = [...rawResults];
+     if (sortConfig.direction !== undefined) {
+         sortableItems.sort((a, b) => {
+            if (sortConfig.key === 'date') {
+               const valA = new Date(a.date).getTime() || 0;
+               const valB = new Date(b.date).getTime() || 0;
+               return sortConfig.direction === 'asc' ? valA - valB : valB - valA;
+            } else if (sortConfig.key === 'total') {
+               const valA = Number(a.total) || 0;
+               const valB = Number(b.total) || 0;
+               return sortConfig.direction === 'asc' ? valA - valB : valB - valA;
+            }
+            return 0;
+         });
+     }
+     return sortableItems;
+  }, [rawResults, sortConfig]);
+
+  const results = sortedResults.slice(0, visibleCount);
 
   const performSearch = async () => {
     setLoading(true);
     setMessage(null);
+
+    let finalStart = startDate;
+    if (activeTab === 'date') {
+      const dEnd = new Date(endDate);
+      const dStart = new Date(startDate);
+      const diffDays = (dEnd.getTime() - dStart.getTime()) / (1000 * 3600 * 24);
+      const limitDays = config.maxDateRange || 60;
+      if (diffDays > limitDays) {
+         const newStartDate = new Date(dEnd.getTime() - limitDays * 24 * 3600 * 1000);
+         finalStart = newStartDate.toISOString().split('T')[0];
+         setStartDate(finalStart); // Auto-update UI
+         
+         // Make the input blink or visually emphasize it updated
+         const el = document.getElementById('startDate');
+         if (el) {
+            el.classList.add('ring-2', 'ring-emerald-500');
+            setTimeout(() => el.classList.remove('ring-2', 'ring-emerald-500'), 2000);
+         }
+         
+         setMessage({ type: 'success', text: `已自動將「開始日期」調整為 ${finalStart} (限制為 ${limitDays} 天內)以確保效能。` });
+      }
+    }
+    
+    if (activeTab === 'keyword' && !query.trim()) {
+       setMessage({ type: 'error', text: '請輸入關鍵字以利查詢，避免消耗過多系統資源。' });
+       setLoading(false);
+       return;
+    }
 
     const payload = {
       action: 'search',
       secret: config.apiSecret,
       type: activeTab,
       query: activeTab === 'keyword' ? query : undefined,
-      startDate: activeTab === 'date' ? startDate : undefined,
+      startDate: activeTab === 'date' ? finalStart : undefined,
       endDate: activeTab === 'date' ? endDate : undefined,
     };
 
@@ -63,7 +114,8 @@ export const SearchPanel: React.FC<SearchPanelProps> = ({ config, onEdit, fontSi
       
       const res = await response.json();
       if (res.status === 'success') {
-        setResults(res.data || []);
+        setRawResults(res.data || []);
+        setVisibleCount(config.recordsPerPage || 20);
         if (res.data.length === 0) {
            setMessage({ type: 'success', text: '查無資料' });
         }
@@ -90,15 +142,15 @@ export const SearchPanel: React.FC<SearchPanelProps> = ({ config, onEdit, fontSi
   }, [refreshTrigger]);
 
   React.useEffect(() => {
-    if (scrollTargetId && results.some(r => r.id === scrollTargetId)) {
+    if (scrollTargetId && rawResults.some(r => r.id === scrollTargetId)) {
       const el = document.getElementById(`record-${scrollTargetId}`);
       if (el) {
         setTimeout(() => {
            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }, 100); // reduced delay since no network fetch happens
+        }, 100); 
       }
     }
-  }, [scrollTargetId, results]);
+  }, [scrollTargetId, rawResults]);
 
   const handleDelete = async (record: LedgerRecord) => {
     if (!window.confirm(`確定要刪除流水號 ${record.id} 嗎？此動作無法復原。`)) return;
@@ -117,7 +169,7 @@ export const SearchPanel: React.FC<SearchPanelProps> = ({ config, onEdit, fontSi
       const res = await response.json();
       if (res.status === 'success') {
          sessionStorage.removeItem('dashboard_records_cache'); // Invalidate stats cache on delete
-         setResults(prev => prev.filter(r => r.id !== record.id));
+         setRawResults(prev => prev.filter(r => r.id !== record.id));
          setMessage({ type: 'success', text: '刪除成功' });
       } else {
          throw new Error(res.message);
@@ -189,13 +241,36 @@ export const SearchPanel: React.FC<SearchPanelProps> = ({ config, onEdit, fontSi
 
           {message && (
              <div className={`p-3 rounded-lg flex items-center text-sm mt-4 ${message.type === 'error' ? 'bg-rose-500/10 text-rose-400' : 'bg-emerald-500/10 text-emerald-400'}`}>
-                {message.type === 'error' ? <AlertTriangle className="w-4 h-4 mr-2" /> : <AlertCircle className="w-4 h-4 mr-2" />}
+                {message.type === 'error' ? <AlertTriangle className="w-4 h-4 mr-2 shrink-0" /> : <AlertCircle className="w-4 h-4 mr-2 shrink-0" />}
                 {message.text}
              </div>
           )}
         </form>
       </Card>
 
+      <div className="flex flex-wrap items-center justify-between gap-2 mb-4 bg-slate-900/50 p-3 rounded-lg border border-slate-800 shadow-sm">
+        <div className="flex items-center gap-2">
+           <span className="text-sm font-medium text-slate-400 mr-1 shrink-0">排列條件：</span>
+           <button 
+             onClick={() => setSortConfig({ key: 'date', direction: sortConfig.key === 'date' && sortConfig.direction === 'desc' ? 'asc' : 'desc' })} 
+             className={`px-4 py-2 rounded-md text-sm font-bold transition-all shadow-sm flex items-center ${sortConfig.key==='date' ? 'bg-sky-500 text-white ring-2 ring-sky-500/50' : 'bg-slate-800 text-slate-400 hover:bg-slate-700'}`}
+             disabled={rawResults.length === 0}
+           >
+              依日期 {sortConfig.key==='date' ? (sortConfig.direction==='desc'?'↓':'↑') : ''}
+           </button>
+           <button 
+             onClick={() => setSortConfig({ key: 'total', direction: sortConfig.key === 'total' && sortConfig.direction === 'desc' ? 'asc' : 'desc' })} 
+             className={`px-4 py-2 rounded-md text-sm font-bold transition-all shadow-sm flex items-center ${sortConfig.key==='total' ? 'bg-sky-500 text-white ring-2 ring-sky-500/50' : 'bg-slate-800 text-slate-400 hover:bg-slate-700'}`}
+             disabled={rawResults.length === 0}
+           >
+              依金額 {sortConfig.key==='total' ? (sortConfig.direction==='desc'?'↓':'↑') : ''}
+           </button>
+        </div>
+        <span className="text-sm font-mono text-slate-400 bg-slate-950 px-3 py-1.5 rounded-md border border-slate-800/50">
+           比對出 <span className="text-sky-400 font-bold">{rawResults.length}</span> 筆
+        </span>
+      </div>
+      
       <div className="space-y-4">
         {results.map((record) => (
           <div 
@@ -254,6 +329,14 @@ export const SearchPanel: React.FC<SearchPanelProps> = ({ config, onEdit, fontSi
             </div>
           </div>
         ))}
+        {visibleCount < rawResults.length && (
+            <button 
+              onClick={() => setVisibleCount(c => c + (config.recordsPerPage || 20))} 
+              className="w-full py-3 mt-8 bg-slate-900/50 hover:bg-slate-800 border-2 border-dashed border-slate-700 text-sky-400 font-medium rounded-xl transition-all"
+            >
+               載入更多紀錄 ({Math.min(visibleCount, rawResults.length)} / {rawResults.length})
+            </button>
+        )}
       </div>
     </div>
   );
