@@ -423,21 +423,31 @@ function setup() {
 
 // 5. 確保每日自動化備份觸發器 (Server-Side Cron)
 function setupDailyBackupTrigger() {
-  const functionName = "backupData";
+  const newFunctionName = "triggerDailyBackup";
+  const oldFunctionName = "backupData";
   // 檢查是否已經有觸發器
   const triggers = ScriptApp.getProjectTriggers();
   for (let i = 0; i < triggers.length; i++) {
-    if (triggers[i].getHandlerFunction() === functionName) {
-      return; // 已經存在
+    // 刪除有參數缺陷的舊觸發器
+    if (triggers[i].getHandlerFunction() === oldFunctionName) {
+      ScriptApp.deleteTrigger(triggers[i]);
+    }
+    if (triggers[i].getHandlerFunction() === newFunctionName) {
+      return; // 已經存在新觸發器
     }
   }
   
   // 建立每日凌晨 2 點到 3 點之間的自動備份
-  ScriptApp.newTrigger(functionName)
+  ScriptApp.newTrigger(newFunctionName)
     .timeBased()
     .everyDays(1)
     .atHour(2)
     .create();
+}
+
+// 5.1 觸發器專用包裝函式 (防止時間驅動的 Event Object 被誤判為 isFailSafe = true)
+function triggerDailyBackup(e) {
+  backupData(false);
 }
 
 // 6. 核心備份邏輯 (手動或自動皆可呼叫)

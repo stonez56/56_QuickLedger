@@ -122,6 +122,14 @@ vercel dev
     *   誰可以存取：**任何人 (Anyone)** (前端需要跨網域呼叫，安全性由 Config 分頁的 Secret 與 Email 白名單把關)。
 6.  複製部署成功後產生的 **網頁應用程式 URL (Web App URL)**。
 
+### 步驟 2.5：升級與更新現有後端 (Upgrading Existing Backend)
+當您需要升級現有的 Apps Script 後端程式碼時，請遵循以下魔法步驟：
+1. 開啟本地端最新的 `AppsScript.js` 檔案，並複製所有程式碼。
+2. 前往您的 Google Sheet > `擴充功能` > `Apps Script`。
+3. 貼上並覆蓋 `Code.gs` 中的所有舊代碼。
+4. **🎩 The Magic Step**: 在上方下拉選單選擇 `setup` 函數並點擊 **執行 (Run)**。此步驟將自動幫您掃描並**刪除存在缺陷的舊觸發器**，同時建立全新的正確系統觸發器。
+5. 最後，點擊右上方「部署」>「管理部署作業」(Manage Deployments)，編輯您的網頁應用程式，選擇「新版本」(New version)，然後點擊部署即可無縫更新您的後端！
+
 ### 步驟 3：設定前端專案
 
 1.  複製本專案程式碼至您的本地環境。

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card } from '../UI.tsx';
 import { AppConfig, LedgerRecord } from '../../types.ts';
-import { Save, Download, CloudOff, Cloud, RefreshCcw, AlertTriangle, Shield, HardDrive, List, FileClock } from 'lucide-react';
+import { Save, Download, CloudOff, Cloud, RefreshCcw, AlertTriangle, Shield, HardDrive, List, FileClock, X } from 'lucide-react';
 
 interface SystemSettingsProps {
   config: AppConfig;
@@ -25,6 +25,12 @@ export const SystemSettings: React.FC<SystemSettingsProps> = ({ config, records 
   // Backup Management
   const [backups, setBackups] = useState<BackupFile[]>([]);
   const [loadingBackups, setLoadingBackups] = useState(false);
+
+  // Restore Modal State
+  const [isRestoreModalOpen, setIsRestoreModalOpen] = useState(false);
+  const [restoreTargetId, setRestoreTargetId] = useState('');
+  const [restoreTargetDate, setRestoreTargetDate] = useState('');
+  const [restoreConfirmText, setRestoreConfirmText] = useState('');
 
   useEffect(() => {
     fetchCurrentUsers();
@@ -149,9 +155,16 @@ export const SystemSettings: React.FC<SystemSettingsProps> = ({ config, records 
     }
   };
 
-  const handleRestore = async (backupId: string, backupName: string) => {
-    const confirmMsg = `警告：這將會使用 [${backupName}] 覆寫目前的資料表！\n而且會導致所有未備份的新增資料遺失！\n\n系統會在還原前自動建立一份「Fail-Safe」備份，但您確定要繼續嗎？`;
-    if (!window.confirm(confirmMsg)) return;
+  const handleRestoreClick = (backupId: string, backupDate: string) => {
+    setRestoreTargetId(backupId);
+    setRestoreTargetDate(backupDate);
+    setRestoreConfirmText('');
+    setIsRestoreModalOpen(true);
+  };
+
+  const submitRestore = async () => {
+    if (restoreConfirmText !== restoreTargetDate) return;
+    setIsRestoreModalOpen(false);
 
     setLoading(true);
     setMessage({ type: 'success', text: '正在準備還原... (此過程包含建立防呆備份與資料覆寫，請耐心等候)' });
@@ -160,7 +173,7 @@ export const SystemSettings: React.FC<SystemSettingsProps> = ({ config, records 
       const response = await fetch(config.scriptUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({ action: 'restoreData', secret: config.apiSecret, backupFileId: backupId }),
+        body: JSON.stringify({ action: 'restoreData', secret: config.apiSecret, backupFileId: restoreTargetId }),
       });
       const result = await response.json();
       if (result.status === 'success') {
@@ -303,7 +316,7 @@ export const SystemSettings: React.FC<SystemSettingsProps> = ({ config, records 
                           </div>
                        </div>
                        <button
-                          onClick={() => handleRestore(b.id, b.name)}
+                          onClick={() => handleRestoreClick(b.id, b.dateCreated)}
                           disabled={loading}
                           className="shrink-0 px-3 py-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 rounded font-medium text-sm transition-colors disabled:opacity-50"
                        >
@@ -315,6 +328,65 @@ export const SystemSettings: React.FC<SystemSettingsProps> = ({ config, records 
             )}
          </div>
       </Card>
+
+      {/* Restore Confirmation Modal */}
+      {isRestoreModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="w-full max-w-md bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-2xl relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-rose-500 to-orange-500" />
+            
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-xl font-bold flex items-center text-rose-400">
+                <AlertTriangle className="w-6 h-6 mr-2" />
+                危險操作：還原備份
+              </h3>
+              <button onClick={() => setIsRestoreModalOpen(false)} className="text-slate-500 hover:text-white transition-colors">
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <p className="text-slate-300 text-sm leading-relaxed">
+                警告：這將會徹底覆寫目前的總帳資料表！<br/>
+                <span className="text-rose-400 font-semibold">此操作會導致所有未備份的新紀錄永久遺失！</span>
+              </p>
+              
+              <div className="bg-slate-800/50 p-4 rounded-lg border border-slate-700">
+                <p className="text-xs text-slate-400 mb-2">為了防止誤觸，請在下方欄位中輸入您要還原的備份時間：</p>
+                <div className="font-mono text-center text-lg font-bold tracking-wider text-sky-400 bg-slate-950 py-2 rounded border border-slate-800 select-all">
+                  {restoreTargetDate}
+                </div>
+              </div>
+
+              <div>
+                <input
+                  type="text"
+                  value={restoreConfirmText}
+                  onChange={(e) => setRestoreConfirmText(e.target.value)}
+                  placeholder="輸入上方的時間字串..."
+                  className="w-full bg-slate-950 border border-slate-700 text-slate-100 rounded-lg py-3 px-4 focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all font-mono text-center"
+                />
+              </div>
+
+              <div className="pt-2 flex gap-3">
+                <button
+                  onClick={() => setIsRestoreModalOpen(false)}
+                  className="flex-1 py-2.5 px-4 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg font-medium transition-colors"
+                >
+                  取消
+                </button>
+                <button
+                  onClick={submitRestore}
+                  disabled={restoreConfirmText !== restoreTargetDate || loading}
+                  className="flex-1 py-2.5 px-4 bg-rose-500 hover:bg-rose-600 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  確認還原
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
