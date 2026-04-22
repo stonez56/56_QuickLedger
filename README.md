@@ -50,7 +50,7 @@
    ```
 2. **設定環境變數**: 在根目錄建立 `.env` 檔案並填入您的 Gemini API Key：
    ```env
-   VITE_GEMINI_API_KEY=您的_GEMINI_API_KEY
+   GEMINI_API_KEY=您的_GEMINI_API_KEY
    ```
 3. **啟動開發伺服器**:
    ```bash
@@ -146,7 +146,7 @@ VITE_APPS_SCRIPT_URL="https://script.google.com/macros/s/您的ID/exec"
 2.  點擊 "Get API key" 並建立一個新的 API Key。
 3.  在您的 `.env.local` 檔案中加入：
 ```env
-VITE_GEMINI_API_KEY="您的_GEMINI_API_KEY"
+GEMINI_API_KEY="您的_GEMINI_API_KEY"
 ```
 
 ---
@@ -172,7 +172,7 @@ VITE_GEMINI_API_KEY="您的_GEMINI_API_KEY"
 1.  將程式碼推送到 GitHub。
 2.  在 Vercel 新增專案並匯入您的 Repository。
 3.  **關鍵步驟**：在 Vercel 的專案設定 (Settings) > **Environment Variables** 中新增：
-    *   Key: `VITE_GEMINI_API_KEY` (您的 Gemini API Key)
+    *   Key: `GEMINI_API_KEY` (您的 Gemini API Key)
     *   Key: `VITE_APPS_SCRIPT_URL` (您「**正式版**」 Google Sheet 的 Web App URL)
 4.  點擊 Deploy 完成部署。
 
