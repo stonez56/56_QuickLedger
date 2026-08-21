@@ -178,6 +178,7 @@ export const ConfigProvider: React.FC<{
         body: JSON.stringify({
           action: 'saveSettings',
           secret: config.apiSecret,
+          userEmail: config.userEmail,
           type: 'categories',
           data: newCategories
         }),
@@ -203,6 +204,7 @@ export const ConfigProvider: React.FC<{
         body: JSON.stringify({
           action: 'saveSettings',
           secret: config.apiSecret,
+          userEmail: config.userEmail,
           type: 'formatCodes',
           data: newFormatCodes
         }),

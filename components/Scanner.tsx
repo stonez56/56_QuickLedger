@@ -1,13 +1,15 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Camera, Loader2, Sparkles, X, ScanLine, Upload } from 'lucide-react';
-import { FLATTENED_CATEGORY_VALUES, AI_SCANNER_PROMPT } from '../constants.ts';
+import { FLATTENED_CATEGORY_VALUES } from '../constants.ts';
+import { AppConfig } from '../types.ts';
 
 interface ScannerProps {
+  config?: AppConfig;
   onScanResult: (data: any) => void;
   onClose: () => void;
 }
 
-export const Scanner: React.FC<ScannerProps> = ({ onScanResult, onClose }) => {
+export const Scanner: React.FC<ScannerProps> = ({ config, onScanResult, onClose }) => {
   const [loading, setLoading] = useState(false);
   const [cameraActive, setCameraActive] = useState(false);
   const [cameraError, setCameraError] = useState<string | null>(null);
@@ -82,9 +84,6 @@ export const Scanner: React.FC<ScannerProps> = ({ onScanResult, onClose }) => {
   const processImage = async (base64Data: string) => {
     setLoading(true);
     try {
-      const categoryList = FLATTENED_CATEGORY_VALUES.join('", "');
-      const fullPrompt = AI_SCANNER_PROMPT.replace('{{CATEGORY_LIST}}', `["${categoryList}"]`);
-
       const response = await fetch('/api/scan', {
         method: 'POST',
         headers: {
@@ -92,7 +91,8 @@ export const Scanner: React.FC<ScannerProps> = ({ onScanResult, onClose }) => {
         },
         body: JSON.stringify({
           imageBase64: base64Data,
-          promptText: fullPrompt
+          apiSecret: config?.apiSecret || '',
+          categories: FLATTENED_CATEGORY_VALUES
         }),
       });
 
