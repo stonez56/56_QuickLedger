@@ -68,6 +68,7 @@ export const SystemSettings: React.FC<SystemSettingsProps> = ({ config, records 
         body: JSON.stringify({ 
           action: 'saveSystemSettings', 
           secret: config.apiSecret,
+          userEmail: config.userEmail,
           data: {
              secret: secret.trim(),
              users: usersStr.trim(),
@@ -128,7 +129,7 @@ export const SystemSettings: React.FC<SystemSettingsProps> = ({ config, records 
       const response = await fetch(config.scriptUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({ action: 'backupData', secret: config.apiSecret }),
+        body: JSON.stringify({ action: 'backupData', secret: config.apiSecret, userEmail: config.userEmail }),
       });
       const result = await response.json();
       if (result.status === 'success') {
@@ -181,7 +182,7 @@ export const SystemSettings: React.FC<SystemSettingsProps> = ({ config, records 
       const response = await fetch(config.scriptUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({ action: 'restoreData', secret: config.apiSecret, backupFileId: restoreTargetId }),
+        body: JSON.stringify({ action: 'restoreData', secret: config.apiSecret, userEmail: config.userEmail, backupFileId: restoreTargetId }),
       });
       const result = await response.json();
       if (result.status === 'success') {

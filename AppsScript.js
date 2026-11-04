@@ -1,9 +1,8 @@
-// Google 記帳 Sheet: https://docs.google.com/spreadsheets/d/1J0wYR-pnMWFVDOU_cA_GxF2WGn86e-nZQ0RP4HJ8Je4/edit?gid=1903772853#gid=1903772853
 const DATA_SHEET_NAME = "Data_總帳";
 const CONFIG_SHEET_NAME = "Config";
 // 自動環境偵測 (自動判斷這是測試機還是正式機)
 // 只要你的 Google Sheet 檔案名稱包含 "TEST" 或 "測試" 字眼，就會自動判定為 "TEST" 環境。
-// 否則一律判定為 "PRODUCTION" 正式環境。這樣未來的開發者直接複製貼上程式碼，這段判斷都能自動運作！
+// 否則一律判定為 "PRODUCTION" 正式環境。
 function getEnv() {
   const sheetName = SpreadsheetApp.getActiveSpreadsheet().getName().toUpperCase();
   if (sheetName.includes("TEST") || sheetName.includes("測試")) {
@@ -31,6 +30,21 @@ function doPost(e) {
         status: 'error', 
         message: 'Invalid Secret' 
       })).setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // 驗證異動操作的使用者白名單 (BOLA/IDOR 與後端特權防禦)
+    const mutatingActions = ['submit', 'update', 'delete', 'saveSettings', 'saveSystemSettings', 'restoreData', 'backupData'];
+    if (mutatingActions.includes(payload.action)) {
+      const userEmail = (payload.userEmail || (payload.data && payload.data.userEmail) || '').toString().trim().toLowerCase();
+      // 若有設置白名單，且操作未提供信箱或信箱不在白名單中，拒絕執行
+      if (config.users && config.users.length > 0) {
+        if (!userEmail || !config.users.includes(userEmail)) {
+          return ContentService.createTextOutput(JSON.stringify({ 
+            status: 'error', 
+            message: '權限不足 (403 Forbidden)：該使用者信箱未在授權白名單中' 
+          })).setMimeType(ContentService.MimeType.JSON);
+        }
+      }
     }
 
     // 處理 getConfig 請求 (前端登入驗證用)
@@ -345,25 +359,36 @@ function safeFormatDate(val) {
   return Utilities.formatDate(d, Session.getScriptTimeZone(), "yyyy-MM-dd");
 }
 
+// 公式注入防禦 (Formula / CSV Injection Sanitizer - CWE-1236)
+function sanitizeCellValue(val) {
+  if (val === null || val === undefined) return '';
+  const str = String(val).trim();
+  // 若開頭為 =, +, -, @, \t, \r，前綴單引號以阻斷試算表公式解析
+  if (/^[=+\-@\t\r]/.test(str)) {
+    return "'" + str;
+  }
+  return str.slice(0, 500); // 欄位最大長度限制 500 字元
+}
+
 function buildRowData(id, payload) {
   return [
-    id,                              // A: 流水號
-    payload.recordType || 'Both',    // B: 入帳類型
-    payload.date || '',              // C: 發票日期
-    payload.paymentDate || '',       // D: 收/付款日期
-    payload.expectedDate || '',      // E: 預計收/付款日
-    payload.type || '',              // F: 憑證種類
-    payload.formatCode || '',        // G: 格式代號
-    payload.invoiceNo || '',         // H: 發票號碼
-    payload.taxId || '',             // I: 對方統編
-    payload.amount || 0,             // J: 銷售額
-    payload.tax || 0,                // K: 營業稅額
-    payload.total || 0,              // L: 總金額
-    payload.taxType || '',           // M: 課稅別
-    payload.category || '',          // N: 會計科目
-    payload.advancePaymentType || 'none', // O: 墊付類型 (新增)
-    payload.note || '',              // P: 備註
-    payload.userEmail || ''          // Q: 紀錄者
+    id,                                                       // A: 流水號
+    sanitizeCellValue(payload.recordType || 'Both'),         // B: 入帳類型
+    sanitizeCellValue(payload.date || ''),                   // C: 發票日期
+    sanitizeCellValue(payload.paymentDate || ''),            // D: 收/付款日期
+    sanitizeCellValue(payload.expectedDate || ''),           // E: 預計收/付款日
+    sanitizeCellValue(payload.type || ''),                   // F: 憑證種類
+    sanitizeCellValue(payload.formatCode || ''),             // G: 格式代號
+    sanitizeCellValue(payload.invoiceNo || ''),              // H: 發票號碼
+    sanitizeCellValue(payload.taxId || ''),                  // I: 對方統編
+    Number(payload.amount) || 0,                             // J: 銷售額
+    Number(payload.tax) || 0,                                // K: 營業稅額
+    Number(payload.total) || 0,                              // L: 總金額
+    sanitizeCellValue(payload.taxType || ''),                // M: 課稅別
+    sanitizeCellValue(payload.category || ''),               // N: 會計科目
+    sanitizeCellValue(payload.advancePaymentType || '無墊付'), // O: 墊付類型
+    sanitizeCellValue(payload.note || ''),                   // P: 備註
+    sanitizeCellValue(payload.userEmail || '')               // Q: 紀錄者
   ];
 }
 
@@ -373,9 +398,9 @@ function getConfig(ss) {
   if (!sheet) {
     sheet = ss.insertSheet(CONFIG_SHEET_NAME);
     sheet.getRange("A1").setValue("API_SECRET");
-    sheet.getRange("B1").setValue("my-secret-888");
+    sheet.getRange("B1").setValue(""); // 預設留空，請於部署後在 Config 分頁設定自訂密鑰
     sheet.getRange("A2").setValue("ALLOWED_USERS");
-    sheet.getRange("B2").setValue("stonez56@gmail.com,stonez.chen@gmail.com");
+    sheet.getRange("B2").setValue(""); // 預設留空，請填入允許的 Google 信箱 (逗號分隔)
     sheet.getRange("A3").setValue("CATEGORIES");
     sheet.getRange("B3").setValue("[]");
     sheet.getRange("A4").setValue("FORMAT_CODES");

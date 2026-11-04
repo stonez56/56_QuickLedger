@@ -163,6 +163,7 @@ export const SearchPanel: React.FC<SearchPanelProps> = ({ config, onEdit, fontSi
         body: JSON.stringify({
            action: 'delete',
            secret: config.apiSecret,
+           userEmail: config.userEmail,
            id: record.id
         })
       });

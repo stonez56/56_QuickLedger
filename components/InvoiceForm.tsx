@@ -593,7 +593,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ config, initialData, o
 
   return (
     <div className="max-w-4xl mx-auto pb-24">
-      {showScanner && <Scanner onScanResult={handleScanResult} onClose={() => setShowScanner(false)} />}
+      {showScanner && <Scanner config={config} onScanResult={handleScanResult} onClose={() => setShowScanner(false)} />}
       
       <form onSubmit={handlePreSubmit} noValidate className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
